@@ -62,7 +62,7 @@ public class LogParser
         var destroyedSymbolAccum = new Dictionary<string, int>();
         var destroyedItemAccum = new Dictionary<string, int>();
         var finePrintList = new List<string>();
-        long finalCoins = 0;
+        double finalCoins = 0;
         bool ended = false;
         bool inSpinBody = false; // true between SpinStart and CoinTotal (effect phase)
         bool expectDestroyedSymbolList = false;
@@ -141,13 +141,13 @@ public class LogParser
             {
                 if (CurrentlyHavePat.IsMatch(line.Content))
                 {
-                    cur.CoinsBefore = ParseLong(CurrentlyHavePat.Match(line.Content).Groups[1].Value);
+                    cur.CoinsBefore = ParseDouble(CurrentlyHavePat.Match(line.Content).Groups[1].Value);
                     continue;
                 }
 
                 if (CoinTotalPat.IsMatch(line.Content))
                 {
-                    cur.CoinsAfter = ParseLong(CoinTotalPat.Match(line.Content).Groups[1].Value);
+                    cur.CoinsAfter = ParseDouble(CoinTotalPat.Match(line.Content).Groups[1].Value);
                     cur.CoinChange = cur.CoinsAfter - cur.CoinsBefore;
                     finalCoins = cur.CoinsAfter;
                     inSpinBody = false; // exiting spin body, entering choice phase
@@ -156,25 +156,25 @@ public class LogParser
 
                 if (GainedCoinsPat.IsMatch(line.Content))
                 {
-                    cur.GainedCoins = ParseLong(GainedCoinsPat.Match(line.Content).Groups[1].Value);
+                    cur.GainedCoins = ParseDouble(GainedCoinsPat.Match(line.Content).Groups[1].Value);
                     continue;
                 }
 
                 if (GainedRerollPat.IsMatch(line.Content))
                 {
-                    cur.GainedReroll = ParseLong(GainedRerollPat.Match(line.Content).Groups[1].Value);
+                    cur.GainedReroll = (long)ParseDouble(GainedRerollPat.Match(line.Content).Groups[1].Value);
                     continue;
                 }
 
                 if (GainedRemovalPat.IsMatch(line.Content))
                 {
-                    cur.GainedRemoval = ParseLong(GainedRemovalPat.Match(line.Content).Groups[1].Value);
+                    cur.GainedRemoval = (long)ParseDouble(GainedRemovalPat.Match(line.Content).Groups[1].Value);
                     continue;
                 }
 
                 if (GainedEssencePat.IsMatch(line.Content))
                 {
-                    cur.GainedEssence = ParseLong(GainedEssencePat.Match(line.Content).Groups[1].Value);
+                    cur.GainedEssence = (long)ParseDouble(GainedEssencePat.Match(line.Content).Groups[1].Value);
                     continue;
                 }
 
@@ -566,10 +566,10 @@ public class LogParser
     private class SpinFrame
     {
         public int SpinNum;
-        public long CoinsBefore;
-        public long CoinsAfter;
-        public long CoinChange;
-        public long GainedCoins;
+        public double CoinsBefore;
+        public double CoinsAfter;
+        public double CoinChange;
+        public double GainedCoins;
         public long GainedReroll;
         public long GainedRemoval;
         public long GainedEssence;
@@ -644,11 +644,11 @@ public class LogParser
         return commaIdx > 0 ? raw[..commaIdx].Trim() : raw.Trim();
     }
 
-    private static long ParseLong(string raw)
+    private static double ParseDouble(string raw)
     {
         if (double.TryParse(raw, NumberStyles.Float,
                 CultureInfo.InvariantCulture, out var d))
-            return (long)Math.Round(d);
+            return d;
         return 0;
     }
 }
