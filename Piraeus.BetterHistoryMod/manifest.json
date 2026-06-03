@@ -1,0 +1,11 @@
+{
+  "Id": "Piraeus.BetterHistoryMod",
+  "AssemblyPath": "Piraeus.BetterHistoryMod.dll",
+  "Dependencies": [],
+  "Metadata": {
+    "Name": "Better History Mod",
+    "Version": "1.0.0",
+    "Author": "Piraeus",
+    "Description": "Structured run history database with timeline viewer for Luck be a Landlord"
+  }
+}

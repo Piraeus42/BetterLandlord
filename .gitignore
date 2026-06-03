@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+.claude/
+node_modules/
+*.user
+*.suo
+*.bak
+dist/
+_bh_inject_diag.txt
+ui_config.json.bak
