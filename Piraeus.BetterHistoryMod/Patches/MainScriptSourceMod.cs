@@ -156,7 +156,7 @@ func _bh_flush():
                 all_spins.append(cur_spin)
             cur_spin = {
                 'spin_num': int(pl.get('spin_num', 0)),
-                'coins_before': int(pl.get('coins', 0)),
+                'coins_before': float(pl.get('coins', 0)),
                 'coins_after': 0,
                 'coin_change': 0,
                 'main_symbol': null,
@@ -166,7 +166,7 @@ func _bh_flush():
 
         elif et == 'spin_end':
             if cur_spin != null:
-                cur_spin.coins_after = int(pl.get('coin_total', 0))
+                cur_spin.coins_after = float(pl.get('coin_total', 0))
                 cur_spin.coin_change = cur_spin.coins_after - cur_spin.coins_before
                 final_coins = cur_spin.coins_after
 
@@ -259,7 +259,7 @@ func _bh_flush():
         elif et == 'run_end':
             _end_time = str(ev.get('timestamp', ''))
             ended_by = str(pl.get('result', 'loss'))
-            final_coins = int(pl.get('coins', final_coins))
+            final_coins = float(pl.get('coins', final_coins))
             floor_num = int(pl.get('floor', 0))
             f_symbols = pl.get('final_symbols', [])
             f_items = pl.get('final_items', [])
@@ -336,7 +336,7 @@ func _bh_flush():
             var last_sp = cycle_spins[cycle_spins.size() - 1]
             cyc['rent_payment'] = {
                 'paid_successfully': true,
-                'coins_left_after_pay': max(0, int(last_sp.coins_after) - int(cyc.rent_required))
+                'coins_left_after_pay': max(0, float(last_sp.coins_after) - float(cyc.rent_required))
             }
             rent_cycles.append(cyc)
             cycle_spins = []
@@ -354,7 +354,7 @@ func _bh_flush():
         if ended_by == 'victory':
             cyc['rent_payment'] = {
                 'paid_successfully': true,
-                'coins_left_after_pay': max(0, int(last_sp.coins_after) - int(cyc.rent_required))
+                'coins_left_after_pay': max(0, float(last_sp.coins_after) - float(cyc.rent_required))
             }
         elif ended_by == 'loss':
             cyc['rent_payment'] = {

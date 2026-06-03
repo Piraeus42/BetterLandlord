@@ -76,7 +76,7 @@ public class RunListItem
     public int? Floor { get; set; }
 
     [JsonPropertyName("final_coins")]
-    public long FinalCoins { get; set; }
+    public double FinalCoins { get; set; }
 
     [JsonPropertyName("total_spins")]
     public int TotalSpins { get; set; }

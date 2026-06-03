@@ -24,11 +24,11 @@ class WriteLogPatch
             elif string.begins_with("Coin total is now "):
                 var _coin_str = string.trim_prefix("Coin total is now ")
                 _coin_str = _coin_str.trim_suffix(" after spinning")
-                var _ct = 0
-                if _coin_str.is_valid_integer():
-                    _ct = int(_coin_str)
-                elif _coin_str.is_valid_float():
-                    _ct = int(float(_coin_str))
+                var _ct = 0.0
+                if _coin_str.is_valid_float():
+                    _ct = float(_coin_str)
+                elif _coin_str.is_valid_integer():
+                    _ct = float(_coin_str)
                 $"/root/Main"._bh_add_event("spin_end", {"coin_total": _ct})
             elif string == "VICTORY":
                 $"/root/Main"._bh_end_run("victory")

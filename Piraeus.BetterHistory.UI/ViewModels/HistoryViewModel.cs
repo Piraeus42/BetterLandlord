@@ -378,7 +378,7 @@ public class RunListItemViewModel
     public int RunNumber { get; private set; }
     public string EndedBy { get; private set; }
     public int? Floor { get; private set; }
-    public long FinalCoins { get; private set; }
+    public double FinalCoins { get; private set; }
     public int TotalSpins { get; private set; }
     public string ResultText { get; private set; } = "";
     public string FloorText { get; private set; } = "";
@@ -410,7 +410,7 @@ public class TimelineRoundViewModel
 {
     public int RoundIndex { get; private set; }
     public int RentRequired { get; private set; }
-    public long CoinsAtRent { get; private set; }
+    public double CoinsAtRent { get; private set; }
     public List<SpinCellViewModel> Spins { get; private set; } = new();
     public List<EndActionGroupViewModel> EndActionGroups { get; private set; } = new();
     public bool HasEndActions => EndActionGroups.Count > 0;
@@ -482,9 +482,9 @@ public class SpinCellViewModel
 {
     public int SpinNum { get; private set; }
     public string MainSymbol { get; private set; } = "";
-    public long CoinsBefore { get; private set; }
-    public long CoinsAfter { get; private set; }
-    public long CoinChange { get; private set; }
+    public double CoinsBefore { get; private set; }
+    public double CoinsAfter { get; private set; }
+    public double CoinChange { get; private set; }
     public string CoinChangeText { get; private set; } = "";
     public bool HasChange => CoinChange != 0;
     public bool HasSymbol => !string.IsNullOrEmpty(MainSymbol);

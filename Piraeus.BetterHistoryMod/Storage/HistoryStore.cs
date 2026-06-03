@@ -79,7 +79,7 @@ public class HistoryStore
                     RunNumber = meta.TryGetProperty("run_number", out var rn) ? rn.GetInt32() : 0,
                     EndedBy = meta.TryGetProperty("ended_by", out var eb) ? eb.GetString() ?? "loss" : "loss",
                     Floor = meta.TryGetProperty("floor", out var fl) && fl.ValueKind != JsonValueKind.Null ? fl.GetInt32() : null,
-                    FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetInt64() : 0,
+                    FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetDouble() : 0,
                     TotalSpins = meta.TryGetProperty("total_spins", out var ts) ? ts.GetInt32() : 0,
                     StartTime = meta.TryGetProperty("start_time", out var st) && st.ValueKind != JsonValueKind.Null ? st.GetString() : null,
                     TopSymbols = ExtractTopSymbols(doc)
@@ -151,11 +151,11 @@ public class HistoryStore
         if (!root.TryGetProperty("summary", out var summary)) return null;
         if (!summary.TryGetProperty("symbols", out var syms) || syms.ValueKind != System.Text.Json.JsonValueKind.Array) return null;
 
-        var ranked = new List<(string id, int value)>();
+        var ranked = new List<(string id, double value)>();
         foreach (var s in syms.EnumerateArray())
         {
             var id = s.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? "" : "";
-            var val = s.TryGetProperty("total_value", out var tv) && tv.ValueKind != System.Text.Json.JsonValueKind.Null ? tv.GetInt32() : 0;
+            var val = s.TryGetProperty("total_value", out var tv) && tv.ValueKind != System.Text.Json.JsonValueKind.Null ? tv.GetDouble() : 0;
             if (!string.IsNullOrEmpty(id) && val > 0)
                 ranked.Add((id, val));
         }
@@ -222,7 +222,7 @@ public class ManifestEntry
     public int? Floor { get; set; }
 
     [JsonPropertyName("final_coins")]
-    public long FinalCoins { get; set; }
+    public double FinalCoins { get; set; }
 
     [JsonPropertyName("total_spins")]
     public int TotalSpins { get; set; }

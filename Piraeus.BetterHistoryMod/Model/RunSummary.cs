@@ -111,7 +111,7 @@ public class SymbolInSummary
     // DPT fields
     [JsonPropertyName("total_value")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public int TotalValue { get; set; }
+    public double TotalValue { get; set; }
 
     [JsonPropertyName("turns_present")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]

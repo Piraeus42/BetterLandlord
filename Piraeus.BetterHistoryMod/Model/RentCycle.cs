@@ -32,13 +32,13 @@ public class SpinEntry
     public int SpinNum { get; set; }
 
     [JsonPropertyName("coins_before")]
-    public long CoinsBefore { get; set; }
+    public double CoinsBefore { get; set; }
 
     [JsonPropertyName("coins_after")]
-    public long CoinsAfter { get; set; }
+    public double CoinsAfter { get; set; }
 
     [JsonPropertyName("coin_change")]
-    public long CoinChange { get; set; }
+    public double CoinChange { get; set; }
 
     [JsonPropertyName("reroll_change")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
@@ -114,5 +114,5 @@ public class RentPaymentResult
     public bool PaidSuccessfully { get; set; }
 
     [JsonPropertyName("coins_left_after_pay")]
-    public long CoinsLeftAfterPay { get; set; }
+    public double CoinsLeftAfterPay { get; set; }
 }

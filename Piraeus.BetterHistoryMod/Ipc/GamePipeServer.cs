@@ -373,7 +373,7 @@ public class GamePipeServer : IDisposable
                             if (meta.TryGetProperty("floor", out var fl) && fl.ValueKind != System.Text.Json.JsonValueKind.Null)
                                 floor = fl.GetInt32();
                             if (meta.TryGetProperty("final_coins", out var fc))
-                                finalCoins = fc.GetInt64();
+                                finalCoins = fc.GetDouble();
                             if (meta.TryGetProperty("total_spins", out var ts))
                                 totalSpins = ts.GetInt32();
                         }
@@ -414,7 +414,7 @@ public class GamePipeServer : IDisposable
                         RunNumber = meta.TryGetProperty("run_number", out var rn) ? rn.GetInt32() : 0,
                         EndedBy = meta.TryGetProperty("ended_by", out var eb) ? eb.GetString() ?? "loss" : "loss",
                         Floor = meta.TryGetProperty("floor", out var fl) && fl.ValueKind != System.Text.Json.JsonValueKind.Null ? fl.GetInt32() : null,
-                        FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetInt64() : 0,
+                        FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetDouble() : 0,
                         TotalSpins = meta.TryGetProperty("total_spins", out var ts) ? ts.GetInt32() : 0,
                         StartTime = meta.TryGetProperty("start_time", out var st) && st.ValueKind != System.Text.Json.JsonValueKind.Null ? st.GetString() : null,
                         TopSymbols = HistoryStore.ExtractTopSymbols(doc)
