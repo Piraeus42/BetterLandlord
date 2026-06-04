@@ -314,7 +314,7 @@
                                                            Text="{Binding Count, TargetNullValue='1', Mode=OneWay, StringFormat='{}{0}'}"
                                                            VerticalAlignment="Center" Margin="0,0,2,0" />
                                                 <Image Source="{Binding Id, Mode=OneWay, Converter={StaticResource IconImage}}"
-                                                       Width="16" Height="16" Stretch="Uniform" />
+                                                       Width="18" Height="18" Stretch="Uniform" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -337,7 +337,7 @@
                                                            Text="{Binding Count, TargetNullValue='1', Mode=OneWay, StringFormat='{}{0}'}"
                                                            VerticalAlignment="Center" Margin="0,0,2,0" />
                                                 <Image Source="{Binding Id, Mode=OneWay, Converter={StaticResource IconImage}}"
-                                                       Width="16" Height="16" Stretch="Uniform" />
+                                                       Width="18" Height="18" Stretch="Uniform" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -348,7 +348,7 @@
                             <StackPanel Margin="0,0,0,6"
                                         Visibility="{Binding Summary.RemovedSymbols.Count, Converter={StaticResource BoolToVis}}">
                                 <TextBlock FontSize="11" Foreground="#CBA6F7"
-                                           Text="Removed:" Margin="0,0,0,4" />
+                                           Text="Removed Symbols:" Margin="0,0,0,4" />
                                 <ItemsControl ItemsSource="{Binding Summary.RemovedSymbols, Mode=OneWay}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
@@ -360,7 +360,7 @@
                                                            Text="{Binding Count, TargetNullValue='1', Mode=OneWay, StringFormat='{}{0}'}"
                                                            VerticalAlignment="Center" Margin="0,0,2,0" />
                                                 <Image Source="{Binding Id, Mode=OneWay, Converter={StaticResource IconImage}}"
-                                                       Width="16" Height="16" Stretch="Uniform" />
+                                                       Width="18" Height="18" Stretch="Uniform" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

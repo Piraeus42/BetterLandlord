@@ -96,6 +96,9 @@ func _bh_flush():
     var symbol_accum = {}
     var item_accum = {}
     var destroyed_item_accum = {}
+    var des_sym = []
+    var des_it = []
+    var rem_sym = []
     # DPT accumulators: per-symbol value tracking
     var symbol_value_sum = {}      # {id: total_coins}
     var symbol_spin_count = {}     # {id: times_on_grid}
@@ -267,6 +270,24 @@ func _bh_flush():
             seed_type = str(pl.get('seed_type', ''))
             seed_input = str(pl.get('seed_input', ''))
             landlord_seed = int(pl.get('landlord_seed', 0))
+            var _raw_ds = pl.get('destroyed_symbols', [])
+            if typeof(_raw_ds) == TYPE_ARRAY and _raw_ds.size() > 0:
+                for _e in _raw_ds:
+                    if typeof(_e) == TYPE_DICTIONARY:
+                        var _d = {'id': str(_e.get('id', '')), 'count': int(_e.get('count', 1))}
+                        des_sym.append(_d)
+            var _raw_di = pl.get('destroyed_items', [])
+            if typeof(_raw_di) == TYPE_ARRAY and _raw_di.size() > 0:
+                for _e in _raw_di:
+                    if typeof(_e) == TYPE_DICTIONARY:
+                        var _d = {'id': str(_e.get('id', '')), 'count': int(_e.get('count', 1))}
+                        des_it.append(_d)
+            var _raw_rs = pl.get('removed_symbols', [])
+            if typeof(_raw_rs) == TYPE_ARRAY and _raw_rs.size() > 0:
+                for _e in _raw_rs:
+                    if typeof(_e) == TYPE_DICTIONARY:
+                        var _d = {'id': str(_e.get('id', '')), 'count': int(_e.get('count', 1))}
+                        rem_sym.append(_d)
 
     # Flush final spin
     if cur_spin != null:
@@ -490,17 +511,24 @@ func _bh_flush():
                     ientry['saved_value'] = sv
                 it_summary.append(ientry)
 
-    var des_it = []
+    # Merge destroyed_item_accum into des_it (avoid duplicates)
     for dk in destroyed_item_accum.keys():
-        des_it.append({'id': dk, 'count': destroyed_item_accum[dk]})
+        var _found = false
+        for _di in des_it:
+            if str(_di.get('id', '')) == str(dk):
+                _di['count'] = int(_di.get('count', 0)) + int(destroyed_item_accum[dk])
+                _found = true
+                break
+        if not _found:
+            des_it.append({'id': str(dk), 'count': int(destroyed_item_accum[dk])})
 
     var summary = {
         'status_bar': null,
         'symbols': sym_summary,
         'items': it_summary,
-        'destroyed_symbols': [],
+        'destroyed_symbols': des_sym,
         'destroyed_items': des_it,
-        'removed_symbols': [],
+        'removed_symbols': rem_sym,
         'landlord_fine_print': []
     }
     _bh_debug_log('phase4_done symbols=' + str(sym_summary.size()))
@@ -722,10 +750,42 @@ func _bh_end_run(result):
     var _actual_rn = 0
     if typeof($'Pop-up Sprite/Pop-up') != TYPE_NIL:
         _actual_rn = $'Pop-up Sprite/Pop-up'.total_runs
+    var _ds = []
+    var _di = []
+    var _rs = []
+    if typeof($'Pop-up Sprite/Pop-up') != TYPE_NIL:
+        var _popup = $'Pop-up Sprite/Pop-up'
+        # destroyed_symbol_types accumulates globally across the run (SlotIcon pushes on destroy)
+        if _popup.has('destroyed_symbol_types'):
+            var _ds_counts = {}
+            for _s in _popup.destroyed_symbol_types:
+                var _sk = str(_s)
+                _ds_counts[_sk] = _ds_counts.get(_sk, 0) + 1
+            for _k in _ds_counts.keys():
+                _ds.append({'id': _k, 'count': _ds_counts[_k]})
+        # removed_symbol_types accumulates globally across the run
+        if _popup.has('removed_symbol_types'):
+            var _rs_counts = {}
+            for _s in _popup.removed_symbol_types:
+                var _sk = str(_s)
+                _rs_counts[_sk] = _rs_counts.get(_sk, 0) + 1
+            for _k in _rs_counts.keys():
+                _rs.append({'id': _k, 'count': _rs_counts[_k]})
+    # destroyed_item_types lives on $/root/Main/Items, not Pop-up
+    if typeof($'/root/Main/Items') != TYPE_NIL:
+        var _items_node = $'/root/Main/Items'
+        if _items_node.has('destroyed_item_types'):
+            var _di_counts = {}
+            for _s in _items_node.destroyed_item_types:
+                var _sk = str(_s)
+                _di_counts[_sk] = _di_counts.get(_sk, 0) + 1
+            for _k in _di_counts.keys():
+                _di.append({'id': _k, 'count': _di_counts[_k]})
     _bh_debug_log('endrun_before_flush')
     _bh_add_event('run_end', {
         'result': result, 'floor': fl, 'coins': cc,
         'final_symbols': fs, 'final_items': fi,
+        'destroyed_symbols': _ds, 'destroyed_items': _di, 'removed_symbols': _rs,
         'run_number': _actual_rn,
         'seed_type': _bh_rng_seed_type,
         'seed_input': _bh_rng_seed_input,
