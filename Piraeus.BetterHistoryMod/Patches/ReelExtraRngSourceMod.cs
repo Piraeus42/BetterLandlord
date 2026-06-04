@@ -22,7 +22,7 @@ func _rer_rand_range(a, b):
     var r = $""/root/Main""._bh_rng_reel; return r.rand_range(a, b) if r != null else a
 func _rer_shuffle(arr):
     if typeof(arr) != TYPE_ARRAY: return
-    var r = $""/root/Main""._bh_rng_reel; if r != null: r.custom_shuffle(arr)
+    var r = $""/root/Main""._bh_rng_reel_shuffle; if r != null: r.custom_shuffle(arr)
 " + "\n";
     }
 }

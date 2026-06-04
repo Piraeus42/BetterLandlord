@@ -32,7 +32,7 @@ func _sir_rand_range(a, b):
     var r = $""/root/Main""._bh_rng_effect; return r.rand_range(a, b) if r != null else a
 func _sir_shuffle(arr):
     if typeof(arr) != TYPE_ARRAY: return
-    var r = $""/root/Main""._bh_rng_effect; if r != null: r.custom_shuffle(arr)
+    var r = $""/root/Main""._bh_rng_effect_shuffle; if r != null: r.custom_shuffle(arr)
 
 func _scr_randf():
     var r = $""/root/Main""._bh_rng_scratch; return r.randf() if r != null else 0.0

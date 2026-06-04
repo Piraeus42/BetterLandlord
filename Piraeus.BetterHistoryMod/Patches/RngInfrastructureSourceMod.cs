@@ -122,9 +122,9 @@ var _bh_rng_seed_type: String = ''      # 'random' | 'custom'
 var _bh_rng_seed_input: String = ''     # 10-char or user input
 var _bh_rng_landlord_seed: int = 0      # hash result
 
-# 17 persistent (cross-spin) RNG instances
-var _bh_rng_spin: PCGRng = null
-var _bh_rng_rarity: PCGRng = null
+# 20 persistent (cross-spin) RNG instances
+var _bh_rng_sym_rarity: PCGRng = null
+var _bh_rng_itm_rarity: PCGRng = null
 var _bh_rng_sym_common: PCGRng = null
 var _bh_rng_sym_uncommon: PCGRng = null
 var _bh_rng_sym_rare: PCGRng = null
@@ -133,17 +133,18 @@ var _bh_rng_itm_common: PCGRng = null
 var _bh_rng_itm_uncommon: PCGRng = null
 var _bh_rng_itm_rare: PCGRng = null
 var _bh_rng_itm_vrare: PCGRng = null
-var _bh_rng_ess_common: PCGRng = null
-var _bh_rng_ess_uncommon: PCGRng = null
-var _bh_rng_ess_rare: PCGRng = null
-var _bh_rng_ess_vrare: PCGRng = null
+var _bh_rng_ess: PCGRng = null
 var _bh_rng_fineprint: PCGRng = null
 var _bh_rng_cosmetic: PCGRng = null
+var _bh_rng_forced_rarity: PCGRng = null
 
 # Per-spin temporary instances (recreated each spin)
 var _bh_rng_reel: PCGRng = null
+var _bh_rng_reel_shuffle: PCGRng = null
 var _bh_rng_effect: PCGRng = null
+var _bh_rng_effect_shuffle: PCGRng = null
 var _bh_rng_scratch: PCGRng = null  # cosmetic/frame-driven discard stream
+var _bh_rng_oil_can: PCGRng = null
 
 # ============================================================
 # Initialize all RNG from seed
@@ -165,9 +166,9 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     _bh_rng_landlord_seed = landlord_seed
     var s: int = landlord_seed
 
-    # === Phase 1: Create ALL 19 instances to local variables ===
-    var _new_spin           = PCGRng.new(_bh_derive_seed(s, 'spin'))
-    var _new_rarity         = PCGRng.new(_bh_derive_seed(s, 'rarity'))
+    # === Phase 1: Create ALL 20 instances to local variables ===
+    var _new_sym_rarity = PCGRng.new(_bh_derive_seed(s, 'sym_rarity'))
+    var _new_itm_rarity    = PCGRng.new(_bh_derive_seed(s, 'itm_rarity'))
     var _new_sym_common     = PCGRng.new(_bh_derive_seed(s, 'sym_common'))
     var _new_sym_uncommon   = PCGRng.new(_bh_derive_seed(s, 'sym_uncommon'))
     var _new_sym_rare       = PCGRng.new(_bh_derive_seed(s, 'sym_rare'))
@@ -176,19 +177,17 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     var _new_itm_uncommon   = PCGRng.new(_bh_derive_seed(s, 'itm_uncommon'))
     var _new_itm_rare       = PCGRng.new(_bh_derive_seed(s, 'itm_rare'))
     var _new_itm_vrare      = PCGRng.new(_bh_derive_seed(s, 'itm_vrare'))
-    var _new_ess_common     = PCGRng.new(_bh_derive_seed(s, 'ess_common'))
-    var _new_ess_uncommon   = PCGRng.new(_bh_derive_seed(s, 'ess_uncommon'))
-    var _new_ess_rare       = PCGRng.new(_bh_derive_seed(s, 'ess_rare'))
-    var _new_ess_vrare      = PCGRng.new(_bh_derive_seed(s, 'ess_vrare'))
+    var _new_ess            = PCGRng.new(_bh_derive_seed(s, 'ess'))
     var _new_fineprint      = PCGRng.new(_bh_derive_seed(s, 'fineprint'))
     var _new_cosmetic       = PCGRng.new(_bh_derive_seed(s, 'cosmetic'))
+    var _new_forced_rarity  = PCGRng.new(_bh_derive_seed(s, 'forced_rarity'))
     var _new_reel           = PCGRng.new(_bh_derive_seed(s, 'reel_init'))
     var _new_effect         = PCGRng.new(_bh_derive_seed(s, 'effect_init'))
     var _new_scratch        = PCGRng.new(_bh_derive_seed(s, 'scratch_init'))
 
     # === Phase 2: Atomically assign — ALL or NOTHING ===
-    _bh_rng_spin           = _new_spin
-    _bh_rng_rarity         = _new_rarity
+    _bh_rng_sym_rarity    = _new_sym_rarity
+    _bh_rng_itm_rarity    = _new_itm_rarity
     _bh_rng_sym_common     = _new_sym_common
     _bh_rng_sym_uncommon   = _new_sym_uncommon
     _bh_rng_sym_rare       = _new_sym_rare
@@ -197,12 +196,10 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     _bh_rng_itm_uncommon   = _new_itm_uncommon
     _bh_rng_itm_rare       = _new_itm_rare
     _bh_rng_itm_vrare      = _new_itm_vrare
-    _bh_rng_ess_common     = _new_ess_common
-    _bh_rng_ess_uncommon   = _new_ess_uncommon
-    _bh_rng_ess_rare       = _new_ess_rare
-    _bh_rng_ess_vrare      = _new_ess_vrare
+    _bh_rng_ess            = _new_ess
     _bh_rng_fineprint      = _new_fineprint
     _bh_rng_cosmetic       = _new_cosmetic
+    _bh_rng_forced_rarity  = _new_forced_rarity
     _bh_rng_reel           = _new_reel
     _bh_rng_effect         = _new_effect
     _bh_rng_scratch        = _new_scratch
@@ -217,12 +214,24 @@ func _bh_init_rng(seed_type: String, seed_input: String):
 func _bh_begin_spin_rng():
     # Safety net: if RNG was never initialized (missed hook / edge case),
     # fall back to random rather than crashing on null dereference.
-    if _bh_rng_spin == null:
+    if _bh_rng_sym_rarity == null:
         _bh_init_rng('random', '')
-    var spin_val: int = _bh_rng_spin.randi_max(2147483647)
+    # Spin RNG is derived deterministically from seed + spin_num,
+    # NOT from any RNG consumption. This guarantees that
+    # spin N always produces the same reel/effect/scratch seeds
+    # regardless of Deck mode, Oil Can, or any other inter-spin
+    # inter-spin events.
+    var spin_num: int = 1
+    var _popup = $'Pop-up Sprite/Pop-up'
+    if _popup != null and _popup.has('spins'):
+        spin_num = int(_popup.spins) + 1
+    var spin_val: int = _bh_derive_seed(_bh_rng_landlord_seed, 'spin_' + str(spin_num))
     _bh_rng_reel   = PCGRng.new(_bh_derive_seed(spin_val, 'reel'))
     _bh_rng_effect = PCGRng.new(_bh_derive_seed(spin_val, 'effect'))
     _bh_rng_scratch = PCGRng.new(_bh_derive_seed(spin_val, 'scratch'))
+    _bh_rng_reel_shuffle = PCGRng.new(_bh_derive_seed(spin_val, 'reel_shuffle'))
+    _bh_rng_effect_shuffle = PCGRng.new(_bh_derive_seed(spin_val, 'effect_shuffle'))
+    _bh_rng_oil_can = PCGRng.new(_bh_derive_seed(spin_val, 'oil_can'))
 
 # ============================================================
 # RNG state persistence — sidecar file for Continue support
@@ -231,7 +240,7 @@ func _bh_begin_spin_rng():
 # Called by SaveGamePatch (save_game Postfix).
 # Dumps all 19 PCG stream (state, inc) pairs + seed metadata + fingerprint.
 func _bh_save_rng_state():
-    if _bh_rng_spin == null:
+    if _bh_rng_sym_rarity == null:
         return
     var f = File.new()
     var dir = Directory.new()
@@ -250,8 +259,8 @@ func _bh_save_rng_state():
             ""coins"": $'Coins'.coins
         },
         ""streams"": {
-            ""spin"":           [str(_bh_rng_spin.state),      str(_bh_rng_spin.inc)],
-            ""rarity"":         [str(_bh_rng_rarity.state),    str(_bh_rng_rarity.inc)],
+            ""sym_rarity"":    [str(_bh_rng_sym_rarity.state), str(_bh_rng_sym_rarity.inc)],
+            ""itm_rarity"":    [str(_bh_rng_itm_rarity.state), str(_bh_rng_itm_rarity.inc)],
             ""sym_common"":     [str(_bh_rng_sym_common.state),str(_bh_rng_sym_common.inc)],
             ""sym_uncommon"":   [str(_bh_rng_sym_uncommon.state),str(_bh_rng_sym_uncommon.inc)],
             ""sym_rare"":       [str(_bh_rng_sym_rare.state),  str(_bh_rng_sym_rare.inc)],
@@ -260,15 +269,16 @@ func _bh_save_rng_state():
             ""itm_uncommon"":   [str(_bh_rng_itm_uncommon.state),str(_bh_rng_itm_uncommon.inc)],
             ""itm_rare"":       [str(_bh_rng_itm_rare.state),  str(_bh_rng_itm_rare.inc)],
             ""itm_vrare"":      [str(_bh_rng_itm_vrare.state), str(_bh_rng_itm_vrare.inc)],
-            ""ess_common"":     [str(_bh_rng_ess_common.state),str(_bh_rng_ess_common.inc)],
-            ""ess_uncommon"":   [str(_bh_rng_ess_uncommon.state),str(_bh_rng_ess_uncommon.inc)],
-            ""ess_rare"":       [str(_bh_rng_ess_rare.state),  str(_bh_rng_ess_rare.inc)],
-            ""ess_vrare"":      [str(_bh_rng_ess_vrare.state), str(_bh_rng_ess_vrare.inc)],
+            ""ess"":            [str(_bh_rng_ess.state),       str(_bh_rng_ess.inc)],
             ""fineprint"":      [str(_bh_rng_fineprint.state), str(_bh_rng_fineprint.inc)],
             ""cosmetic"":       [str(_bh_rng_cosmetic.state),  str(_bh_rng_cosmetic.inc)],
+            ""forced_rarity"":  [str(_bh_rng_forced_rarity.state), str(_bh_rng_forced_rarity.inc)],
             ""reel"":           [str(_bh_rng_reel.state),      str(_bh_rng_reel.inc)],
             ""effect"":         [str(_bh_rng_effect.state),    str(_bh_rng_effect.inc)],
-            ""scratch"":        [str(_bh_rng_scratch.state),   str(_bh_rng_scratch.inc)]
+            ""scratch"":        [str(_bh_rng_scratch.state),   str(_bh_rng_scratch.inc)],
+            ""reel_shuffle"":   [str(_bh_rng_reel_shuffle.state), str(_bh_rng_reel_shuffle.inc)],
+            ""effect_shuffle"": [str(_bh_rng_effect_shuffle.state), str(_bh_rng_effect_shuffle.inc)],
+            ""oil_can"":        [str(_bh_rng_oil_can.state), str(_bh_rng_oil_can.inc)],
         }
     }))
     f.close()
@@ -329,8 +339,8 @@ func _bh_restore_rng_state():
     if typeof(st) != TYPE_DICTIONARY:
         return false
 
-    _bh_rng_spin         = _bh_make_rng_from(st[""spin""])
-    _bh_rng_rarity       = _bh_make_rng_from(st[""rarity""])
+    _bh_rng_sym_rarity  = _bh_make_rng_from(st[""sym_rarity""])
+    _bh_rng_itm_rarity  = _bh_make_rng_from(st[""itm_rarity""])
     _bh_rng_sym_common   = _bh_make_rng_from(st[""sym_common""])
     _bh_rng_sym_uncommon = _bh_make_rng_from(st[""sym_uncommon""])
     _bh_rng_sym_rare     = _bh_make_rng_from(st[""sym_rare""])
@@ -339,15 +349,16 @@ func _bh_restore_rng_state():
     _bh_rng_itm_uncommon = _bh_make_rng_from(st[""itm_uncommon""])
     _bh_rng_itm_rare     = _bh_make_rng_from(st[""itm_rare""])
     _bh_rng_itm_vrare    = _bh_make_rng_from(st[""itm_vrare""])
-    _bh_rng_ess_common   = _bh_make_rng_from(st[""ess_common""])
-    _bh_rng_ess_uncommon = _bh_make_rng_from(st[""ess_uncommon""])
-    _bh_rng_ess_rare     = _bh_make_rng_from(st[""ess_rare""])
-    _bh_rng_ess_vrare    = _bh_make_rng_from(st[""ess_vrare""])
+    _bh_rng_ess        = _bh_make_rng_from(st[""ess""])
     _bh_rng_fineprint    = _bh_make_rng_from(st[""fineprint""])
     _bh_rng_cosmetic     = _bh_make_rng_from(st[""cosmetic""])
+    _bh_rng_forced_rarity = _bh_make_rng_from(st[""forced_rarity""])
     _bh_rng_reel         = _bh_make_rng_from(st[""reel""])
     _bh_rng_effect       = _bh_make_rng_from(st[""effect""])
     _bh_rng_scratch      = _bh_make_rng_from(st[""scratch""])
+    _bh_rng_reel_shuffle   = _bh_make_rng_from(st[""reel_shuffle""])
+    _bh_rng_effect_shuffle = _bh_make_rng_from(st[""effect_shuffle""])
+    _bh_rng_oil_can        = _bh_make_rng_from(st[""oil_can""])
 
     # Sync Godot global RNG
     seed(_bh_rng_landlord_seed)

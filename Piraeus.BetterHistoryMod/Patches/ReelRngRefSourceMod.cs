@@ -24,7 +24,7 @@ public class ReelRngRefSourceMod : ISourceMod
 
 func _rrr_shuffle(arr):
     if typeof(arr) != TYPE_ARRAY: return
-    var r = $""/root/Main""._bh_rng_reel; if r != null: r.custom_shuffle(arr)
+    var r = $""/root/Main""._bh_rng_reel_shuffle; if r != null: r.custom_shuffle(arr)
 func _rrr_randi_max(n):
     var r = $""/root/Main""._bh_rng_reel; return r.randi_max(n) if r != null else 0
 func _rrr_randf():
