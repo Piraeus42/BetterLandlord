@@ -19,8 +19,9 @@ class TitleSetFloorPatch
             # shows floor menu), once after floor selection (actually starts game).
             # Only flush+init on the second call when a run is really about to begin.
             if $'Pop-up Sprite/Pop-up'.floor_selected or demo:
-                # Flush any dangling events from a previous saved game
-                if _bh_events.size() > 0 and not _bh_run_ended:
+                # Flush any dangling events from a previous run.
+                # _bh_end_run is debounced — safe to call even if already flushed.
+                if _bh_events.size() > 0:
                     _bh_end_run("quit")
                 # Fresh bookkeeping for the new run
                 _bh_start_run()

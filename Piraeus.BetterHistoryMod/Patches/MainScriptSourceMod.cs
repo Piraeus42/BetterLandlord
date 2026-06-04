@@ -25,7 +25,8 @@ var sb = new System.Text.StringBuilder(source);
 
 var _bh_events = []
 var _bh_run_id = ''
-var _bh_run_ended = false
+var _bh_flushed_at_spin = -1
+var _bh_victory_achieved = false
 var _bh_pending_choice = {}
 var _bh_just_recorded_item = ''
 var _bh_choice_idx = 0
@@ -45,13 +46,23 @@ func _bh_clip_sample():
 func _bh_init():
     _bh_events.clear()
     _bh_run_id = str(OS.get_unix_time())
-    _bh_run_ended = false
+    _bh_flushed_at_spin = -1
+    _bh_victory_achieved = false
     _bh_pending_choice.clear()
     _bh_choice_idx = 0
 
 func _bh_start_run():
+    # Clean up temp events file from the previous run before resetting run_id.
+    # New Game is the one true run boundary — only here can we safely delete
+    # recovery data for the old run without risk of needing it for Continue.
+    if _bh_run_id != '':
+        var _d2 = Directory.new()
+        var _old_tmp = 'user://betterHistory/events_' + _bh_run_id + '.json'
+        if _d2.file_exists(_old_tmp):
+            _d2.remove(_old_tmp)
     _bh_events.clear()
-    _bh_run_ended = false
+    _bh_flushed_at_spin = -1
+    _bh_victory_achieved = false
     # Always include run_number to prevent collisions across sessions.
     # Never reuse run_timestamp from a previous run.
     _bh_run_id = str(OS.get_unix_time())
@@ -119,6 +130,7 @@ func _bh_flush():
     var f_items = []
     var _start_time = ''
     var _end_time = ''
+    var victory_achieved = false
 
     for ev in _bh_events:
         var et = str(ev.get('type', ''))
@@ -262,6 +274,7 @@ func _bh_flush():
         elif et == 'run_end':
             _end_time = str(ev.get('timestamp', ''))
             ended_by = str(pl.get('result', 'loss'))
+            victory_achieved = bool(pl.get('victory_achieved', false))
             final_coins = float(pl.get('coins', final_coins))
             floor_num = int(pl.get('floor', 0))
             f_symbols = pl.get('final_symbols', [])
@@ -415,6 +428,7 @@ func _bh_flush():
         'start_time': _start_time,
         'end_time': _end_time,
         'ended_by': ended_by,
+        'victory_achieved': victory_achieved,
         'final_coins': final_coins,
         'total_spins': total_spins,
         'floor': floor_num,
@@ -555,12 +569,9 @@ func _bh_flush():
     f.store_string(JSON.print(record, '  '))
     f.close()
     _bh_debug_log('phase5_done json_written')
-    _bh_events.clear()
-    # Clean up temp events dump — run is complete, no need for recovery file
-    var _d2 = Directory.new()
-    var _tmp_path = 'user://betterHistory/events_' + _bh_run_id + '.json'
-    if _d2.file_exists(_tmp_path):
-        _d2.remove(_tmp_path)
+    # Events persist in memory — flush is non-destructive.
+    # Clean-up is the responsibility of _bh_start_run() (the one true
+    # run boundary, reached via New Game).
 
 # ---- Incremental event persistence (cold-boot Continue recovery) ----
 
@@ -633,6 +644,16 @@ func _bh_lookup_actual_rent(actual_rents, idx, base_rents):
         return base_rents[idx]
     return 500 + (idx - 11) * 500
 
+# Count completed spins from _bh_events (spin_start events).
+# Used as the debounce key — two flushes at the same spin count
+# are duplicate notifications for the same game state.
+func _bh_count_spins():
+    var n = 0
+    for _ev in _bh_events:
+        if str(_ev.get('type', '')) == 'spin_start':
+            n += 1
+    return n
+
 func _bh_record_cards(presented, email_type):
     _bh_pending_choice = {'presented': presented, 'event_type': email_type}
     var evt = 'symbol_choice_presented'
@@ -681,23 +702,43 @@ func _bh_record_skip():
     _bh_pending_choice = {}
 
 func _bh_end_run(result):
-    if _bh_run_ended:
-        return
-    # Don't flush ghost runs — a real game needs spin_start/spin_end events.
-    # run_start + startup popups can accumulate 2-3 events without any spins.
-    # Check for actual spin activity rather than a fixed event count.
-    var _has_spins = false
-    for _ev in _bh_events:
-        if str(_ev.get('type', '')) == 'spin_start':
-            _has_spins = true
-            break
-    if not _has_spins:
+    # --- Ghost-run filter ---
+    # A real game needs spin_start/spin_end events.  run_start + startup
+    # popups can accumulate 2-3 events without any spins — discard those.
+    var spins = _bh_count_spins()
+    if spins == 0:
         _bh_events.clear()
-        _bh_run_ended = true
+        _bh_flushed_at_spin = -1
         return
-    _bh_run_ended = true
+
+    # --- Debounce: skip duplicate notifications for the same game state ---
+    # Both write_log(""VICTORY"") and resolve_event(""win"") fire for the same
+    # victory.  The second one arrives with no new spin data -- skip it.
+    if spins == _bh_flushed_at_spin:
+        return
+
+    # --- Track victory achievement ---
+    # Once a run has won, record it permanently so re-flushes after
+    # guillotine / coin-loss / quit still carry victory_achieved=true.
+    if result == 'victory':
+        _bh_victory_achieved = true
+
+    # --- Strip any stale run_end events ---
+    # A previous flush may have appended a run_end.  Remove all of them
+    # so exactly one exists, at the tail, for this flush.  While stripping,
+    # preserve victory_achieved knowledge from any prior run_end.
+    var _i = _bh_events.size() - 1
+    while _i >= 0:
+        var _ev = _bh_events[_i]
+        if str(_ev.get('type', '')) == 'run_end':
+            if str(_ev.get('payload', {}).get('result', '')) == 'victory':
+                _bh_victory_achieved = true
+            _bh_events.remove(_i)
+        _i -= 1
+
     _bh_debug_log('endrun_start result=' + result)
 
+    # --- Capture final board state ---
     var fs = []
     var fi = []
     if typeof($'Reels') != TYPE_NIL:
@@ -783,7 +824,9 @@ func _bh_end_run(result):
                 _di.append({'id': _k, 'count': _di_counts[_k]})
     _bh_debug_log('endrun_before_flush')
     _bh_add_event('run_end', {
-        'result': result, 'floor': fl, 'coins': cc,
+        'result': result,
+        'victory_achieved': _bh_victory_achieved,
+        'floor': fl, 'coins': cc,
         'final_symbols': fs, 'final_items': fi,
         'destroyed_symbols': _ds, 'destroyed_items': _di, 'removed_symbols': _rs,
         'run_number': _actual_rn,
@@ -792,6 +835,7 @@ func _bh_end_run(result):
         'landlord_seed': _bh_rng_landlord_seed
     })
     _bh_flush()
+    _bh_flushed_at_spin = spins
 
 func _bh_fmt_time(tm):
     var _m = str(tm.month)

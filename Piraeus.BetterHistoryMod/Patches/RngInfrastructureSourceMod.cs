@@ -253,6 +253,7 @@ func _bh_save_rng_state():
         ""seed_type"": _bh_rng_seed_type,
         ""seed_input"": _bh_rng_seed_input,
         ""landlord_seed"": _bh_rng_landlord_seed,
+        ""victory_achieved"": _bh_victory_achieved,
         ""fingerprint"": {
             ""total_runs"": $'Pop-up Sprite/Pop-up'.total_runs,
             ""spins"": $'Pop-up Sprite/Pop-up'.spins,
@@ -335,6 +336,12 @@ func _bh_restore_rng_state():
         var _save_spins = int(fp.get(""spins"", 0))
         _bh_load_events_for_continue(_save_spins)
 
+    # Force the next ending to flush — sidecar events may be from a run
+    # that was already flushed once.  Restore victory_achieved from the
+    # sidecar so cold-boot Continue preserves the semantic flag.
+    _bh_flushed_at_spin = -1
+    _bh_victory_achieved = bool(data.get(""victory_achieved"", false))
+
     var st = data.get(""streams"", {})
     if typeof(st) != TYPE_DICTIONARY:
         return false
@@ -390,9 +397,10 @@ func _bh_apply_seed():
 
 # Called by Godot when the window is closed mid-run.
 # NOTIFICATION_WM_QUIT_REQUEST = 1006
+# _bh_end_run is re-entrant and debounced — safe to call unconditionally.
 func _notification(what: int):
     if what == 1006:
-        if _bh_events.size() > 0 and not _bh_run_ended:
+        if _bh_events.size() > 0:
             _bh_end_run(""quit"")
 
 func _bh_item_rng_for_rarity(rarity: String) -> PCGRng:
