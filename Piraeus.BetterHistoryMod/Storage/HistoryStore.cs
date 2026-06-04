@@ -115,6 +115,7 @@ public class HistoryStore
             existing.FinalCoins = record.Meta.FinalCoins;
             existing.TotalSpins = record.Meta.TotalSpins;
             existing.StartTime = record.Meta.StartTime;
+            existing.SeedType = record.Meta.SeedType;
         }
         else
         {
@@ -126,7 +127,8 @@ public class HistoryStore
                 Floor = record.Meta.Floor,
                 FinalCoins = record.Meta.FinalCoins,
                 TotalSpins = record.Meta.TotalSpins,
-                StartTime = record.Meta.StartTime
+                StartTime = record.Meta.StartTime,
+                SeedType = record.Meta.SeedType
             });
             manifest.TotalRuns = manifest.Entries.Count;
         }
@@ -233,4 +235,8 @@ public class ManifestEntry
     [JsonPropertyName("top_symbols")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? TopSymbols { get; set; }
+
+    [JsonPropertyName("seed_type")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? SeedType { get; set; }
 }

@@ -359,6 +359,7 @@ public class GamePipeServer : IDisposable
                 var floor = e.Floor;
                 var finalCoins = e.FinalCoins;
                 var totalSpins = e.TotalSpins;
+                var seedType = e.SeedType;
                 try
                 {
                     var path = Path.Combine(runsDir, $"{e.RunId}.json");
@@ -376,6 +377,8 @@ public class GamePipeServer : IDisposable
                                 finalCoins = fc.GetDouble();
                             if (meta.TryGetProperty("total_spins", out var ts))
                                 totalSpins = ts.GetInt32();
+                            if (meta.TryGetProperty("seed_type", out var st) && st.ValueKind != System.Text.Json.JsonValueKind.Null)
+                                seedType = st.GetString();
                         }
                     }
                 }
@@ -389,7 +392,8 @@ public class GamePipeServer : IDisposable
                     FinalCoins = finalCoins,
                     TotalSpins = totalSpins,
                     StartTime = e.StartTime,
-                    TopSymbols = e.TopSymbols
+                    TopSymbols = e.TopSymbols,
+                    SeedType = seedType
                 });
             }
         }
@@ -417,7 +421,8 @@ public class GamePipeServer : IDisposable
                         FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetDouble() : 0,
                         TotalSpins = meta.TryGetProperty("total_spins", out var ts) ? ts.GetInt32() : 0,
                         StartTime = meta.TryGetProperty("start_time", out var st) && st.ValueKind != System.Text.Json.JsonValueKind.Null ? st.GetString() : null,
-                        TopSymbols = HistoryStore.ExtractTopSymbols(doc)
+                        TopSymbols = HistoryStore.ExtractTopSymbols(doc),
+                        SeedType = meta.TryGetProperty("seed_type", out var sdt) && sdt.ValueKind != System.Text.Json.JsonValueKind.Null ? sdt.GetString() : null
                     });
                 }
                 catch { }

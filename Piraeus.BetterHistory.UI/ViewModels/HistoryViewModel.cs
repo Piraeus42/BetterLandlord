@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
@@ -208,6 +210,23 @@ public class HistoryViewModel : INotifyPropertyChanged
         set => SetProperty(ref _statusText, value);
     }
 
+    public bool HasWinRateStats => !string.IsNullOrEmpty(WinRate50);
+    public bool HasWinRate50 => !string.IsNullOrEmpty(WinRate50);
+    public bool HasWinRate100 => !string.IsNullOrEmpty(WinRate100);
+    public bool HasWinRate200 => !string.IsNullOrEmpty(WinRate200);
+
+    private string _winRate50 = "";
+    public string WinRate50 { get => _winRate50; set { SetProperty(ref _winRate50, value); OnPropertyChanged(nameof(HasWinRate50)); } }
+
+    private string _winRate100 = "";
+    public string WinRate100 { get => _winRate100; set { SetProperty(ref _winRate100, value); OnPropertyChanged(nameof(HasWinRate100)); } }
+
+    private string _winRate200 = "";
+    public string WinRate200 { get => _winRate200; set { SetProperty(ref _winRate200, value); OnPropertyChanged(nameof(HasWinRate200)); } }
+
+    private string _winRateOverall = "";
+    public string WinRateOverall { get => _winRateOverall; set => SetProperty(ref _winRateOverall, value); }
+
     private bool _showSummary;
     public bool ShowSummary
     {
@@ -219,7 +238,7 @@ public class HistoryViewModel : INotifyPropertyChanged
 
     public bool HasData => CurrentRecord != null;
     public string RunInfo => CurrentRecord?.Meta != null
-        ? $"Run #{CurrentRecord.Meta.RunNumber} — {FormatEndedBy(CurrentRecord.Meta.EndedBy)} (Floor {CurrentRecord.Meta.Floor ?? 0})"
+        ? $"Run #{CurrentRecord.Meta.RunNumber}{(CurrentRecord.Meta.SeedType == "custom" ? " \U0001F512" : "")} — {FormatEndedBy(CurrentRecord.Meta.EndedBy)} (Floor {CurrentRecord.Meta.Floor ?? 0})"
         : "";
 
     public RunSummary? Summary => CurrentRecord?.Summary;
@@ -260,6 +279,7 @@ public class HistoryViewModel : INotifyPropertyChanged
                             foreach (var r in listMsg.Runs)
                                 Runs.Add(new RunListItemViewModel(r));
                             StatusText = $"Connected — {Runs.Count} runs loaded";
+                            UpdateWinRateStats();
                         }
                         break;
 
@@ -324,6 +344,28 @@ public class HistoryViewModel : INotifyPropertyChanged
         StatusText = "Refreshing...";
     }
 
+    private void UpdateWinRateStats()
+    {
+        if (Runs.Count == 0)
+        {
+            WinRate50 = WinRate100 = WinRate200 = WinRateOverall = "";
+            OnPropertyChanged(nameof(HasWinRateStats));
+            return;
+        }
+
+        var all = Runs.ToList();
+        int total = all.Count;
+        int totalWins = all.Count(r => r.EndedBy == "victory");
+        WinRateOverall = $"{totalWins * 100.0 / total:F1}%";
+
+        var recent = all.Take(200).ToList();
+        WinRate50  = recent.Count >= 50  ? $"{recent.Take(50).Count(r => r.EndedBy == "victory") * 100.0 / Math.Min(50, recent.Count):F1}%" : "";
+        WinRate100 = recent.Count >= 100 ? $"{recent.Take(100).Count(r => r.EndedBy == "victory") * 100.0 / Math.Min(100, recent.Count):F1}%" : "";
+        WinRate200 = recent.Count >= 200 ? $"{recent.Take(200).Count(r => r.EndedBy == "victory") * 100.0 / Math.Min(200, recent.Count):F1}%" : "";
+
+        OnPropertyChanged(nameof(HasWinRateStats));
+    }
+
     public void ToggleSummary()
     {
         ShowSummary = !ShowSummary;
@@ -386,6 +428,9 @@ public class RunListItemViewModel
     public List<string> TopSymbols { get; private set; } = new();
     public bool HasTopSymbols => TopSymbols.Count > 0;
 
+    public string? SeedType { get; private set; }
+    public bool IsCustomSeed => SeedType == "custom";
+
     public RunListItemViewModel(RunListItem item)
     {
         RunId = item.RunId;
@@ -394,6 +439,7 @@ public class RunListItemViewModel
         Floor = item.Floor;
         FinalCoins = item.FinalCoins;
         TotalSpins = item.TotalSpins;
+        SeedType = item.SeedType;
         ResultText = item.EndedBy switch
         {
             "victory" => "Victory",
@@ -401,7 +447,9 @@ public class RunListItemViewModel
             _         => "Defeat"
         };
         // total_runs is 0-based in-game; display as 1-based for users
-        RunLabel = $"Run #{item.RunNumber}";
+        RunLabel = IsCustomSeed
+            ? $"Run #{item.RunNumber} \U0001F512"
+            : $"Run #{item.RunNumber}";
         TopSymbols = item.TopSymbols ?? new();
     }
 }

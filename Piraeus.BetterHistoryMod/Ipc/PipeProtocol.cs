@@ -87,6 +87,10 @@ public class RunListItem
     [JsonPropertyName("top_symbols")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? TopSymbols { get; set; }
+
+    [JsonPropertyName("seed_type")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? SeedType { get; set; }
 }
 
 public class RunDataMessage

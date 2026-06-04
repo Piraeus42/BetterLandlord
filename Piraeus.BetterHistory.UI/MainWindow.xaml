@@ -652,9 +652,69 @@
         <!-- Bottom bar -->
         <Border Grid.Row="2" Background="#181825" Padding="12,8"
                 BorderBrush="#45475A" BorderThickness="0,1,0,0">
-            <TextBlock Text="{Binding StatusText, Mode=OneWay}"
-                       FontSize="11" Foreground="#6C7086"
-                       VerticalAlignment="Center" />
+            <Grid>
+                <TextBlock Text="{Binding StatusText, Mode=OneWay}"
+                           FontSize="11" Foreground="#6C7086"
+                           HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+                <!-- Win rate stats (right side) -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Visibility="{Binding HasWinRateStats, Converter={StaticResource BoolToVis}}">
+                    <!-- Label -->
+                    <TextBlock Text="近期胜率  " FontSize="10" Foreground="#585B70"
+                               VerticalAlignment="Center" />
+
+                    <!-- 50场 -->
+                    <TextBlock FontSize="10" Foreground="#585B70" VerticalAlignment="Center"
+                               Visibility="{Binding HasWinRate50, Converter={StaticResource BoolToVis}}">
+                        <Run Text="50场 "/>
+                    </TextBlock>
+                    <TextBlock FontSize="16" FontWeight="Bold" Foreground="#89B4FA"
+                               VerticalAlignment="Center" Margin="0,0,6,0"
+                               Visibility="{Binding HasWinRate50, Converter={StaticResource BoolToVis}}"
+                               Text="{Binding WinRate50}" />
+
+                    <!-- separator · -->
+                    <TextBlock Text=" · " FontSize="10" Foreground="#45475A"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding HasWinRate100, Converter={StaticResource BoolToVis}}" />
+
+                    <!-- 100场 -->
+                    <TextBlock FontSize="10" Foreground="#585B70" VerticalAlignment="Center"
+                               Visibility="{Binding HasWinRate100, Converter={StaticResource BoolToVis}}">
+                        <Run Text="100场 "/>
+                    </TextBlock>
+                    <TextBlock FontSize="16" FontWeight="Bold" Foreground="#89B4FA"
+                               VerticalAlignment="Center" Margin="0,0,6,0"
+                               Visibility="{Binding HasWinRate100, Converter={StaticResource BoolToVis}}"
+                               Text="{Binding WinRate100}" />
+
+                    <!-- separator · -->
+                    <TextBlock Text=" · " FontSize="10" Foreground="#45475A"
+                               VerticalAlignment="Center"
+                               Visibility="{Binding HasWinRate200, Converter={StaticResource BoolToVis}}" />
+
+                    <!-- 200场 -->
+                    <TextBlock FontSize="10" Foreground="#585B70" VerticalAlignment="Center"
+                               Visibility="{Binding HasWinRate200, Converter={StaticResource BoolToVis}}">
+                        <Run Text="200场 "/>
+                    </TextBlock>
+                    <TextBlock FontSize="16" FontWeight="Bold" Foreground="#89B4FA"
+                               VerticalAlignment="Center" Margin="0,0,6,0"
+                               Visibility="{Binding HasWinRate200, Converter={StaticResource BoolToVis}}"
+                               Text="{Binding WinRate200}" />
+
+                    <!-- divider | -->
+                    <TextBlock Text=" |  总胜率  " FontSize="10" Foreground="#45475A"
+                               VerticalAlignment="Center" />
+
+                    <!-- overall -->
+                    <TextBlock FontSize="16" FontWeight="Bold" Foreground="#A6E3A1"
+                               VerticalAlignment="Center"
+                               Text="{Binding WinRateOverall}" />
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>
