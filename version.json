@@ -1,0 +1,9 @@
+﻿{
+    "version":  "1.0.0",
+    "name":  "Better Landlord",
+    "id":  "Piraeus.BetterLandlord",
+    "description":  "Structured run history with DPT stats, seed management, RNG controls, and timeline viewer",
+    "game":  "Luck be a Landlord",
+    "author":  "Piraeus",
+    "slotweave":  "2.0.17"
+}
