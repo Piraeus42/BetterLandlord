@@ -235,7 +235,7 @@
                                            Text="储物间" Margin="0,0,0,8" />
 
                                 <!-- Symbols: label above, wrapping grid -->
-                            <TextBlock FontSize="11" Foreground="#6C7086"
+                            <TextBlock FontSize="11" Foreground="#CDD6F4"
                                        Text="Symbols:" Margin="0,0,0,4" />
                             <ItemsControl ItemsSource="{Binding Summary.Symbols, Mode=OneWay}" Margin="0,0,0,8">
                                 <ItemsControl.ItemsPanel>
@@ -244,7 +244,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,8,2">
-                                            <TextBlock FontSize="11" Foreground="#CDD6F4"
+                                            <TextBlock FontSize="11" Foreground="White"
                                                        Text="{Binding Count, Mode=OneWay, StringFormat='{}{0}'}"
                                                        VerticalAlignment="Center" Margin="0,0,2,0" />
                                             <Grid>
@@ -254,7 +254,7 @@
                                                         <ToolTip Background="#1E2030" BorderBrush="#45475A"
                                                                  BorderThickness="1" Padding="6,4"
                                                                  HasDropShadow="True">
-                                                            <TextBlock FontSize="11" Foreground="#CDD6F4"
+                                                            <TextBlock FontSize="11" Foreground="White"
                                                                        Text="{Binding DptDisplay, Mode=OneWay}" />
                                                         </ToolTip>
                                                     </Image.ToolTip>
@@ -274,7 +274,7 @@
                             </ItemsControl>
 
                             <!-- Items -->
-                            <TextBlock FontSize="11" Foreground="#6C7086"
+                            <TextBlock FontSize="11" Foreground="#CDD6F4"
                                        Text="Items:" Margin="0,0,0,4" />
                             <ItemsControl ItemsSource="{Binding Summary.Items, Mode=OneWay}" Margin="0,0,0,8">
                                 <ItemsControl.ItemsPanel>

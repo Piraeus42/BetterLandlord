@@ -779,8 +779,15 @@ func _bh_end_run(result):
     var fi = []
     if typeof($'Reels') != TYPE_NIL:
         _bh_debug_log('endrun_reading_reels')
-        for r in $'Reels'.reels:
-            for i in r.icons:
+        # Row-major iteration (same order as BoardValuePatch.check_values)
+        # so Phase 4 badge matching by position index is correct.
+        var _reels = $'Reels'
+        var _rw = _reels.reel_width
+        var _rh = _reels.reel_height
+        var _di = _reels.displayed_icons
+        for _y in range(_rh):
+            for _x in range(_rw):
+                var i = _di[_y][_x]
                 if i.type != 'empty' and i.type != 'dud':
                     var iv = 0
                     if typeof(i.value) == TYPE_REAL:
