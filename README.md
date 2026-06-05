@@ -1,41 +1,35 @@
 # Better Landlord
 
-*Luck be a Landlord* 全方位游戏体验增强 Mod。运行于 [SlotWeave](https://github.com/Piraeus42/SlotWeave) 框架。
+*Luck be a Landlord* companion mod. Runs on the [SlotWeave](https://github.com/Piraeus42/SlotWeave) framework.
+
+> **Compliance & Fairness**
+>
+> This mod does **not** include, modify, or redistribute any original game source code or art assets.
+> Icons displayed in the timeline viewer are embedded as program resources — the original game files
+> are never read, extracted, or repackaged.
+>
+> **Custom-seeded runs are automatically excluded from native stats and Steam achievements.**
+> This is enforced at the engine level — seeded runs do not increment your play count, win/loss
+> record, or unlock achievements. The mod's own win-rate tracker also filters them out.
 
 ---
 
-## 功能
+## Features
 
-### 结构化对局历史
-- 每局自动保存完整 JSON 记录：每次 spin 的硬币变化、符号选择、道具获取/摧毁、租金周期
-- 时间线回放查看器（WPF UI）——spin-by-spin 复盘
-- 历史数据目录：`%AppData%/Godot/app_userdata/Luck be a Landlord/betterHistory/`
-
-### DPT 统计分析
-- **Total Value** — 符号整局产生的总硬币
-- **DPT (实际)** — 总硬币 / 存在回合数（含未上屏回合）
-- **DPT (有效)** — 总硬币 / 实际贡献回合数（仅上屏回合）
-- 储物间快照：符号、道具、摧毁/移除记录、Fine Print
-
-### 种子系统
-- **Random** — 基于 OS 熵生成不可预测的种子
-- **Custom** — 手动输入种子字符串，可复现对局
-- 20 条独立 PCG RNG 流，全链路确定性
-- 种子对局自动从原生统计和 Steam 成就中排除
-- 胜率统计（50/100/200 场滑动窗口 + 总胜率），种子局不计入
-
-### 游戏体验
-- Continue 支持（冷启动 Continue + warm Continue）——RNG 状态精确恢复
-- 断头台 / 中途退出 / 强退 / Victory 后继续 ——全部正确处理
-- 对局可标记为 Quit（非 Defeat）
+- **Structured run history** — Every spin, symbol choice, item pick, destruction, and rent cycle saved as JSON
+- **Timeline replay viewer** (WPF) — Spin-by-spin walkthrough of any past run
+- **DPT analytics** — Total Value, DPT (actual), DPT (effective) per symbol with ranking
+- **Seed system** — Random (OS entropy) or custom seed string for reproducible runs
+- **Continue support** — RNG state preserved across save/load, cold-boot, and force-close
+- **Win-rate tracker** — 50/100/200 game sliding window + overall (seeded runs excluded)
+- **End-state handling** — Guillotine, mid-run quit, force-close, and post-victory continue all handled correctly
 
 ---
 
-## 安装
+## Installation
 
-1. 确保已安装 **SlotWeave**（`winmm.dll` 在游戏根目录，`SlotWeave/` 目录就位）
-2. 将本 Mod 文件夹放入 `SlotWeave/mods/Piraeus.BetterLandlord/`
-3. 启动游戏
+1. Install **SlotWeave** (`winmm.dll` in game root, `SlotWeave/` directory in place)
+2. Extract the mod into `SlotWeave/mods/Piraeus.BetterLandlord/`
 
 ```
 Luck be a Landlord/
@@ -47,72 +41,75 @@ Luck be a Landlord/
         └── Piraeus.BetterLandlord/
             ├── manifest.json
             ├── Piraeus.BetterLandlord.dll
-            ├── Piraeus.BetterLandlord.UI.dll
             ├── Piraeus.BetterLandlord.UI.exe
+            ├── Piraeus.BetterLandlord.UI.dll
             └── Piraeus.BetterLandlord.UI.runtimeconfig.json
 ```
 
 ---
 
-## 使用
+## Usage
 
-### WPF 时间线查看器
-游戏运行时自动启动（隐藏窗口）。点击游戏标题界面的 **History** 按钮即可打开。
+### Timeline Viewer
+The WPF viewer launches automatically (hidden window). Click the **History** button on the title screen.
 
-- 左侧：对局列表（显示结果、硬币、Top 3 符号图标）
-- 右侧：spin-by-spin 时间线 + DPT 排名
-- 底栏：胜率统计
+- Left panel — run list (result, coins, top-3 symbol icons)
+- Right panel — spin-by-spin timeline + DPT ranking
+- Bottom bar — win-rate statistics
 
-### 种子输入
-Title 界面的种子输入框支持手动输入 10 位种子码。选中 Custom Seed 锁定图标后生效。
+### Custom Seeds
+Enter a seed string on the title screen input field. The lock icon turns blue when a custom seed is active.
 
 ---
 
-## 构建
+## Build
 
 ```bash
 dotnet build Piraeus.BetterLandlord.sln -c Release
 ```
 
-输出到 `SlotWeave/mods/Piraeus.BetterLandlord/`。
+Output goes to `SlotWeave/mods/Piraeus.BetterLandlord/`.
 
-调试启动：`run-lbl-debug.bat`（控制台 + dump 脚本 + 无缓存）。
+Debug: `run-lbl-debug.bat` (console + script dumps + no cache).
 
 ---
 
-## 架构
+## Architecture
 
 ```
-C# Mod DLL (Piraeus.BetterLandlord.dll)
-├── ISourceMod × 15    — GDScript 源码注入（RNG 替换、事件采集、种子 UI）
-├── [Patch] × 16       — 运行时 Prefix/Postfix（spin、write_log、title、save...）
-├── GameStateBus       — 帧级内存直读（种子序列号变更检测）
-├── PipeServer         — Named Pipe IPC → WPF UI
-└── HistoryStore       — JSON 读写 + manifest 管理
+Piraeus.BetterLandlord.dll (C# Mod)
+├── ISourceMod × 15    — GDScript source injection (RNG routing, event capture, seed UI)
+├── [Patch] × 16       — runtime Prefix/Postfix hooks (spin, write_log, title, save...)
+├── GameStateBus       — per-frame memory reads (seed change detection)
+├── PipeServer         — Named Pipe IPC → WPF viewer
+└── HistoryStore        — JSON persistence + manifest management
 
-WPF UI (Piraeus.BetterLandlord.UI.exe)
-├── UiPipeClient       — Pipe 客户端
-├── HistoryViewModel   — 数据绑定 + 胜率计算
-└── IconConverter      — 内嵌资源图标加载（854 图标编译进 DLL）
+Piraeus.BetterLandlord.UI.exe (WPF Viewer)
+├── UiPipeClient        — Pipe client
+├── HistoryViewModel    — data binding + win-rate stats
+└── IconConverter       — embedded resource icons (854 PNGs compiled into DLL)
 ```
 
-### RNG 架构
+### RNG Architecture
 ```
 landlord_seed (FNV-1a hash of seed string)
-  ├── _bh_derive_seed(seed, 'sym_rarity') → PCGRng → 符号稀有度选择
-  ├── _bh_derive_seed(seed, 'sym_common') → PCGRng → 普通符号选择
-  ├── _bh_derive_seed(seed, 'sym_uncommon') → PCGRng
-  ├── ... (20 streams total)
-  └── Per-spin: _bh_derive_seed(seed, 'spin_N') → reel/effect/scratch RNG
+  ├── derive('sym_rarity') → PCGRng → symbol rarity selection
+  ├── derive('sym_common') → PCGRng → common symbol pick
+  ├── ... (20 persistent streams)
+  └── per-spin: derive('spin_' + N) → reel / effect / scratch RNG
 ```
 
 ---
 
-## 常见问题
+## FAQ
 
-| 问题 | 答案 |
-|------|------|
-| 历史数据在哪 | `%AppData%/Godot/app_userdata/Luck be a Landlord/betterHistory/runs/` |
-| WPF 窗口不出现 | 点游戏里的 History 按钮；如果还没出现，检查 `SlotWeave.log` |
-| 种子对局影响成就吗 | 不影响——种子局已从原生统计和 Steam 成就中排除 |
-| 卸载后数据还在吗 | 是的，JSON 文件不会自动删除。可手动删除 `betterHistory/` 目录 |
+| Question | Answer |
+|----------|--------|
+| Where is history stored? | `%AppData%/Godot/app_userdata/Luck be a Landlord/betterHistory/runs/` |
+| Seeded runs affect achievements? | **No.** Blocked at engine level in `add_stat`, `add_to_games_played`, `unlock_achievement`, and `add_queued_achievement` |
+| Viewer doesn't appear? | Click the History button in-game. Check `SlotWeave.log` if still missing |
+| Data after uninstall? | JSON files are not auto-deleted. Remove `betterHistory/` manually if needed |
+
+---
+
+[中文文档](README_zh.md)
