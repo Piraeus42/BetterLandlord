@@ -685,6 +685,10 @@ func _bh_lookup_actual_rent(actual_rents, idx, base_rents):
         return base_rents[idx]
     return 500 + (idx - 11) * 500
 
+# Whether the current run uses a custom seed (excluded from native stats).
+func _bh_is_seeded():
+    return _bh_rng_seed_type == 'custom'
+
 # Count completed spins from _bh_events (spin_start events).
 # Used as the debounce key — two flushes at the same spin count
 # are duplicate notifications for the same game state.

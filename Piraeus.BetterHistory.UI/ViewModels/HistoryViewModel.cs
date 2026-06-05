@@ -353,8 +353,15 @@ public class HistoryViewModel : INotifyPropertyChanged
             return;
         }
 
-        var all = Runs.ToList();
+        // Exclude custom-seeded runs from win-rate calculation
+        var all = Runs.Where(r => r.SeedType != "custom").ToList();
         int total = all.Count;
+        if (total == 0)
+        {
+            WinRate50 = WinRate100 = WinRate200 = WinRateOverall = "";
+            OnPropertyChanged(nameof(HasWinRateStats));
+            return;
+        }
         int totalWins = all.Count(r => r.EndedBy == "victory");
         WinRateOverall = $"{totalWins * 100.0 / total:F1}%";
 

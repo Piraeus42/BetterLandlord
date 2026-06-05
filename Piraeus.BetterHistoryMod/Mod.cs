@@ -47,9 +47,12 @@ public class Mod : IMod
         // ISourceMod: IPC toggle helpers on Title node (Main.tscn::6)
         _modInterface.RegisterSourceMod(new TitleToggleSourceMod());
 
+        // ISourceMod: seed-exclusion guards on Stats node (Stats.tscn::1)
+        _modInterface.RegisterSourceMod(new SeededStatsSourceMod());
+
         // [Patch] classes are auto-discovered by GDWeave:
         // ReadyPatch, TitlePatch, SpinPatch, WriteLogPatch,
-        // ResolveEventPatch, HistoryButtonPatch
+        // ResolveEventPatch, HistoryButtonPatch, SeededAchievementPatch
 
         // Run legacy log migration on startup
         RunMigration();
