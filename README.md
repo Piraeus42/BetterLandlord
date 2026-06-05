@@ -106,6 +106,12 @@ landlord_seed (FNV-1a hash of seed string)
 
 ---
 
+## Acknowledgments
+
+Thanks to community testers from 卡瓦尼幸运房东交流群 (QQ: 262548401) and @无名萌新.
+
+---
+
 > **Compliance & Fairness**
 >
 > This mod does **not** include, modify, or redistribute any original game source code or art assets.
