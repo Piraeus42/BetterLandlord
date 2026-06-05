@@ -107,6 +107,8 @@ func _bh_flush():
     var symbol_accum = {}
     var item_accum = {}
     var destroyed_item_accum = {}
+    var destroyed_symbol_accum = {}
+    var removed_symbol_accum = {}
     var des_sym = []
     var des_it = []
     var rem_sym = []
@@ -270,6 +272,18 @@ func _bh_flush():
                 # Attach destroyed items to the current spin if active
                 if cur_spin != null:
                     cur_spin.extra_actions.append({'action': 'destroyed', 'type': 'item', 'id': it})
+
+        elif et == 'symbol_destroyed':
+            var sd = str(pl.get('symbol', ''))
+            if sd != '':
+                var sc = destroyed_symbol_accum.get(sd, 0)
+                destroyed_symbol_accum[sd] = sc + 1
+
+        elif et == 'symbol_removed':
+            var sr = str(pl.get('symbol', ''))
+            if sr != '':
+                var rc = removed_symbol_accum.get(sr, 0)
+                removed_symbol_accum[sr] = rc + 1
 
         elif et == 'run_end':
             _end_time = str(ev.get('timestamp', ''))
@@ -535,6 +549,28 @@ func _bh_flush():
                 break
         if not _found:
             des_it.append({'id': str(dk), 'count': int(destroyed_item_accum[dk])})
+
+    # Merge destroyed_symbol_accum into des_sym (mirrors destroyed_item_accum)
+    for _sk in destroyed_symbol_accum.keys():
+        var _found_s = false
+        for _ds in des_sym:
+            if str(_ds.get('id', '')) == str(_sk):
+                _ds['count'] = int(_ds.get('count', 0)) + int(destroyed_symbol_accum[_sk])
+                _found_s = true
+                break
+        if not _found_s:
+            des_sym.append({'id': str(_sk), 'count': int(destroyed_symbol_accum[_sk])})
+
+    # Merge removed_symbol_accum into rem_sym
+    for _rk in removed_symbol_accum.keys():
+        var _found_r = false
+        for _rs in rem_sym:
+            if str(_rs.get('id', '')) == str(_rk):
+                _rs['count'] = int(_rs.get('count', 0)) + int(removed_symbol_accum[_rk])
+                _found_r = true
+                break
+        if not _found_r:
+            rem_sym.append({'id': str(_rk), 'count': int(removed_symbol_accum[_rk])})
 
     var summary = {
         'status_bar': null,

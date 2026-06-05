@@ -29,6 +29,22 @@ public class SlotIconRngSourceMod : ISourceMod
         source = source.Replace("str(floor(_sir_rand_range(0, sfx_total_num)))", "str(_scr_randi_max(sfx_total_num))");
         source = source.Replace("floor(_sir_rand_range(-1, 2))", "floor(_scr_rand_range(-1, 2))");
 
+        // Inject event emission at symbol destruction / removal points
+        // so _bh_flush can accumulate destroyed/removed symbols from events
+        // (mirrors destroyed_item capture in WriteLogPatch).
+        source = Regex.Replace(source,
+            @"^(\t*)\$""/root/Main/Pop-up Sprite/Pop-up""\.destroyed_symbol_types\.push_back\(target\.type\)\r?$",
+            @"$1$""/root/Main/Pop-up Sprite/Pop-up"".destroyed_symbol_types.push_back(target.type)
+$1if $""/root/Main"".has_method(""_bh_add_event""):
+$1	$""/root/Main""._bh_add_event(""symbol_destroyed"", {""symbol"": target.type})",
+            RegexOptions.Multiline);
+        source = Regex.Replace(source,
+            @"^(\t*)\$""/root/Main/Pop-up Sprite/Pop-up""\.removed_symbol_types\.push_back\(target\.type\)\r?$",
+            @"$1$""/root/Main/Pop-up Sprite/Pop-up"".removed_symbol_types.push_back(target.type)
+$1if $""/root/Main"".has_method(""_bh_add_event""):
+$1	$""/root/Main""._bh_add_event(""symbol_removed"", {""symbol"": target.type})",
+            RegexOptions.Multiline);
+
         return source + "\n" + @"
 
 func _sir_randf():
