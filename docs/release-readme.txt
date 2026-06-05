@@ -14,10 +14,10 @@
    ├── SlotWeave/
    │   ├── core/               (SlotWeave 运行时)
    │   └── mods/
-   │       └── Piraeus.BetterHistoryMod/
+   │       └── Piraeus.BetterLandlord/
    │           ├── manifest.json
-   │           ├── Piraeus.BetterHistoryMod.dll
-   │           ├── Piraeus.BetterHistory.UI.exe
+   │           ├── Piraeus.BetterLandlord.dll
+   │           ├── Piraeus.BetterLandlord.UI.exe
    │           └── Assets/Icons/
    └── Luck be a Landlord.exe
 

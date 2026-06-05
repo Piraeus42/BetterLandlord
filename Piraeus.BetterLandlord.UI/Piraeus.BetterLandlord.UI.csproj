@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Piraeus.BetterLandlord.UI</AssemblyName>
+  </PropertyGroup>
+
+  <!-- Shared source files linked from the mod project -->
+  <ItemGroup>
+    <!-- Model types -->
+    <Compile Include="..\Piraeus.BetterLandlord\Model\EventType.cs" Link="Models\EventType.cs" />
+    <Compile Include="..\Piraeus.BetterLandlord\Model\GameEvent.cs" Link="Models\GameEvent.cs" />
+    <Compile Include="..\Piraeus.BetterLandlord\Model\RunRecord.cs" Link="Models\RunRecord.cs" />
+    <Compile Include="..\Piraeus.BetterLandlord\Model\RentCycle.cs" Link="Models\RentCycle.cs" />
+    <Compile Include="..\Piraeus.BetterLandlord\Model\SingleOrArrayConverter.cs" Link="Models\SingleOrArrayConverter.cs" />
+    <Compile Include="..\Piraeus.BetterLandlord\Model\RunSummary.cs" Link="Models\RunSummary.cs" />
+    <Compile Include="..\Piraeus.BetterLandlord\Model\RunMeta.cs" Link="Models\RunMeta.cs" />
+    <!-- IPC protocol types (RunListItem, etc.) -->
+    <Compile Include="..\Piraeus.BetterLandlord\Ipc\PipeProtocol.cs" Link="Ipc\PipeProtocol.cs" />
+  </ItemGroup>
+
+  <!-- Game icons as content (loaded on demand, not embedded) -->
+  <ItemGroup>
+    <Content Include="Assets\Icons\*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Copy UI exe + icons to mod directory so the game can launch it -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord&quot;&#xD;&#xA;if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.exe&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.dll&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.runtimeconfig.json&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)Assets\Icons\*.png&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons\&quot;" />
+  </Target>
+
+</Project>

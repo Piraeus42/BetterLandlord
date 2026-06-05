@@ -1,7 +1,7 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Threading;
 
-namespace Piraeus.BetterHistory.UI;
+namespace Piraeus.BetterLandlord.UI;
 
 public partial class App : Application
 {
@@ -23,7 +23,7 @@ public partial class App : Application
         DispatcherUnhandledException += (s, args) =>
         {
             MessageBox.Show($"Unhandled UI error:\n\n{args.Exception.Message}\n\n{args.Exception.StackTrace}",
-                "Better History Mod — Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Better Landlord — Error", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
 
@@ -31,13 +31,13 @@ public partial class App : Application
         {
             var ex = args.ExceptionObject as Exception;
             MessageBox.Show($"Fatal error:\n\n{ex?.ToString() ?? "Unknown"}",
-                "Better History Mod — Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Better Landlord — Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
         };
 
         TaskScheduler.UnobservedTaskException += (s, args) =>
         {
             MessageBox.Show($"Task error:\n\n{args.Exception.Message}",
-                "Better History Mod — Task Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Better Landlord — Task Error", MessageBoxButton.OK, MessageBoxImage.Error);
             args.SetObserved();
         };
 

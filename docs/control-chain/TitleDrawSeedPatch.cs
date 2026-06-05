@@ -1,6 +1,6 @@
 ﻿using SlotWeave.Scripting;
 
-namespace Piraeus.BetterHistoryMod.Patches;
+namespace Piraeus.BetterLandlord.Patches;
 
 [Patch("res://Main.tscn::6", "draw")]
 class TitleDrawSeedPatch

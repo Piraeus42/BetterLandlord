@@ -1,17 +1,17 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO.Pipes;
 using System.Text;
 using System.Text.Json;
-using Piraeus.BetterHistoryMod.Storage;
+using Piraeus.BetterLandlord.Storage;
 using ILogger = Serilog.ILogger;
 
-namespace Piraeus.BetterHistoryMod.Ipc;
+namespace Piraeus.BetterLandlord.Ipc;
 
 public class GamePipeServer : IDisposable
 {
-    private const string PipeName = "Piraeus.BetterHistoryMod.Pipe";
-    private const string PushPipeName = "Piraeus.BetterHistoryMod.Push";
-    private const string UiExeName = "Piraeus.BetterHistory.UI.exe";
+    private const string PipeName = "Piraeus.BetterLandlord.Pipe";
+    private const string PushPipeName = "Piraeus.BetterLandlord.Push";
+    private const string UiExeName = "Piraeus.BetterLandlord.UI.exe";
     private const int FlagPollIntervalMs = 500;
 
     private readonly HistoryStore _store;

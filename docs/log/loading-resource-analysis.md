@@ -19,8 +19,8 @@
 | 时间 | 来源 | 事件 | 说明 |
 |------|------|------|------|
 | 14:50:41 | **SlotWeave** | `This is SlotWeave 2.0.17.0` | 框架启动 |
-| 14:50:41 | **SlotWeave** | `Loading mod Piraeus.BetterHistoryMod` | 发现并加载 mod DLL |
-| 14:50:42 | **Mod (C#)** | `[BetterHistoryMod] initializing...` | `Mod.cs` 构造函数开始 |
+| 14:50:41 | **SlotWeave** | `Loading mod Piraeus.BetterLandlord` | 发现并加载 mod DLL |
+| 14:50:42 | **Mod (C#)** | `[BetterLandlord] initializing...` | `Mod.cs` 构造函数开始 |
 | 14:50:42 | **Mod (C#)** | Migration done: 0 migrated, 120 skipped | `RunMigration()` 完成 |
 | 14:50:42 | **Mod (C#)** | `Registered reader: SeedSignalReader` | GameStateBus reader 注册 |
 | 14:50:42 | **Mod (C#)** | `[Push] Waiting for WPF...` | 启动 WPF UI 进程 |

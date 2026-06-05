@@ -1,8 +1,8 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Piraeus.BetterHistoryMod.Model;
+using Piraeus.BetterLandlord.Model;
 
-namespace Piraeus.BetterHistoryMod.Ipc;
+namespace Piraeus.BetterLandlord.Ipc;
 
 /// <summary>
 /// Shared IPC message types and serialization helpers.

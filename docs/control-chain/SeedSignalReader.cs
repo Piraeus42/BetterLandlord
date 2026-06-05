@@ -1,7 +1,7 @@
 ﻿using SlotWeave.GameState;
 using SlotWeave.NativeInterop;
 
-namespace Piraeus.BetterHistoryMod.Ipc;
+namespace Piraeus.BetterLandlord.Ipc;
 
 /// <summary>
 /// GameStateBus reader: reads _bh_seed_request from Title node every frame.

@@ -1,4 +1,4 @@
-# BetterHistoryMod Architecture Report — 2026-06-03
+﻿# BetterHistoryMod Architecture Report — 2026-06-03
 
 ## 1. Overall Architecture
 
@@ -19,7 +19,7 @@
 │      └── reads user://betterHistory/seed_config.json        │
 └──────────────────────┬──────────────────────────────────────┘
                        │ Named Pipe
-                       │ "Piraeus.BetterHistoryMod.Pipe"
+                       │ "Piraeus.BetterLandlord.Pipe"
 ┌──────────────────────▼──────────────────────────────────────┐
 │  GamePipeServer (C#, in-game)                               │
 │  ├── ServerLoop: request-response pipe handler              │
@@ -39,10 +39,10 @@
 │  ├── seed_config.json (written by set_seed handler)         │
 │  └── runs/*.json (history data written by GDScript)         │
 └──────────────────────┬──────────────────────────────────────┘
-                       │ launch Piraeus.BetterHistory.UI.exe
+                       │ launch Piraeus.BetterLandlord.UI.exe
                        │ --data-dir "..." [--seed]
 ┌──────────────────────▼──────────────────────────────────────┐
-│  WPF UI (Piraeus.BetterHistory.UI.exe)                      │
+│  WPF UI (Piraeus.BetterLandlord.UI.exe)                      │
 │                                                             │
 │  App.OnStartup                                              │
 │  ├── base.OnStartup(e) → creates MainWindow (from StartupUri)│
@@ -72,7 +72,7 @@ User clicks "History" (floor menu)
     → deletes ui_requested
     → LaunchUiProcess(seedMode: false)
       → if WPF already running: return
-      → else: Process.Start("Piraeus.BetterHistory.UI.exe",
+      → else: Process.Start("Piraeus.BetterLandlord.UI.exe",
                "--data-dir \"C:\\Users\\...\\Luck be a Landlord\"")
       
   → WPF App.OnStartup
@@ -96,7 +96,7 @@ User clicks "Custom Seed" (floor menu)
   → GamePipeServer.FlagPollLoop (next 500ms tick)
     → detects flag_seed (does NOT delete)
     → LaunchUiProcess(seedMode: true)
-      → Process.Start("Piraeus.BetterHistory.UI.exe",
+      → Process.Start("Piraeus.BetterLandlord.UI.exe",
            "--data-dir \"...\" --seed")
       
   → WPF App.OnStartup

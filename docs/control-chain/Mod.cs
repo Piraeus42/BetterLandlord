@@ -1,9 +1,9 @@
 ﻿using SlotWeave;
-using Piraeus.BetterHistoryMod.Ipc;
-using Piraeus.BetterHistoryMod.Patches;
-using Piraeus.BetterHistoryMod.Storage;
+using Piraeus.BetterLandlord.Ipc;
+using Piraeus.BetterLandlord.Patches;
+using Piraeus.BetterLandlord.Storage;
 
-namespace Piraeus.BetterHistoryMod;
+namespace Piraeus.BetterLandlord;
 
 public class Mod : IMod
 {
@@ -13,7 +13,7 @@ public class Mod : IMod
     public Mod(IModInterface modInterface)
     {
         _modInterface = modInterface;
-        _modInterface.Logger.Information("[BetterHistoryMod] initializing...");
+        _modInterface.Logger.Information("[BetterLandlord] initializing...");
 
         // ISourceMod: event capture helpers on Main node (Main.tscn::1)
         _modInterface.RegisterSourceMod(new MainScriptSourceMod());
@@ -63,7 +63,7 @@ public class Mod : IMod
         // Initialize and start the IPC pipe server.
         var userDataDir = GetUserDataDir();
         var modDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location)
-                     ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterHistoryMod");
+                     ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterLandlord");
         var store = new HistoryStore(userDataDir);
 
         // Rebuild lightweight manifest (fast — uses JsonDocument, not full deserialization)
@@ -86,7 +86,7 @@ public class Mod : IMod
             var result = runner.Run();
 
             _modInterface.Logger.Information(
-                "[BetterHistoryMod] Migration done: {Migrated} complete + {Truncated} truncated + {Partial} partial " +
+                "[BetterLandlord] Migration done: {Migrated} complete + {Truncated} truncated + {Partial} partial " +
                 "({Skipped} skipped, {Empty} empty, {Corrupted} corrupted, {Failed} failed) — history db at {Dir}",
                 result.Migrated, result.MigratedTruncated, result.MigratedPartial,
                 result.Skipped, result.EmptyFiles, result.Corrupted, result.Failed,
@@ -94,7 +94,7 @@ public class Mod : IMod
         }
         catch (Exception ex)
         {
-            _modInterface.Logger.Error("[BetterHistoryMod] Migration failed: {Error}", ex.Message);
+            _modInterface.Logger.Error("[BetterLandlord] Migration failed: {Error}", ex.Message);
         }
     }
 
@@ -107,6 +107,6 @@ public class Mod : IMod
     public void Dispose()
     {
         _pipeServer?.Dispose();
-        _modInterface.Logger.Information("[BetterHistoryMod] unloaded.");
+        _modInterface.Logger.Information("[BetterLandlord] unloaded.");
     }
 }

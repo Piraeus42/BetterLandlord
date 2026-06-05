@@ -1,8 +1,8 @@
-using System.Windows;
-using Piraeus.BetterHistory.UI.Ipc;
-using Piraeus.BetterHistory.UI.ViewModels;
+﻿using System.Windows;
+using Piraeus.BetterLandlord.UI.Ipc;
+using Piraeus.BetterLandlord.UI.ViewModels;
 
-namespace Piraeus.BetterHistory.UI;
+namespace Piraeus.BetterLandlord.UI;
 
 public partial class MainWindow : Window
 {

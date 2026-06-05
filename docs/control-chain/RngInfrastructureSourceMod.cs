@@ -1,6 +1,6 @@
 ﻿using SlotWeave.Modding;
 
-namespace Piraeus.BetterHistoryMod.Patches;
+namespace Piraeus.BetterLandlord.Patches;
 
 /// <summary>
 /// Injects PCGRng class, FNV-1a/djb2 hash, custom_shuffle,

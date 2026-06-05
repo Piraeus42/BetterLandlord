@@ -1,18 +1,18 @@
-@echo off
+﻿@echo off
 
-set "MOD_NAME=Piraeus.BetterHistoryMod"
+set "MOD_NAME=Piraeus.BetterLandlord"
 set "LBL_PATH=D:\steam\steamapps\common\Luck be a Landlord"
-set "MODS_PATH=%LBL_PATH%\GDWeave\mods"
+set "MODS_PATH=%LBL_PATH%\SlotWeave\mods"
 set "MOD_DEST_PATH=%MODS_PATH%\%MOD_NAME%"
 
-set "BUILD_SOURCE_PATH=.\Piraeus.BetterHistoryMod\bin\Debug\net8.0"
+set "BUILD_SOURCE_PATH=.\Piraeus.BetterLandlord\bin\release\net8.0"
 
 echo "Copying mod files..."
 if not exist "%MOD_DEST_PATH%" (
     mkdir "%MOD_DEST_PATH%"
 )
 copy /Y "%BUILD_SOURCE_PATH%\%MOD_NAME%.dll" "%MOD_DEST_PATH%\"
-copy /Y ".\Piraeus.BetterHistoryMod\manifest.json" "%MOD_DEST_PATH%\manifest.json"
+copy /Y ".\Piraeus.BetterLandlord\manifest.json" "%MOD_DEST_PATH%\manifest.json"
 
 echo "Starting game..."
 @REM set GDWEAVE_DEBUG=1

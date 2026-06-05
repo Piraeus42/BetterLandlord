@@ -1,6 +1,6 @@
 ﻿using SlotWeave.Modding;
 
-namespace Piraeus.BetterHistoryMod.Patches;
+namespace Piraeus.BetterLandlord.Patches;
 
 public class TitleSeedSourceMod : ISourceMod
 {

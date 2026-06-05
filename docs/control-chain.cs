@@ -3,7 +3,7 @@
 // ============================================================
 using SlotWeave.Modding;
 
-namespace Piraeus.BetterHistoryMod.Patches;
+namespace Piraeus.BetterLandlord.Patches;
 
 public class TitleSeedSourceMod : ISourceMod
 {
@@ -155,7 +155,7 @@ func _bh_get_seed_config():
 // ============================================================
 using SlotWeave.Scripting;
 
-namespace Piraeus.BetterHistoryMod.Patches;
+namespace Piraeus.BetterLandlord.Patches;
 
 [Patch("res://Main.tscn::6", "draw")]
 class TitleDrawSeedPatch
@@ -177,7 +177,7 @@ class TitleDrawSeedPatch
 // ============================================================
 using SlotWeave.Scripting;
 
-namespace Piraeus.BetterHistoryMod.Patches;
+namespace Piraeus.BetterLandlord.Patches;
 
 [Patch("res://Main.tscn::6", "floor_menu")]
 class FloorMenuSeedPatch
@@ -195,7 +195,7 @@ class FloorMenuSeedPatch
 // ============================================================
 using SlotWeave.Modding;
 
-namespace Piraeus.BetterHistoryMod.Patches;
+namespace Piraeus.BetterLandlord.Patches;
 
 /// <summary>
 /// Injects PCGRng class, FNV-1a/djb2 hash, custom_shuffle,
@@ -463,7 +463,7 @@ func _bh_item_rng_for_rarity(rarity: String) -> PCGRng:
 using SlotWeave.GameState;
 using SlotWeave.NativeInterop;
 
-namespace Piraeus.BetterHistoryMod.Ipc;
+namespace Piraeus.BetterLandlord.Ipc;
 
 /// <summary>
 /// GameStateBus reader: reads _bh_seed_request from Title node every frame.
@@ -501,16 +501,16 @@ using System.Diagnostics;
 using System.IO.Pipes;
 using System.Text;
 using System.Text.Json;
-using Piraeus.BetterHistoryMod.Storage;
+using Piraeus.BetterLandlord.Storage;
 using ILogger = Serilog.ILogger;
 
-namespace Piraeus.BetterHistoryMod.Ipc;
+namespace Piraeus.BetterLandlord.Ipc;
 
 public class GamePipeServer : IDisposable
 {
-    private const string PipeName = "Piraeus.BetterHistoryMod.Pipe";
-    private const string PushPipeName = "Piraeus.BetterHistoryMod.Push";
-    private const string UiExeName = "Piraeus.BetterHistory.UI.exe";
+    private const string PipeName = "Piraeus.BetterLandlord.Pipe";
+    private const string PushPipeName = "Piraeus.BetterLandlord.Push";
+    private const string UiExeName = "Piraeus.BetterLandlord.UI.exe";
     private const int FlagPollIntervalMs = 500;
 
     private readonly HistoryStore _store;
@@ -931,9 +931,9 @@ public class GamePipeServer : IDisposable
 // ============================================================
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Piraeus.BetterHistoryMod.Model;
+using Piraeus.BetterLandlord.Model;
 
-namespace Piraeus.BetterHistoryMod.Ipc;
+namespace Piraeus.BetterLandlord.Ipc;
 
 /// <summary>
 /// Shared IPC message types and serialization helpers.
@@ -1075,11 +1075,11 @@ public class CloseMessage
 // Mod.cs
 // ============================================================
 using SlotWeave;
-using Piraeus.BetterHistoryMod.Ipc;
-using Piraeus.BetterHistoryMod.Patches;
-using Piraeus.BetterHistoryMod.Storage;
+using Piraeus.BetterLandlord.Ipc;
+using Piraeus.BetterLandlord.Patches;
+using Piraeus.BetterLandlord.Storage;
 
-namespace Piraeus.BetterHistoryMod;
+namespace Piraeus.BetterLandlord;
 
 public class Mod : IMod
 {
@@ -1089,7 +1089,7 @@ public class Mod : IMod
     public Mod(IModInterface modInterface)
     {
         _modInterface = modInterface;
-        _modInterface.Logger.Information("[BetterHistoryMod] initializing...");
+        _modInterface.Logger.Information("[BetterLandlord] initializing...");
 
         // ISourceMod: event capture helpers on Main node (Main.tscn::1)
         _modInterface.RegisterSourceMod(new MainScriptSourceMod());
@@ -1139,7 +1139,7 @@ public class Mod : IMod
         // Initialize and start the IPC pipe server.
         var userDataDir = GetUserDataDir();
         var modDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location)
-                     ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterHistoryMod");
+                     ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterLandlord");
         var store = new HistoryStore(userDataDir);
 
         // Rebuild lightweight manifest (fast 鈥?uses JsonDocument, not full deserialization)
@@ -1162,7 +1162,7 @@ public class Mod : IMod
             var result = runner.Run();
 
             _modInterface.Logger.Information(
-                "[BetterHistoryMod] Migration done: {Migrated} complete + {Truncated} truncated + {Partial} partial " +
+                "[BetterLandlord] Migration done: {Migrated} complete + {Truncated} truncated + {Partial} partial " +
                 "({Skipped} skipped, {Empty} empty, {Corrupted} corrupted, {Failed} failed) 鈥?history db at {Dir}",
                 result.Migrated, result.MigratedTruncated, result.MigratedPartial,
                 result.Skipped, result.EmptyFiles, result.Corrupted, result.Failed,
@@ -1170,7 +1170,7 @@ public class Mod : IMod
         }
         catch (Exception ex)
         {
-            _modInterface.Logger.Error("[BetterHistoryMod] Migration failed: {Error}", ex.Message);
+            _modInterface.Logger.Error("[BetterLandlord] Migration failed: {Error}", ex.Message);
         }
     }
 
@@ -1183,7 +1183,7 @@ public class Mod : IMod
     public void Dispose()
     {
         _pipeServer?.Dispose();
-        _modInterface.Logger.Information("[BetterHistoryMod] unloaded.");
+        _modInterface.Logger.Information("[BetterLandlord] unloaded.");
     }
 }
 
@@ -1196,15 +1196,15 @@ using System.IO.Pipes;
 using System.Text;
 using System.Text.Json;
 
-namespace Piraeus.BetterHistory.UI.Ipc;
+namespace Piraeus.BetterLandlord.UI.Ipc;
 
 /// <summary>
 /// Named Pipe client 鈥?request-response + push notifications.
 /// </summary>
 public class UiPipeClient : IDisposable
 {
-    private const string PipeName = "Piraeus.BetterHistoryMod.Pipe";
-    private const string PushPipeName = "Piraeus.BetterHistoryMod.Push";
+    private const string PipeName = "Piraeus.BetterLandlord.Pipe";
+    private const string PushPipeName = "Piraeus.BetterLandlord.Push";
     private const int ConnectTimeoutMs = 5000;
 
     private readonly CancellationTokenSource _cts = new();
@@ -1221,7 +1221,7 @@ public class UiPipeClient : IDisposable
     {
         var t = new Thread(RunLoop)
         {
-            Name = "BetterHistory-PipeIO",
+            Name = "BetterLandlord-PipeIO",
             IsBackground = true
         };
         t.Start();
@@ -1229,7 +1229,7 @@ public class UiPipeClient : IDisposable
         // Start push listener
         _pushThread = new Thread(PushListenerLoop)
         {
-            Name = "BetterHistory-PushIO",
+            Name = "BetterLandlord-PushIO",
             IsBackground = true
         };
         _pushThread.Start();
@@ -1404,10 +1404,10 @@ public class UiPipeClient : IDisposable
 // MainWindow.xaml.cs
 // ============================================================
 using System.Windows;
-using Piraeus.BetterHistory.UI.Ipc;
-using Piraeus.BetterHistory.UI.ViewModels;
+using Piraeus.BetterLandlord.UI.Ipc;
+using Piraeus.BetterLandlord.UI.ViewModels;
 
-namespace Piraeus.BetterHistory.UI;
+namespace Piraeus.BetterLandlord.UI;
 
 public partial class MainWindow : Window
 {
@@ -1585,15 +1585,15 @@ public partial class MainWindow : Window
 // ============================================================
 // MainWindow.xaml
 // ============================================================
-<Window x:Class="Piraeus.BetterHistory.UI.MainWindow"
+<Window x:Class="Piraeus.BetterLandlord.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Piraeus.BetterHistory.UI"
-        xmlns:conv="clr-namespace:Piraeus.BetterHistory.UI.Converters"
+        xmlns:local="clr-namespace:Piraeus.BetterLandlord.UI"
+        xmlns:conv="clr-namespace:Piraeus.BetterLandlord.UI.Converters"
         mc:Ignorable="d"
-        Title="Better History Mod"
+        Title="Better Landlord"
         Height="720" Width="1100"
         MinHeight="480" MinWidth="800"
         Background="#1E1E2E"
@@ -1656,7 +1656,7 @@ public partial class MainWindow : Window
         <Border Grid.Row="0" Background="#181825" Padding="16,10">
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Better History Mod"
+                    <TextBlock Text="Better Landlord"
                                FontSize="16" FontWeight="SemiBold"
                                Foreground="#CDD6F4" />
                     <TextBlock Text="Created by Piraeus"
@@ -2246,7 +2246,7 @@ public partial class MainWindow : Window
 // ============================================================
 // SeedDialog.xaml
 // ============================================================
-<Window x:Class="Piraeus.BetterHistory.UI.SeedDialog"
+<Window x:Class="Piraeus.BetterLandlord.UI.SeedDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Custom Seed"
@@ -2327,9 +2327,9 @@ public partial class MainWindow : Window
 // ============================================================
 using System.Windows;
 using System.Windows.Input;
-using Piraeus.BetterHistory.UI.Ipc;
+using Piraeus.BetterLandlord.UI.Ipc;
 
-namespace Piraeus.BetterHistory.UI;
+namespace Piraeus.BetterLandlord.UI;
 
 public partial class SeedDialog : Window
 {
@@ -2403,7 +2403,7 @@ public partial class SeedDialog : Window
 using System.Windows;
 using System.Windows.Threading;
 
-namespace Piraeus.BetterHistory.UI;
+namespace Piraeus.BetterLandlord.UI;
 
 public partial class App : Application
 {
@@ -2425,7 +2425,7 @@ public partial class App : Application
         DispatcherUnhandledException += (s, args) =>
         {
             MessageBox.Show($"Unhandled UI error:\n\n{args.Exception.Message}\n\n{args.Exception.StackTrace}",
-                "Better History Mod 鈥?Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Better Landlord 鈥?Error", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
 
@@ -2433,13 +2433,13 @@ public partial class App : Application
         {
             var ex = args.ExceptionObject as Exception;
             MessageBox.Show($"Fatal error:\n\n{ex?.ToString() ?? "Unknown"}",
-                "Better History Mod 鈥?Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Better Landlord 鈥?Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
         };
 
         TaskScheduler.UnobservedTaskException += (s, args) =>
         {
             MessageBox.Show($"Task error:\n\n{args.Exception.Message}",
-                "Better History Mod 鈥?Task Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Better Landlord 鈥?Task Error", MessageBoxButton.OK, MessageBoxImage.Error);
             args.SetObserved();
         };
 
@@ -2471,10 +2471,10 @@ public partial class App : Application
 // ============================================================
 // App.xaml
 // ============================================================
-<Application x:Class="Piraeus.BetterHistory.UI.App"
+<Application x:Class="Piraeus.BetterLandlord.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Piraeus.BetterHistory.UI">
+             xmlns:local="clr-namespace:Piraeus.BetterLandlord.UI">
     <Application.Resources>
 
     </Application.Resources>

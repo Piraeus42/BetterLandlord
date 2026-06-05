@@ -169,7 +169,7 @@ push 全部由**一个线程**发送 → 无并发写。reader 回调**只更新
 using SlotWeave.GameState;
 using SlotWeave.NativeInterop;
 
-namespace Piraeus.BetterHistoryMod.Ipc;
+namespace Piraeus.BetterLandlord.Ipc;
 
 public class SeedSignalReader : IGameStateReader
 {
@@ -286,10 +286,10 @@ private bool TryWrite(NamedPipeServerStream s, string msg)
 ```csharp
 public void Start()
 {
-    _serverThread = new Thread(ServerLoop) { Name = "BH-PipeServer", IsBackground = true };
+    _serverThread = new Thread(ServerLoop) { Name = "BL-PipeServer", IsBackground = true };
     _serverThread.Start();
 
-    _pushThread = new Thread(PushLoop) { Name = "BH-PushServer", IsBackground = true };
+    _pushThread = new Thread(PushLoop) { Name = "BL-PushServer", IsBackground = true };
     _pushThread.Start();
 
     SeedReader.OnSeedSeq = SignalSeedSeq;
@@ -460,7 +460,7 @@ public void Dispose()
         _modInterface.UnregisterGameStateReader(_pipeServer.SeedReader);
         _pipeServer.Dispose();
     }
-    _modInterface.Logger.Information("[BetterHistoryMod] unloaded.");
+    _modInterface.Logger.Information("[BetterLandlord] unloaded.");
 }
 ```
 

@@ -13,7 +13,7 @@ if not exist "%GAME_DIR%\Luck be a Landlord.exe" (
 )
 
 echo [1/4] Building Release...
-dotnet build "%~dp0..\Piraeus.BetterHistoryMod.sln" -c Release
+dotnet build "%~dp0..\Piraeus.BetterLandlord.sln" -c Release
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Build failed
     pause
@@ -24,8 +24,8 @@ echo [2/4] Creating dist folder...
 if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
 mkdir "%DIST_DIR%\SlotWeave\core"
-mkdir "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod"
-mkdir "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons"
+mkdir "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord"
+mkdir "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons"
 
 echo [3/4] Copying files...
 :: SlotWeave loader
@@ -36,16 +36,16 @@ xcopy /Y "%GAME_DIR%\SlotWeave\core\SlotWeave.dll" "%DIST_DIR%\SlotWeave\core\"
 xcopy /Y "%GAME_DIR%\SlotWeave\core\Serilog.dll" "%DIST_DIR%\SlotWeave\core\"
 
 :: Mod
-xcopy /Y "%~dp0..\Piraeus.BetterHistoryMod\bin\Release\net8.0\Piraeus.BetterHistoryMod.dll" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
-xcopy /Y "%~dp0..\Piraeus.BetterHistoryMod\manifest.json" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
+xcopy /Y "%~dp0..\Piraeus.BetterLandlord\bin\Release\net8.0\Piraeus.BetterLandlord.dll" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord\"
+xcopy /Y "%~dp0..\Piraeus.BetterLandlord\manifest.json" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord\"
 
 :: UI
-xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.exe" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
-xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.dll" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
-xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.runtimeconfig.json" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
+xcopy /Y "%~dp0..\Piraeus.BetterLandlord.UI\bin\Release\net8.0-windows\Piraeus.BetterLandlord.UI.exe" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord\"
+xcopy /Y "%~dp0..\Piraeus.BetterLandlord.UI\bin\Release\net8.0-windows\Piraeus.BetterLandlord.UI.dll" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord\"
+xcopy /Y "%~dp0..\Piraeus.BetterLandlord.UI\bin\Release\net8.0-windows\Piraeus.BetterLandlord.UI.runtimeconfig.json" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord\"
 
 :: Icons
-xcopy /Y /I "E:\code\LBaL\icons\*.png" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons\"
+xcopy /Y /I "E:\code\LBaL\icons\*.png" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons\"
 
 :: README
 xcopy /Y "%~dp0..\docs\release-readme.txt" "%DIST_DIR%\README.txt"

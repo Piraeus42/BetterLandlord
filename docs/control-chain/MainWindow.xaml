@@ -1,12 +1,12 @@
-<Window x:Class="Piraeus.BetterHistory.UI.MainWindow"
+﻿<Window x:Class="Piraeus.BetterLandlord.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Piraeus.BetterHistory.UI"
-        xmlns:conv="clr-namespace:Piraeus.BetterHistory.UI.Converters"
+        xmlns:local="clr-namespace:Piraeus.BetterLandlord.UI"
+        xmlns:conv="clr-namespace:Piraeus.BetterLandlord.UI.Converters"
         mc:Ignorable="d"
-        Title="Better History Mod"
+        Title="Better Landlord"
         Height="720" Width="1100"
         MinHeight="480" MinWidth="800"
         Background="#1E1E2E"
@@ -69,7 +69,7 @@
         <Border Grid.Row="0" Background="#181825" Padding="16,10">
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Better History Mod"
+                    <TextBlock Text="Better Landlord"
                                FontSize="16" FontWeight="SemiBold"
                                Foreground="#CDD6F4" />
                     <TextBlock Text="Created by Piraeus"
