@@ -76,7 +76,7 @@
                                VerticalAlignment="Center" Margin="10,2,0,0">
                         <Run Text="Created by Piraeus" />
                         <Run Text="  |  " Foreground="#45475A" />
-                        <Run Text="xu13189692243@outlook.com" Foreground="#6C7086" />
+                        <Run Text="Discord: @piraeus42" Foreground="#6C7086" />
                     </TextBlock>
                 </StackPanel>
                 <TextBlock Text="{Binding StatusText, Mode=OneWay}"
