@@ -1,4 +1,4 @@
-using GDWeave;
+﻿using SlotWeave;
 using Piraeus.BetterHistoryMod.Ipc;
 using Piraeus.BetterHistoryMod.Patches;
 using Piraeus.BetterHistoryMod.Storage;
@@ -50,7 +50,7 @@ public class Mod : IMod
         // ISourceMod: seed-exclusion guards on Stats node (Stats.tscn::1)
         _modInterface.RegisterSourceMod(new SeededStatsSourceMod());
 
-        // [Patch] classes are auto-discovered by GDWeave:
+        // [Patch] classes are auto-discovered by SlotWeave:
         // ReadyPatch, TitlePatch, SpinPatch, WriteLogPatch,
         // ResolveEventPatch, HistoryButtonPatch, SeededAchievementPatch
 
@@ -60,7 +60,7 @@ public class Mod : IMod
         // Initialize and start the IPC pipe server.
         var userDataDir = GetUserDataDir();
         var modDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location)
-                     ?? Path.Combine(_modInterface.GameDir, "GDWeave", "mods", "Piraeus.BetterHistoryMod");
+                     ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterHistoryMod");
         var store = new HistoryStore(userDataDir);
 
         // Rebuild lightweight manifest (fast — uses JsonDocument, not full deserialization)

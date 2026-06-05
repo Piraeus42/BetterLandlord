@@ -1,10 +1,10 @@
-# GDWeave 双重替换 Bug — 从 Mod 开发者视角
+﻿# SlotWeave 双重替换 Bug — 从 Mod 开发者视角
 
 ## 概述
 
-GDWeave 对同一 `.gd` 文件依次应用多个 `ISourceMod.Modify()` 和 `[Patch] Replace` 时，先执行的替换输出可能被后执行的替换**再次匹配**，导致函数名被破坏（如 `_lfr__lfr_rand_range`、`_scr__sir_rand_range`），产生运行时对不存在函数的调用。
+SlotWeave 对同一 `.gd` 文件依次应用多个 `ISourceMod.Modify()` 和 `[Patch] Replace` 时，先执行的替换输出可能被后执行的替换**再次匹配**，导致函数名被破坏（如 `_lfr__lfr_rand_range`、`_scr__sir_rand_range`），产生运行时对不存在函数的调用。
 
-本报告记录了 BetterHistoryMod 中两次因这个 GDWeave 设计缺陷导致的 bug，以及 mod 侧不得不采用的防御性写法。
+本报告记录了 BetterHistoryMod 中两次因这个 SlotWeave 设计缺陷导致的 bug，以及 mod 侧不得不采用的防御性写法。
 
 ---
 
@@ -16,7 +16,7 @@ GDWeave 对同一 `.gd` 文件依次应用多个 `ISourceMod.Modify()` 和 `[Pat
 
 ### 涉事代码
 
-同一个文件 `Landlord.tscn::9` 被两个 GDWeave 处理器修改：
+同一个文件 `Landlord.tscn::9` 被两个 SlotWeave 处理器修改：
 
 **处理器 A — `LandlordRngRefSourceMod` (ISourceMod)**:
 ```csharp
@@ -40,7 +40,7 @@ class LandlordFinePrintPatch {
 ### 执行顺序与结果
 
 ```
-GDWeave 处理 Landlord.tscn::9:
+SlotWeave 处理 Landlord.tscn::9:
 
 Step 1: ISourceMod.Modify() 对整个文件执行
   rand_range( → _lfr_rand_range(
@@ -136,12 +136,12 @@ source = source.Replace("str(floor(_sir_rand_range(0, sfx_total_num)))",
 
 ---
 
-## 根本原因 (GDWeave 框架层面)
+## 根本原因 (SlotWeave 框架层面)
 
-两个 bug 指向同一个 GDWeave 设计缺陷：
+两个 bug 指向同一个 SlotWeave 设计缺陷：
 
 ```
-GDWeave 对同一 .gd 文件执行多个字符串替换时:
+SlotWeave 对同一 .gd 文件执行多个字符串替换时:
 
   source ──→ [Modify A] ──→ [Modify B] ──→ ... ──→ [Patch Replace] ──→ 最终脚本
 
@@ -166,7 +166,7 @@ BetterHistoryMod 目前采用的 workaround：
 if (source.Contains("func _my_helper")) return source;
 ```
 
-**防范**: GDWeave 第二次调用 Modify 时不做任何操作。
+**防范**: SlotWeave 第二次调用 Modify 时不做任何操作。
 **局限**: 只防重复调用，不防同一 pass 内的自毁（Bug #2 绕过了这个守卫）。
 
 ### 策略 2: [Replace] pass-through（防 ISourceMod+[Replace] 冲突）
@@ -200,7 +200,7 @@ source = source.Replace("floor(_sir_rand_range(-1, 2))", ...);  // 覆盖
 
 ---
 
-## 对 GDWeave 框架的建议
+## 对 SlotWeave 框架的建议
 
 从 mod 开发者视角，以下改进可以消除这类 bug：
 
@@ -243,7 +243,7 @@ public class MyMod : ISourceMod {
 
 ## 受影响的文件清单 (BetterHistoryMod)
 
-| 文件 | GDWeave 类型 | 是否有双替换风险 | 当前状态 |
+| 文件 | SlotWeave 类型 | 是否有双替换风险 | 当前状态 |
 |------|-------------|----------------|---------|
 | `LandlordRngRefSourceMod.cs` | ISourceMod | ✅ 与 `LandlordFinePrintPatch` [Replace] 冲突 | ✅ 已修复 (pass-through) |
 | `LandlordFinePrintPatch.cs` | [Patch] Replace | — 同上 — | ✅ 已修复 (pass-through) |

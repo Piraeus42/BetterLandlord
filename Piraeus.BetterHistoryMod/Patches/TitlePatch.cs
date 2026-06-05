@@ -1,4 +1,4 @@
-using GDWeave.Scripting;
+﻿using SlotWeave.Scripting;
 
 namespace Piraeus.BetterHistoryMod.Patches;
 

@@ -1,6 +1,6 @@
-# BetterHistoryMod 开发百科全书
+﻿# BetterHistoryMod 开发百科全书
 
-> Luck be a Landlord 全功能历史记录 Mod — 架构 · GDWeave 模式 · 陷阱 · 参考
+> Luck be a Landlord 全功能历史记录 Mod — 架构 · SlotWeave 模式 · 陷阱 · 参考
 
 ---
 
@@ -49,7 +49,7 @@ Game (Godot 3.4.4)                    UI (WPF .NET 8)
 
 ---
 
-## 2. GDWeave 模式
+## 2. SlotWeave 模式
 
 ### ISourceMod
 

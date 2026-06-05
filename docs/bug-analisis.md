@@ -1,4 +1,4 @@
-读完了。你的"频繁时序问题、状态不稳"不是一堆孤立 bug，是**几个结构性模式**在反复制造同类故障。我按"能解释你已报告症状"和"还没炸但一定会炸"两类排，最重要的在前面。
+﻿读完了。你的"频繁时序问题、状态不稳"不是一堆孤立 bug，是**几个结构性模式**在反复制造同类故障。我按"能解释你已报告症状"和"还没炸但一定会炸"两类排，最重要的在前面。
 
 ## 症结一：事件被当状态用，且"消费"early于"投递"（这是丢点击的根因）
 
@@ -166,8 +166,8 @@ push 全部由**一个线程**发送 → 无并发写。reader 回调**只更新
 ## 改动 A：SeedSignalReader.cs — 收敛计数器，双信号
 
 ```csharp
-using GDWeave.GameState;
-using GDWeave.NativeInterop;
+using SlotWeave.GameState;
+using SlotWeave.NativeInterop;
 
 namespace Piraeus.BetterHistoryMod.Ipc;
 
@@ -520,7 +520,7 @@ case "show_history":  ShowFromTray();   break;
 3. **WPF 杀掉重启**：任务管理器杀 WPF，点 history 按钮 → WPF 重启并自动连上 push → 窗口出现。
 4. **状态一致性**：设种子 X → 按钮 ON → 开新 run → 验证 RNG 用的是 X（同 seed 两局一致）。
 5. **并发写**：连续快速 set_seed 多次 → GDScript 读到的 json 始终是完整合法 JSON（原子写保证）。
-6. **热重载**（若 GDWeave 支持）：reload mod → 不重复弹窗（解订阅 + 忽略 seq=0 保证）。
+6. **热重载**（若 SlotWeave 支持）：reload mod → 不重复弹窗（解订阅 + 忽略 seq=0 保证）。
 
 ---
 

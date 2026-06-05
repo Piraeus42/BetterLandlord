@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 setlocal
 echo === BetterHistoryMod Alpha Package Builder ===
 
@@ -23,29 +23,29 @@ if %ERRORLEVEL% NEQ 0 (
 echo [2/4] Creating dist folder...
 if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
-mkdir "%DIST_DIR%\GDWeave\core"
-mkdir "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod"
-mkdir "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons"
+mkdir "%DIST_DIR%\SlotWeave\core"
+mkdir "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod"
+mkdir "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons"
 
 echo [3/4] Copying files...
-:: GDWeave loader
+:: SlotWeave loader
 xcopy /Y "%GAME_DIR%\winmm.dll" "%DIST_DIR%\"
 
-:: GDWeave core
-xcopy /Y "%GAME_DIR%\GDWeave\core\GDWeave.dll" "%DIST_DIR%\GDWeave\core\"
-xcopy /Y "%GAME_DIR%\GDWeave\core\Serilog.dll" "%DIST_DIR%\GDWeave\core\"
+:: SlotWeave core
+xcopy /Y "%GAME_DIR%\SlotWeave\core\SlotWeave.dll" "%DIST_DIR%\SlotWeave\core\"
+xcopy /Y "%GAME_DIR%\SlotWeave\core\Serilog.dll" "%DIST_DIR%\SlotWeave\core\"
 
 :: Mod
-xcopy /Y "%~dp0..\Piraeus.BetterHistoryMod\bin\Release\net8.0\Piraeus.BetterHistoryMod.dll" "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod\"
-xcopy /Y "%~dp0..\Piraeus.BetterHistoryMod\manifest.json" "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod\"
+xcopy /Y "%~dp0..\Piraeus.BetterHistoryMod\bin\Release\net8.0\Piraeus.BetterHistoryMod.dll" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
+xcopy /Y "%~dp0..\Piraeus.BetterHistoryMod\manifest.json" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
 
 :: UI
-xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.exe" "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod\"
-xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.dll" "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod\"
-xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.runtimeconfig.json" "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod\"
+xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.exe" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
+xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.dll" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
+xcopy /Y "%~dp0..\Piraeus.BetterHistory.UI\bin\Release\net8.0-windows\Piraeus.BetterHistory.UI.runtimeconfig.json" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\"
 
 :: Icons
-xcopy /Y /I "E:\code\LBaL\icons\*.png" "%DIST_DIR%\GDWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons\"
+xcopy /Y /I "E:\code\LBaL\icons\*.png" "%DIST_DIR%\SlotWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons\"
 
 :: README
 xcopy /Y "%~dp0..\docs\release-readme.txt" "%DIST_DIR%\README.txt"

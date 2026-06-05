@@ -1,4 +1,4 @@
-# Backspace 快捷键与种子输入框冲突 Bug Report
+﻿# Backspace 快捷键与种子输入框冲突 Bug Report
 
 > 2026-06-03 · 未解决
 
@@ -20,7 +20,7 @@
 
 在 `_input` Prefix 中检测种子输入框焦点,`return` 跳过函数体。
 
-**失败原因**: GDWeave `[Prefix]` 的 `return` 只跳出 Prefix 代码块,**不阻止**原函数体执行。
+**失败原因**: SlotWeave `[Prefix]` 的 `return` 只跳出 Prefix 代码块,**不阻止**原函数体执行。
 
 ### 方案 3: Patch `Main._input` 的 Prefix,`event.scancode = 0` 中和事件
 
@@ -44,7 +44,7 @@
 ## 可能需要探索的方向
 
 1. **修改 `Options.hotkeys["deny_cancel"]`**: 输入框焦点时临时改 hotkey 绑定
-2. **GDWeave 原生层**: 用 C# 在引擎更底层拦截
+2. **SlotWeave 原生层**: 用 C# 在引擎更底层拦截
 3. **修改 `back_button` 的 `shortcut_in_tooltip`**: 设为 false 阻止引擎处理
 4. **替换 `back_button` 的 `shortcuts` 为空数组而非 null**: `_back.shortcuts = []`
 5. **连接 `focus_entered`/`focus_exited` 信号时机**: 确认是否在引擎 shortcut 处理之后

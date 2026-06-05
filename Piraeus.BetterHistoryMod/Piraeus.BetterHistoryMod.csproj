@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -14,18 +14,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="GDWeave">
-      <HintPath>D:\steam\steamapps\common\Luck be a Landlord\GDWeave\core\GDWeave.dll</HintPath>
+    <Reference Include="SlotWeave">
+      <HintPath>D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\core\SlotWeave.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Serilog">
-      <HintPath>D:\steam\steamapps\common\Luck be a Landlord\GDWeave\core\Serilog.dll</HintPath>
+      <HintPath>D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\core\Serilog.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetPath)&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y &quot;$(ProjectDir)manifest.json&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\&quot;" />
+    <Exec Command="if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetPath)&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y &quot;$(ProjectDir)manifest.json&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\&quot;" />
   </Target>
 
 </Project>

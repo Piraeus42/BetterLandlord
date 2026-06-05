@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -32,7 +32,7 @@
 
   <!-- Copy UI exe + icons to mod directory so the game can launch it -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod&quot;&#xD;&#xA;if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.exe&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.dll&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.runtimeconfig.json&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)Assets\Icons\*.png&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\GDWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons\&quot;" />
+    <Exec Command="if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod&quot;&#xD;&#xA;if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.exe&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.dll&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.runtimeconfig.json&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)Assets\Icons\*.png&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterHistoryMod\Assets\Icons\&quot;" />
   </Target>
 
 </Project>

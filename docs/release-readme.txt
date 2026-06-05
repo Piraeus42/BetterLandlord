@@ -1,4 +1,4 @@
-BetterHistoryMod v0.1 Alpha - 安装说明
+﻿BetterHistoryMod v0.1 Alpha - 安装说明
 =========================================
 
 === 系统要求 ===
@@ -10,9 +10,9 @@ BetterHistoryMod v0.1 Alpha - 安装说明
 1. 解压 zip 到游戏根目录 (和 Luck be a Landlord.exe 同级)
    最终结构:
    Luck be a Landlord/
-   ├── winmm.dll              (GDWeave 注入器)
-   ├── GDWeave/
-   │   ├── core/               (GDWeave 运行时)
+   ├── winmm.dll              (SlotWeave 注入器)
+   ├── SlotWeave/
+   │   ├── core/               (SlotWeave 运行时)
    │   └── mods/
    │       └── Piraeus.BetterHistoryMod/
    │           ├── manifest.json
@@ -43,9 +43,9 @@ BetterHistoryMod v0.1 Alpha - 安装说明
 遇到 Bug 请记录:
 1. 你做了什么操作
 2. 弹出的错误窗口截图 (如果有)
-3. 游戏目录下 GDWeave/GDWeave.log 文件
+3. 游戏目录下 SlotWeave/SlotWeave.log 文件
 
 === 卸载 ===
 删除游戏目录下的:
 - winmm.dll
-- GDWeave/ 文件夹
+- SlotWeave/ 文件夹

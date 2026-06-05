@@ -1,7 +1,7 @@
 ﻿// ============================================================
 // TitleSeedSourceMod.cs
 // ============================================================
-using GDWeave.Modding;
+using SlotWeave.Modding;
 
 namespace Piraeus.BetterHistoryMod.Patches;
 
@@ -153,7 +153,7 @@ func _bh_get_seed_config():
 // ============================================================
 // TitleDrawSeedPatch.cs
 // ============================================================
-using GDWeave.Scripting;
+using SlotWeave.Scripting;
 
 namespace Piraeus.BetterHistoryMod.Patches;
 
@@ -175,7 +175,7 @@ class TitleDrawSeedPatch
 // ============================================================
 // FloorMenuSeedPatch.cs
 // ============================================================
-using GDWeave.Scripting;
+using SlotWeave.Scripting;
 
 namespace Piraeus.BetterHistoryMod.Patches;
 
@@ -193,7 +193,7 @@ class FloorMenuSeedPatch
 // ============================================================
 // RngInfrastructureSourceMod.cs
 // ============================================================
-using GDWeave.Modding;
+using SlotWeave.Modding;
 
 namespace Piraeus.BetterHistoryMod.Patches;
 
@@ -460,8 +460,8 @@ func _bh_item_rng_for_rarity(rarity: String) -> PCGRng:
 // ============================================================
 // SeedSignalReader.cs
 // ============================================================
-using GDWeave.GameState;
-using GDWeave.NativeInterop;
+using SlotWeave.GameState;
+using SlotWeave.NativeInterop;
 
 namespace Piraeus.BetterHistoryMod.Ipc;
 
@@ -1074,7 +1074,7 @@ public class CloseMessage
 // ============================================================
 // Mod.cs
 // ============================================================
-using GDWeave;
+using SlotWeave;
 using Piraeus.BetterHistoryMod.Ipc;
 using Piraeus.BetterHistoryMod.Patches;
 using Piraeus.BetterHistoryMod.Storage;
@@ -1129,7 +1129,7 @@ public class Mod : IMod
         // ISourceMod: IPC toggle helpers on Title node (Main.tscn::6)
         _modInterface.RegisterSourceMod(new TitleToggleSourceMod());
 
-        // [Patch] classes are auto-discovered by GDWeave:
+        // [Patch] classes are auto-discovered by SlotWeave:
         // ReadyPatch, TitlePatch, SpinPatch, WriteLogPatch,
         // ResolveEventPatch, HistoryButtonPatch
 
@@ -1139,7 +1139,7 @@ public class Mod : IMod
         // Initialize and start the IPC pipe server.
         var userDataDir = GetUserDataDir();
         var modDir = Path.GetDirectoryName(typeof(Mod).Assembly.Location)
-                     ?? Path.Combine(_modInterface.GameDir, "GDWeave", "mods", "Piraeus.BetterHistoryMod");
+                     ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterHistoryMod");
         var store = new HistoryStore(userDataDir);
 
         // Rebuild lightweight manifest (fast 鈥?uses JsonDocument, not full deserialization)

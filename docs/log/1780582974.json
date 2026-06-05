@@ -1,0 +1,6048 @@
+{
+  "history_version": "2.0",
+  "run_id": "1780582974",
+  "is_legacy_log": false,
+  "meta": {
+    "run_number": 3293,
+    "start_time": "2026-06-04T22:22:54",
+    "end_time": "2026-06-04T22:30:51",
+    "ended_by": "victory",
+    "victory_achieved": true,
+    "final_coins": 27980657662,
+    "total_spins": 278,
+    "floor": 20,
+    "seed_type": "random",
+    "seed_input": "VGTCHNRN7S",
+    "landlord_seed": 151422467
+  },
+  "summary": {
+    "status_bar": null,
+    "symbols": [
+      {
+        "id": "cat",
+        "count": 4,
+        "badge_mult": "1.5x",
+        "total_value": 2959,
+        "turns_present": 0,
+        "turns_contributing": 979,
+        "dpt_actual": 0,
+        "dpt_effective": 3
+      },
+      {
+        "id": "moon",
+        "count": 2,
+        "badge_mult": "1.5x",
+        "total_value": 381,
+        "turns_present": 56,
+        "turns_contributing": 99,
+        "dpt_actual": 6.8,
+        "dpt_effective": 3.8
+      },
+      {
+        "id": "diver",
+        "count": 1,
+        "badge_mult": "1.5x",
+        "badge_bonus": "16",
+        "total_value": 2465,
+        "turns_present": 208,
+        "turns_contributing": 207,
+        "dpt_actual": 11.9,
+        "dpt_effective": 11.9
+      },
+      {
+        "id": "diamond",
+        "count": 3,
+        "badge_mult": "1.5x",
+        "total_value": 1597,
+        "turns_present": 87,
+        "turns_contributing": 220,
+        "dpt_actual": 18.4,
+        "dpt_effective": 7.3
+      },
+      {
+        "id": "bronze_arrow",
+        "count": 2,
+        "badge_mult": "1.5x",
+        "total_value": 0,
+        "turns_present": 54,
+        "turns_contributing": 88,
+        "dpt_actual": 0,
+        "dpt_effective": 0
+      },
+      {
+        "id": "rabbit_fluff",
+        "count": 1,
+        "badge_mult": "1.5x",
+        "total_value": 174,
+        "turns_present": 78,
+        "turns_contributing": 78,
+        "dpt_actual": 2.2,
+        "dpt_effective": 2.2
+      },
+      {
+        "id": "comedian",
+        "count": 1,
+        "badge_mult": "1.5x",
+        "total_value": 2187,
+        "turns_present": 198,
+        "turns_contributing": 715,
+        "dpt_actual": 11,
+        "dpt_effective": 3.1
+      },
+      {
+        "id": "silver_arrow",
+        "count": 1,
+        "badge_mult": "1.5x",
+        "total_value": 0,
+        "turns_present": 18,
+        "turns_contributing": 18,
+        "dpt_actual": 0,
+        "dpt_effective": 0
+      },
+      {
+        "id": "d5",
+        "count": 1,
+        "badge_mult": "1.5x",
+        "total_value": 372,
+        "turns_present": 103,
+        "turns_contributing": 112,
+        "dpt_actual": 3.6,
+        "dpt_effective": 3.3
+      },
+      {
+        "id": "sun",
+        "count": 1,
+        "badge_mult": "1.5x",
+        "total_value": 219,
+        "turns_present": 64,
+        "turns_contributing": 62,
+        "dpt_actual": 3.4,
+        "dpt_effective": 3.5
+      }
+    ],
+    "items": [
+      {
+        "id": "green_pepper",
+        "item_count": 1
+      },
+      {
+        "id": "pink_pepper",
+        "item_count": 1
+      },
+      {
+        "id": "egg_carton",
+        "item_count": 1,
+        "saved_value": 5
+      },
+      {
+        "id": "lucky_cat",
+        "item_count": 1
+      },
+      {
+        "id": "pizza_the_cat",
+        "item_count": 1
+      },
+      {
+        "id": "lemon",
+        "item_count": 1
+      },
+      {
+        "id": "oil_can_essence",
+        "item_count": 1,
+        "saved_value": 6
+      },
+      {
+        "id": "yellow_pepper",
+        "item_count": 1
+      },
+      {
+        "id": "cardboard_box",
+        "item_count": 1,
+        "saved_value": 7
+      },
+      {
+        "id": "rain_cloud_essence",
+        "item_count": 1
+      },
+      {
+        "id": "pool_ball",
+        "item_count": 1
+      },
+      {
+        "id": "lucky_cat_essence",
+        "item_count": 1
+      },
+      {
+        "id": "grave_robber",
+        "item_count": 1
+      },
+      {
+        "id": "guillotine",
+        "item_count": 1
+      },
+      {
+        "id": "x_ray_machine_essence",
+        "item_count": 1
+      },
+      {
+        "id": "jackolantern",
+        "item_count": 1
+      },
+      {
+        "id": "tax_evasion",
+        "item_count": 1
+      }
+    ],
+    "destroyed_symbols": [
+
+    ],
+    "destroyed_items": [
+      {
+        "id": "symbol_bomb_quantum",
+        "count": 1
+      },
+      {
+        "id": "lucky_carrot_essence",
+        "count": 1
+      },
+      {
+        "id": "symbol_bomb_small",
+        "count": 2
+      },
+      {
+        "id": "lunchbox",
+        "count": 1
+      },
+      {
+        "id": "pizza_the_cat_essence",
+        "count": 1
+      },
+      {
+        "id": "frozen_pizza_essence",
+        "count": 1
+      },
+      {
+        "id": "adoption_papers",
+        "count": 1
+      }
+    ],
+    "removed_symbols": [
+
+    ],
+    "landlord_fine_print": [
+
+    ]
+  },
+  "rent_cycles": [
+    {
+      "cycle_index": 1,
+      "rent_required": 25,
+      "spins_in_cycle": 5,
+      "spins": [
+        {
+          "spin_num": 1,
+          "coins_before": 1,
+          "coins_after": 5,
+          "coin_change": 4,
+          "main_symbol": "coal",
+          "skipped_options": [
+            "lockbox",
+            "cherry"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 2,
+          "coins_before": 5,
+          "coins_after": 9,
+          "coin_change": 4,
+          "main_symbol": "milk",
+          "skipped_options": [
+            "cultist",
+            "present"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 3,
+          "coins_before": 9,
+          "coins_after": 14,
+          "coin_change": 5,
+          "main_symbol": "cat",
+          "skipped_options": [
+            "crow",
+            "turtle"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 4,
+          "coins_before": 14,
+          "coins_after": 38,
+          "coin_change": 24,
+          "main_symbol": "beer",
+          "skipped_options": [
+            "cherry",
+            "banana_peel"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 5,
+          "coins_before": 38,
+          "coins_after": 44,
+          "coin_change": 6,
+          "main_symbol": "d5",
+          "skipped_options": [
+            "void_fruit",
+            "target"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 19
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "green_pepper",
+          "source": "choice",
+          "choice_idx": 5
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "egg_carton",
+          "choice_idx": 5
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "maxwell_the_bear",
+          "choice_idx": 5
+        }
+      ]
+    },
+    {
+      "cycle_index": 2,
+      "rent_required": 50,
+      "spins_in_cycle": 5,
+      "spins": [
+        {
+          "spin_num": 6,
+          "coins_before": 19,
+          "coins_after": 31,
+          "coin_change": 12,
+          "main_symbol": "coal",
+          "skipped_options": [
+            "mouse",
+            "snail"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 7,
+          "coins_before": 31,
+          "coins_after": 41,
+          "coin_change": 10,
+          "main_symbol": "mouse",
+          "skipped_options": [
+            "banana",
+            "urn"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 8,
+          "coins_before": 41,
+          "coins_after": 56,
+          "coin_change": 15,
+          "main_symbol": "cheese",
+          "skipped_options": [
+            "void_fruit",
+            "pearl"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 9,
+          "coins_before": 56,
+          "coins_after": 92,
+          "coin_change": 36,
+          "main_symbol": "sloth",
+          "skipped_options": [
+            "cherry",
+            "goose"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 10,
+          "coins_before": 92,
+          "coins_after": 105,
+          "coin_change": 13,
+          "main_symbol": "target",
+          "skipped_options": [
+            "diamonds",
+            "buffing_powder"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 55
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "pink_pepper",
+          "source": "choice",
+          "choice_idx": 11
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "guillotine",
+          "choice_idx": 11
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "red_suits",
+          "choice_idx": 11
+        }
+      ]
+    },
+    {
+      "cycle_index": 3,
+      "rent_required": 100,
+      "spins_in_cycle": 6,
+      "spins": [
+        {
+          "spin_num": 11,
+          "coins_before": 55,
+          "coins_after": 74,
+          "coin_change": 19,
+          "main_symbol": null,
+          "skipped_options": [
+            "shiny_pebble",
+            "cat",
+            "hex_of_tedium"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 12,
+          "coins_before": 74,
+          "coins_after": 91,
+          "coin_change": 17,
+          "main_symbol": "milk",
+          "skipped_options": [
+            "cultist",
+            "mouse"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 13,
+          "coins_before": 91,
+          "coins_after": 118,
+          "coin_change": 27,
+          "main_symbol": "present",
+          "skipped_options": [
+            "pearl",
+            "turtle"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 14,
+          "coins_before": 118,
+          "coins_after": 134,
+          "coin_change": 16,
+          "main_symbol": "item_capsule",
+          "skipped_options": [
+            "mouse",
+            "goldfish"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 15,
+          "coins_before": 134,
+          "coins_after": 154,
+          "coin_change": 20,
+          "main_symbol": null,
+          "skipped_options": [
+            "cherry",
+            "ore",
+            "snail"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 16,
+          "coins_before": 156,
+          "coins_after": 173,
+          "coin_change": 17,
+          "main_symbol": "target",
+          "skipped_options": [
+            "hearts",
+            "hex_of_destruction"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 73
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "egg_carton",
+          "source": "shop",
+          "choice_idx": 0
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "lucky_cat",
+          "source": "choice",
+          "choice_idx": 16
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "turtle_and_rabbit",
+          "choice_idx": 16
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "maxwell_the_bear",
+          "choice_idx": 16
+        }
+      ]
+    },
+    {
+      "cycle_index": 4,
+      "rent_required": 150,
+      "spins_in_cycle": 6,
+      "spins": [
+        {
+          "spin_num": 17,
+          "coins_before": 73,
+          "coins_after": 95,
+          "coin_change": 22,
+          "main_symbol": "hex_of_draining",
+          "skipped_options": [
+            "lockbox",
+            "dog"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 18,
+          "coins_before": 95,
+          "coins_after": 115,
+          "coin_change": 20,
+          "main_symbol": "tedium_capsule",
+          "skipped_options": [
+            "bounty_hunter",
+            "oyster"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 19,
+          "coins_before": 115,
+          "coins_after": 143,
+          "coin_change": 28,
+          "main_symbol": "dwarf",
+          "skipped_options": [
+            "pearl",
+            "diamonds"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 20,
+          "coins_before": 143,
+          "coins_after": 161,
+          "coin_change": 18,
+          "main_symbol": "cheese",
+          "skipped_options": [
+            "d5",
+            "toddler"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 21,
+          "coins_before": 161,
+          "coins_after": 188,
+          "coin_change": 27,
+          "main_symbol": null,
+          "skipped_options": [
+            "miner",
+            "banana",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 22,
+          "coins_before": 190,
+          "coins_after": 235,
+          "coin_change": 45,
+          "main_symbol": "void_creature",
+          "skipped_options": [
+            "bear",
+            "pinata"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 85
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "lucky_carrot_essence",
+          "source": "choice",
+          "choice_idx": 21
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "wanted_poster_essence",
+          "choice_idx": 21
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lunchbox_essence",
+          "choice_idx": 21
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "pizza_the_cat",
+          "source": "choice",
+          "choice_idx": 23
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "kyle_the_kernite",
+          "choice_idx": 23
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fifth_ace",
+          "choice_idx": 23
+        }
+      ]
+    },
+    {
+      "cycle_index": 5,
+      "rent_required": 225,
+      "spins_in_cycle": 7,
+      "spins": [
+        {
+          "spin_num": 23,
+          "coins_before": 85,
+          "coins_after": 126,
+          "coin_change": 41,
+          "main_symbol": "cheese",
+          "skipped_options": [
+            "tedium_capsule",
+            "candy"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 24,
+          "coins_before": 126,
+          "coins_after": 157,
+          "coin_change": 31,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_hoarding",
+            "turtle",
+            "goldfish"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 25,
+          "coins_before": 159,
+          "coins_after": 189,
+          "coin_change": 30,
+          "main_symbol": null,
+          "skipped_options": [
+            "safe",
+            "light_bulb",
+            "matryoshka_doll_1"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 26,
+          "coins_before": 189,
+          "coins_after": 249,
+          "coin_change": 60,
+          "main_symbol": "coal",
+          "skipped_options": [
+            "dog",
+            "mouse"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 27,
+          "coins_before": 249,
+          "coins_after": 289,
+          "coin_change": 40,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "cherry",
+            "goldfish"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 28,
+          "coins_before": 289,
+          "coins_after": 320,
+          "coin_change": 31,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "hex_of_emptiness",
+            "turtle"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 29,
+          "coins_before": 320,
+          "coins_after": 351,
+          "coin_change": 31,
+          "main_symbol": null,
+          "skipped_options": [
+            "hearts",
+            "bear",
+            "sapphire"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 126
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "symbol_bomb_small",
+          "source": "choice",
+          "choice_idx": 28
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fertilizer",
+          "choice_idx": 28
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "compost_heap",
+          "choice_idx": 28
+        }
+      ]
+    },
+    {
+      "cycle_index": 6,
+      "rent_required": 300,
+      "spins_in_cycle": 7,
+      "spins": [
+        {
+          "spin_num": 30,
+          "coins_before": 128,
+          "coins_after": 162,
+          "coin_change": 34,
+          "main_symbol": "egg",
+          "skipped_options": [
+            "seed",
+            "anchor"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 31,
+          "coins_before": 162,
+          "coins_after": 195,
+          "coin_change": 33,
+          "main_symbol": "tedium_capsule",
+          "skipped_options": [
+            "magpie",
+            "oyster"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 32,
+          "coins_before": 195,
+          "coins_after": 226,
+          "coin_change": 31,
+          "main_symbol": "cheese",
+          "skipped_options": [
+            "void_fruit",
+            "present"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 33,
+          "coins_before": 226,
+          "coins_after": 263,
+          "coin_change": 37,
+          "main_symbol": null,
+          "skipped_options": [
+            "diamonds",
+            "sapphire",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 34,
+          "coins_before": 265,
+          "coins_after": 298,
+          "coin_change": 33,
+          "main_symbol": "rabbit_fluff",
+          "skipped_options": [
+            "target",
+            "seed"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 35,
+          "coins_before": 298,
+          "coins_after": 336,
+          "coin_change": 38,
+          "main_symbol": "rarity_capsule",
+          "skipped_options": [
+            "void_fruit",
+            "oyster"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 36,
+          "coins_before": 336,
+          "coins_after": 389,
+          "coin_change": 53,
+          "main_symbol": "general_zaroff",
+          "skipped_options": [
+            "pinata",
+            "witch",
+            "shiny_pebble",
+            "safe",
+            "goldfish",
+            "lockbox",
+            "snail",
+            "banana",
+            "light_bulb",
+            "seed",
+            "pearl",
+            "banana_peel",
+            "hex_of_hoarding",
+            "goldfish",
+            "bear",
+            "hearts",
+            "light_bulb",
+            "turtle",
+            "pinata",
+            "matryoshka_doll_1",
+            "hex_of_hoarding",
+            "coin",
+            "ore",
+            "safe",
+            "urn",
+            "pinata",
+            "hex_of_emptiness"
+          ],
+          "extra_actions": [
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "symbol_bomb_quantum"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "bounty_hunter",
+              "source": "choice"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "buffing_powder",
+              "source": "choice"
+            }
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 89
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "pizza_the_cat_essence",
+          "source": "choice",
+          "choice_idx": 34
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lockpick_essence",
+          "choice_idx": 34
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fertilizer_essence",
+          "choice_idx": 34
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "symbol_bomb_quantum",
+          "source": "choice",
+          "choice_idx": 36
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "conveyor_belt",
+          "choice_idx": 36
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "white_pepper",
+          "choice_idx": 36
+        }
+      ]
+    },
+    {
+      "cycle_index": 7,
+      "rent_required": 375,
+      "spins_in_cycle": 8,
+      "spins": [
+        {
+          "spin_num": 37,
+          "coins_before": 103,
+          "coins_after": 142,
+          "coin_change": 39,
+          "main_symbol": "midas_bomb",
+          "skipped_options": [
+            "flower",
+            "chick"
+          ],
+          "extra_actions": [
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "lucky_carrot_essence"
+            }
+          ]
+        },
+        {
+          "spin_num": 38,
+          "coins_before": 142,
+          "coins_after": 194,
+          "coin_change": 52,
+          "main_symbol": "toddler",
+          "skipped_options": [
+            "coconut",
+            "beer"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 39,
+          "coins_before": 194,
+          "coins_after": 307,
+          "coin_change": 113,
+          "main_symbol": "d5",
+          "skipped_options": [
+            "owl",
+            "banana"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 40,
+          "coins_before": 307,
+          "coins_after": 340,
+          "coin_change": 33,
+          "main_symbol": "ninja",
+          "skipped_options": [
+            "removal_capsule",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 41,
+          "coins_before": 340,
+          "coins_after": 376,
+          "coin_change": 36,
+          "main_symbol": null,
+          "skipped_options": [
+            "turtle",
+            "pinata",
+            "goose"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 42,
+          "coins_before": 376,
+          "coins_after": 413,
+          "coin_change": 37,
+          "main_symbol": "thief",
+          "skipped_options": [
+            "banana",
+            "bounty_hunter"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 43,
+          "coins_before": 413,
+          "coins_after": 501,
+          "coin_change": 88,
+          "main_symbol": "big_urn",
+          "skipped_options": [
+            "buffing_powder",
+            "owl"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 44,
+          "coins_before": 501,
+          "coins_after": 537,
+          "coin_change": 36,
+          "main_symbol": "sun",
+          "skipped_options": [
+            "item_capsule",
+            "hex_of_destruction",
+            "hex_of_hoarding",
+            "shiny_pebble",
+            "jellyfish",
+            "wine"
+          ],
+          "extra_actions": [
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "symbol_bomb_small"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "egg",
+              "source": "choice"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "dwarf",
+              "source": "choice"
+            }
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 162
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "lemon",
+          "source": "choice",
+          "choice_idx": 46
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lucky_seven",
+          "choice_idx": 46
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "treasure_map",
+          "choice_idx": 46
+        }
+      ]
+    },
+    {
+      "cycle_index": 8,
+      "rent_required": 450,
+      "spins_in_cycle": 8,
+      "spins": [
+        {
+          "spin_num": 45,
+          "coins_before": 162,
+          "coins_after": 237,
+          "coin_change": 75,
+          "main_symbol": "hooligan",
+          "skipped_options": [
+            "big_urn",
+            "ore"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 46,
+          "coins_before": 237,
+          "coins_after": 293,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_tedium",
+            "ore",
+            "owl"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 47,
+          "coins_before": 295,
+          "coins_after": 354,
+          "coin_change": 59,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "buffing_powder",
+            "pufferfish"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 48,
+          "coins_before": 354,
+          "coins_after": 414,
+          "coin_change": 60,
+          "main_symbol": "urn",
+          "skipped_options": [
+            "lucky_capsule",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 49,
+          "coins_before": 414,
+          "coins_after": 475,
+          "coin_change": 61,
+          "main_symbol": "billionaire",
+          "skipped_options": [
+            "dog",
+            "orange"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 50,
+          "coins_before": 475,
+          "coins_after": 535,
+          "coin_change": 60,
+          "main_symbol": "cultist",
+          "skipped_options": [
+            "hex_of_midas",
+            "sand_dollar"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 51,
+          "coins_before": 535,
+          "coins_after": 598,
+          "coin_change": 63,
+          "main_symbol": "cat",
+          "skipped_options": [
+            "oyster",
+            "target"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 52,
+          "coins_before": 598,
+          "coins_after": 707,
+          "coin_change": 109,
+          "main_symbol": "moon",
+          "skipped_options": [
+            "big_urn",
+            "jellyfish"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 257
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "oil_can_essence",
+          "source": "choice",
+          "choice_idx": 55
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "recycling_essence",
+          "choice_idx": 55
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "kyle_the_kernite_essence",
+          "choice_idx": 55
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "yellow_pepper",
+          "source": "choice",
+          "choice_idx": 57
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "swear_jar",
+          "choice_idx": 57
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "red_suits",
+          "choice_idx": 57
+        }
+      ]
+    },
+    {
+      "cycle_index": 9,
+      "rent_required": 600,
+      "spins_in_cycle": 9,
+      "spins": [
+        {
+          "spin_num": 53,
+          "coins_before": 257,
+          "coins_after": 321,
+          "coin_change": 64,
+          "main_symbol": null,
+          "skipped_options": [
+            "matryoshka_doll_1",
+            "hex_of_hoarding",
+            "coconut"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 54,
+          "coins_before": 323,
+          "coins_after": 405,
+          "coin_change": 82,
+          "main_symbol": "bronze_arrow",
+          "skipped_options": [
+            "sand_dollar",
+            "big_ore"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 55,
+          "coins_before": 405,
+          "coins_after": 466,
+          "coin_change": 61,
+          "main_symbol": "time_capsule",
+          "skipped_options": [
+            "ore",
+            "coconut"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 56,
+          "coins_before": 466,
+          "coins_after": 545,
+          "coin_change": 79,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "reroll_capsule",
+            "rain"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 57,
+          "coins_before": 545,
+          "coins_after": 608,
+          "coin_change": 63,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "hooligan",
+            "hex_of_emptiness"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 58,
+          "coins_before": 608,
+          "coins_after": 704,
+          "coin_change": 96,
+          "main_symbol": null,
+          "skipped_options": [
+            "present",
+            "magpie",
+            "snail"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 59,
+          "coins_before": 706,
+          "coins_after": 799,
+          "coin_change": 93,
+          "main_symbol": "dwarf",
+          "skipped_options": [
+            "turtle",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 60,
+          "coins_before": 799,
+          "coins_after": 895,
+          "coin_change": 96,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "diamonds",
+            "rabbit_fluff"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 61,
+          "coins_before": 895,
+          "coins_after": 988,
+          "coin_change": 93,
+          "main_symbol": "moon",
+          "skipped_options": [
+            "witch",
+            "d5"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 388
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "cardboard_box",
+          "source": "choice",
+          "choice_idx": 65
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lint_roller",
+          "choice_idx": 65
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lockpick",
+          "choice_idx": 65
+        }
+      ]
+    },
+    {
+      "cycle_index": 10,
+      "rent_required": 650,
+      "spins_in_cycle": 9,
+      "spins": [
+        {
+          "spin_num": 62,
+          "coins_before": 388,
+          "coins_after": 448,
+          "coin_change": 60,
+          "main_symbol": "thief",
+          "skipped_options": [
+            "hex_of_hoarding",
+            "buffing_powder"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 63,
+          "coins_before": 448,
+          "coins_after": 504,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "dog",
+            "d5",
+            "coconut_half"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 64,
+          "coins_before": 506,
+          "coins_after": 559,
+          "coin_change": 53,
+          "main_symbol": "wine",
+          "skipped_options": [
+            "hex_of_draining",
+            "crab"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 65,
+          "coins_before": 559,
+          "coins_after": 660,
+          "coin_change": 101,
+          "main_symbol": "buffing_powder",
+          "skipped_options": [
+            "goldfish",
+            "anchor"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 66,
+          "coins_before": 660,
+          "coins_after": 733,
+          "coin_change": 73,
+          "main_symbol": "bronze_arrow",
+          "skipped_options": [
+            "spades",
+            "hex_of_destruction"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 67,
+          "coins_before": 733,
+          "coins_after": 787,
+          "coin_change": 54,
+          "main_symbol": "cultist",
+          "skipped_options": [
+            "chemical_seven",
+            "d5"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 68,
+          "coins_before": 787,
+          "coins_after": 904,
+          "coin_change": 117,
+          "main_symbol": "target",
+          "skipped_options": [
+            "tedium_capsule",
+            "big_ore"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 69,
+          "coins_before": 904,
+          "coins_after": 1023,
+          "coin_change": 119,
+          "main_symbol": "void_fruit",
+          "skipped_options": [
+            "goldfish",
+            "rabbit_fluff"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 70,
+          "coins_before": 1023,
+          "coins_after": 1089,
+          "coin_change": 66,
+          "main_symbol": "diver",
+          "skipped_options": [
+            "moon",
+            "dove"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 439
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "rain_cloud_essence",
+          "source": "choice",
+          "choice_idx": 73
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "jackolantern_essence",
+          "choice_idx": 73
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "blue_pepper_essence",
+          "choice_idx": 73
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "lunchbox",
+          "source": "choice",
+          "choice_idx": 75
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "zaroffs_contract",
+          "choice_idx": 75
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "goldilocks",
+          "choice_idx": 75
+        }
+      ]
+    },
+    {
+      "cycle_index": 11,
+      "rent_required": 700,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 71,
+          "coins_before": 439,
+          "coins_after": 494,
+          "coin_change": 55,
+          "main_symbol": null,
+          "skipped_options": [
+            "clubs",
+            "wine",
+            "spades"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 72,
+          "coins_before": 496,
+          "coins_after": 591,
+          "coin_change": 95,
+          "main_symbol": "cat",
+          "skipped_options": [
+            "lucky_capsule",
+            "magpie"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 73,
+          "coins_before": 591,
+          "coins_after": 647,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "safe",
+            "diamonds",
+            "matryoshka_doll_1"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 74,
+          "coins_before": 649,
+          "coins_after": 710,
+          "coin_change": 61,
+          "main_symbol": "hustler",
+          "skipped_options": [
+            "mrs_fruit",
+            "golem"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 75,
+          "coins_before": 710,
+          "coins_after": 762,
+          "coin_change": 52,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "time_capsule",
+            "urn",
+            "candy",
+            "wine",
+            "milk",
+            "beer",
+            "beer",
+            "cherry"
+          ],
+          "extra_actions": [
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "lunchbox"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "milk",
+              "source": "choice"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "egg",
+              "source": "choice"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "egg",
+              "source": "choice"
+            }
+          ]
+        },
+        {
+          "spin_num": 76,
+          "coins_before": 762,
+          "coins_after": 839,
+          "coin_change": 77,
+          "main_symbol": "essence_capsule",
+          "skipped_options": [
+            "hooligan",
+            "bronze_arrow"
+          ],
+          "extra_actions": [
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "pizza_the_cat_essence"
+            }
+          ]
+        },
+        {
+          "spin_num": 77,
+          "coins_before": 839,
+          "coins_after": 893,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_hoarding",
+            "wolf",
+            "present"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 78,
+          "coins_before": 895,
+          "coins_after": 965,
+          "coin_change": 70,
+          "main_symbol": null,
+          "skipped_options": [
+            "spades",
+            "coconut",
+            "coconut_half"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 79,
+          "coins_before": 967,
+          "coins_after": 1029,
+          "coin_change": 62,
+          "main_symbol": null,
+          "skipped_options": [
+            "big_ore",
+            "wine",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 80,
+          "coins_before": 1031,
+          "coins_after": 1101,
+          "coin_change": 70,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "witch",
+            "mine"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 401
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "pool_ball",
+          "source": "shop",
+          "choice_idx": 0
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "lucky_cat_essence",
+          "source": "choice",
+          "choice_idx": 83
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "nori_the_rabbit_essence",
+          "choice_idx": 83
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "ricky_the_banana_essence",
+          "choice_idx": 83
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "grave_robber",
+          "source": "choice",
+          "choice_idx": 85
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fertilizer",
+          "choice_idx": 85
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "watering_can",
+          "choice_idx": 85
+        }
+      ]
+    },
+    {
+      "cycle_index": 12,
+      "rent_required": 777,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 81,
+          "coins_before": 401,
+          "coins_after": 473,
+          "coin_change": 72,
+          "main_symbol": "sand_dollar",
+          "skipped_options": [
+            "turtle",
+            "diamonds"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 82,
+          "coins_before": 473,
+          "coins_after": 558,
+          "coin_change": 85,
+          "main_symbol": null,
+          "skipped_options": [
+            "rabbit",
+            "magic_key",
+            "rabbit_fluff"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 83,
+          "coins_before": 560,
+          "coins_after": 642,
+          "coin_change": 82,
+          "main_symbol": null,
+          "skipped_options": [
+            "chick",
+            "safe",
+            "hooligan"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 84,
+          "coins_before": 644,
+          "coins_after": 732,
+          "coin_change": 88,
+          "main_symbol": "rarity_capsule",
+          "skipped_options": [
+            "hex_of_hoarding",
+            "peach"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 85,
+          "coins_before": 732,
+          "coins_after": 802,
+          "coin_change": 70,
+          "main_symbol": null,
+          "skipped_options": [
+            "diver",
+            "d5",
+            "hex_of_draining"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 86,
+          "coins_before": 804,
+          "coins_after": 876,
+          "coin_change": 72,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "buffing_powder",
+            "coconut"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 87,
+          "coins_before": 876,
+          "coins_after": 970,
+          "coin_change": 94,
+          "main_symbol": null,
+          "skipped_options": [
+            "rabbit",
+            "rabbit_fluff",
+            "hex_of_hoarding"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 88,
+          "coins_before": 972,
+          "coins_after": 1052,
+          "coin_change": 80,
+          "main_symbol": "void_creature",
+          "skipped_options": [
+            "bear",
+            "hearts"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 89,
+          "coins_before": 1052,
+          "coins_after": 1135,
+          "coin_change": 83,
+          "main_symbol": "item_capsule",
+          "skipped_options": [
+            "spades",
+            "sapphire"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 90,
+          "coins_before": 1135,
+          "coins_after": 1200,
+          "coin_change": 65,
+          "main_symbol": "silver_arrow",
+          "skipped_options": [
+            "emerald",
+            "apple"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 423
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "guillotine",
+          "source": "shop",
+          "choice_idx": 0
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "x_ray_machine_essence",
+          "source": "choice",
+          "choice_idx": 91
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lucky_carrot_essence",
+          "choice_idx": 91
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "tax_evasion_essence",
+          "choice_idx": 91
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "jackolantern",
+          "source": "choice",
+          "choice_idx": 93
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "shedding_season",
+          "choice_idx": 93
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "tax_evasion",
+          "choice_idx": 93
+        }
+      ]
+    },
+    {
+      "cycle_index": 13,
+      "rent_required": 1000,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 91,
+          "coins_before": 423,
+          "coins_after": 535,
+          "coin_change": 112,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "rabbit_fluff",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 92,
+          "coins_before": 535,
+          "coins_after": 629,
+          "coin_change": 94,
+          "main_symbol": null,
+          "skipped_options": [
+            "matryoshka_doll_1",
+            "general_zaroff",
+            "coconut"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 93,
+          "coins_before": 631,
+          "coins_after": 750,
+          "coin_change": 119,
+          "main_symbol": "egg",
+          "skipped_options": [
+            "crow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 94,
+          "coins_before": 750,
+          "coins_after": 842,
+          "coin_change": 92,
+          "main_symbol": "turtle",
+          "skipped_options": [
+            "cultist"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 95,
+          "coins_before": 842,
+          "coins_after": 917,
+          "coin_change": 75,
+          "main_symbol": null,
+          "skipped_options": [
+            "wine",
+            "dog"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 96,
+          "coins_before": 919,
+          "coins_after": 996,
+          "coin_change": 77,
+          "main_symbol": null,
+          "skipped_options": [
+            "general_zaroff",
+            "lockbox"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 97,
+          "coins_before": 998,
+          "coins_after": 1117,
+          "coin_change": 119,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_tedium",
+            "bee"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 98,
+          "coins_before": 1119,
+          "coins_after": 1194,
+          "coin_change": 75,
+          "main_symbol": "urn",
+          "skipped_options": [
+            "snail"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 99,
+          "coins_before": 1194,
+          "coins_after": 1271,
+          "coin_change": 77,
+          "main_symbol": null,
+          "skipped_options": [
+            "wolf",
+            "mouse"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 100,
+          "coins_before": 1273,
+          "coins_after": 1364,
+          "coin_change": 91,
+          "main_symbol": null,
+          "skipped_options": [
+            "treasure_chest",
+            "farmer"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 364
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "tax_evasion",
+          "source": "choice",
+          "choice_idx": 98
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "triple_coins",
+          "choice_idx": 98
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "goldilocks",
+          "choice_idx": 98
+        }
+      ]
+    },
+    {
+      "cycle_index": 14,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 101,
+          "coins_before": 366,
+          "coins_after": 440,
+          "coin_change": 74,
+          "main_symbol": "rarity_capsule",
+          "skipped_options": [
+            "rabbit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 102,
+          "coins_before": 440,
+          "coins_after": 523,
+          "coin_change": 83,
+          "main_symbol": null,
+          "skipped_options": [
+            "thief",
+            "present"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 103,
+          "coins_before": 525,
+          "coins_after": 596,
+          "coin_change": 71,
+          "main_symbol": null,
+          "skipped_options": [
+            "apple",
+            "cultist"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 104,
+          "coins_before": 598,
+          "coins_after": 673,
+          "coin_change": 75,
+          "main_symbol": null,
+          "skipped_options": [
+            "goldfish",
+            "hex_of_destruction"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 105,
+          "coins_before": 675,
+          "coins_after": 769,
+          "coin_change": 94,
+          "main_symbol": null,
+          "skipped_options": [
+            "toddler",
+            "light_bulb"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 106,
+          "coins_before": 771,
+          "coins_after": 828,
+          "coin_change": 57,
+          "main_symbol": null,
+          "skipped_options": [
+            "matryoshka_doll_1",
+            "ninja"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 107,
+          "coins_before": 830,
+          "coins_after": 886,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "coconut_half",
+            "lockbox"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 108,
+          "coins_before": 888,
+          "coins_after": 947,
+          "coin_change": 59,
+          "main_symbol": null,
+          "skipped_options": [
+            "mrs_fruit",
+            "cow",
+            "chicken"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 109,
+          "coins_before": 949,
+          "coins_after": 991,
+          "coin_change": 42,
+          "main_symbol": null,
+          "skipped_options": [
+            "hustler",
+            "void_stone",
+            "thief"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 110,
+          "coins_before": 993,
+          "coins_after": 1035,
+          "coin_change": 42,
+          "main_symbol": null,
+          "skipped_options": [
+            "eldritch_beast",
+            "hearts",
+            "strawberry"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 1035
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "kyle_the_kernite_essence",
+          "source": "choice",
+          "choice_idx": 100
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "symbol_bomb_very_big_essence",
+          "choice_idx": 100
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "symbol_bomb_quantum_essence",
+          "choice_idx": 100
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "quigley_the_wolf",
+          "source": "choice",
+          "choice_idx": 101
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lime_pepper",
+          "choice_idx": 101
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "frying_pan",
+          "choice_idx": 101
+        }
+      ]
+    },
+    {
+      "cycle_index": 15,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 111,
+          "coins_before": 1037,
+          "coins_after": 1079,
+          "coin_change": 42,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "void_creature",
+            "safe"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 112,
+          "coins_before": 1079,
+          "coins_after": 1124,
+          "coin_change": 45,
+          "main_symbol": null,
+          "skipped_options": [
+            "rarity_capsule",
+            "hex_of_draining",
+            "target"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 113,
+          "coins_before": 1126,
+          "coins_after": 1168,
+          "coin_change": 42,
+          "main_symbol": "time_capsule",
+          "skipped_options": [
+            "sloth",
+            "void_stone"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 114,
+          "coins_before": 1168,
+          "coins_after": 1210,
+          "coin_change": 42,
+          "main_symbol": null,
+          "skipped_options": [
+            "buffing_powder",
+            "turtle",
+            "beer"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 115,
+          "coins_before": 1212,
+          "coins_after": 1254,
+          "coin_change": 42,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_destruction",
+            "archaeologist",
+            "lockbox"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 116,
+          "coins_before": 1256,
+          "coins_after": 1298,
+          "coin_change": 42,
+          "main_symbol": null,
+          "skipped_options": [
+            "buffing_powder",
+            "honey",
+            "chemical_seven"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 117,
+          "coins_before": 1300,
+          "coins_after": 1342,
+          "coin_change": 42,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "dwarf",
+            "rabbit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 118,
+          "coins_before": 1342,
+          "coins_after": 1385,
+          "coin_change": 43,
+          "main_symbol": null,
+          "skipped_options": [
+            "spirit",
+            "bartender",
+            "diver"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 119,
+          "coins_before": 1387,
+          "coins_after": 1430,
+          "coin_change": 43,
+          "main_symbol": "banana",
+          "skipped_options": [
+            "time_capsule",
+            "big_urn"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 120,
+          "coins_before": 1430,
+          "coins_after": 1473,
+          "coin_change": 43,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "hex_of_hoarding",
+            "peach"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 1473
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "ricky_the_banana_essence",
+          "source": "choice",
+          "choice_idx": 105
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lefty_the_rabbit_essence",
+          "choice_idx": 105
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "tax_evasion_essence",
+          "choice_idx": 105
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "checkered_flag",
+          "source": "choice",
+          "choice_idx": 106
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "goldilocks",
+          "choice_idx": 106
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "shedding_season",
+          "choice_idx": 106
+        }
+      ]
+    },
+    {
+      "cycle_index": 16,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 121,
+          "coins_before": 1473,
+          "coins_after": 1521,
+          "coin_change": 48,
+          "main_symbol": null,
+          "skipped_options": [
+            "goldfish",
+            "turtle",
+            "egg"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 122,
+          "coins_before": 1523,
+          "coins_after": 1571,
+          "coin_change": 48,
+          "main_symbol": "rarity_capsule",
+          "skipped_options": [
+            "rabbit",
+            "sapphire"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 123,
+          "coins_before": 1571,
+          "coins_after": 1615,
+          "coin_change": 44,
+          "main_symbol": "item_capsule",
+          "skipped_options": [
+            "frozen_fossil",
+            "thief"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 124,
+          "coins_before": 1615,
+          "coins_after": 1659,
+          "coin_change": 44,
+          "main_symbol": "time_capsule",
+          "skipped_options": [
+            "rain",
+            "wine"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 125,
+          "coins_before": 1659,
+          "coins_after": 1706,
+          "coin_change": 47,
+          "main_symbol": "rarity_capsule",
+          "skipped_options": [
+            "lucky_capsule",
+            "hex_of_destruction"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 126,
+          "coins_before": 1706,
+          "coins_after": 1750,
+          "coin_change": 44,
+          "main_symbol": null,
+          "skipped_options": [
+            "treasure_chest",
+            "matryoshka_doll_1",
+            "hearts"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 127,
+          "coins_before": 1752,
+          "coins_after": 1798,
+          "coin_change": 46,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "wolf",
+            "rarity_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 128,
+          "coins_before": 1798,
+          "coins_after": 1842,
+          "coin_change": 44,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "tomb",
+            "joker"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 129,
+          "coins_before": 1842,
+          "coins_after": 1888,
+          "coin_change": 46,
+          "main_symbol": null,
+          "skipped_options": [
+            "spades",
+            "void_fruit",
+            "bear"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 130,
+          "coins_before": 1890,
+          "coins_after": 1937,
+          "coin_change": 47,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "thief",
+            "cultist"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 1937
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "kyle_the_kernite",
+          "source": "shop",
+          "choice_idx": 0
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "flush",
+          "source": "choice",
+          "choice_idx": 115
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "rusty_gear",
+          "choice_idx": 115
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "happy_hour",
+          "choice_idx": 115
+        }
+      ]
+    },
+    {
+      "cycle_index": 17,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 131,
+          "coins_before": 1937,
+          "coins_after": 1987,
+          "coin_change": 50,
+          "main_symbol": null,
+          "skipped_options": [
+            "general_zaroff",
+            "safe",
+            "hooligan"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 132,
+          "coins_before": 1989,
+          "coins_after": 2039,
+          "coin_change": 50,
+          "main_symbol": null,
+          "skipped_options": [
+            "sand_dollar",
+            "void_fruit",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 133,
+          "coins_before": 2041,
+          "coins_after": 2089,
+          "coin_change": 48,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "hex_of_thievery",
+            "d5"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 134,
+          "coins_before": 2089,
+          "coins_after": 2137,
+          "coin_change": 48,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_emptiness",
+            "peach",
+            "gambler"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 135,
+          "coins_before": 2139,
+          "coins_after": 2187,
+          "coin_change": 48,
+          "main_symbol": null,
+          "skipped_options": [
+            "thief",
+            "hex_of_hoarding",
+            "bronze_arrow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 136,
+          "coins_before": 2189,
+          "coins_after": 2237,
+          "coin_change": 48,
+          "main_symbol": null,
+          "skipped_options": [
+            "pirate",
+            "sloth",
+            "orange"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 137,
+          "coins_before": 2239,
+          "coins_after": 2295,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "void_fruit",
+            "orange",
+            "bar_of_soap"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 138,
+          "coins_before": 2297,
+          "coins_after": 2353,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "general_zaroff",
+            "card_shark",
+            "robin_hood"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 139,
+          "coins_before": 2355,
+          "coins_after": 2403,
+          "coin_change": 48,
+          "main_symbol": null,
+          "skipped_options": [
+            "lucky_capsule",
+            "wine",
+            "sapphire"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 140,
+          "coins_before": 2405,
+          "coins_after": 2455,
+          "coin_change": 50,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_midas",
+            "void_stone",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 2455
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "flush_essence",
+          "source": "choice",
+          "choice_idx": 118
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "gray_pepper_essence",
+          "choice_idx": 118
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "black_cat_essence",
+          "choice_idx": 118
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "red_suits",
+          "source": "choice",
+          "choice_idx": 119
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "zaroffs_contract",
+          "choice_idx": 119
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fifth_ace",
+          "choice_idx": 119
+        }
+      ]
+    },
+    {
+      "cycle_index": 18,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 141,
+          "coins_before": 2455,
+          "coins_after": 2505,
+          "coin_change": 50,
+          "main_symbol": "removal_capsule",
+          "skipped_options": [
+            "hex_of_midas",
+            "seed"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 142,
+          "coins_before": 2505,
+          "coins_after": 2553,
+          "coin_change": 48,
+          "main_symbol": null,
+          "skipped_options": [
+            "buffing_powder",
+            "sapphire",
+            "peach"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 143,
+          "coins_before": 2555,
+          "coins_after": 2603,
+          "coin_change": 48,
+          "main_symbol": "essence_capsule",
+          "skipped_options": [
+            "bear",
+            "sand_dollar"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 144,
+          "coins_before": 2603,
+          "coins_after": 2640,
+          "coin_change": 37,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "tedium_capsule",
+            "hex_of_thievery"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 145,
+          "coins_before": 2640,
+          "coins_after": 2688,
+          "coin_change": 48,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "hex_of_hoarding",
+            "safe"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 146,
+          "coins_before": 2688,
+          "coins_after": 2736,
+          "coin_change": 48,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "toddler",
+            "void_creature"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 147,
+          "coins_before": 2736,
+          "coins_after": 2787,
+          "coin_change": 51,
+          "main_symbol": null,
+          "skipped_options": [
+            "wine",
+            "goose",
+            "shiny_pebble"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 148,
+          "coins_before": 2789,
+          "coins_after": 2846,
+          "coin_change": 57,
+          "main_symbol": null,
+          "skipped_options": [
+            "golden_egg",
+            "tomb",
+            "magic_key"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 149,
+          "coins_before": 2848,
+          "coins_after": 2899,
+          "coin_change": 51,
+          "main_symbol": null,
+          "skipped_options": [
+            "target",
+            "toddler",
+            "matryoshka_doll_1"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 150,
+          "coins_before": 2901,
+          "coins_after": 2952,
+          "coin_change": 51,
+          "main_symbol": null,
+          "skipped_options": [
+            "tedium_capsule",
+            "bronze_arrow",
+            "void_fruit"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 2952
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "protractor_essence",
+          "source": "choice",
+          "choice_idx": 125
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "blue_suits_essence",
+          "choice_idx": 125
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "mining_pick_essence",
+          "choice_idx": 125
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "symbol_bomb_big",
+          "source": "choice",
+          "choice_idx": 126
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "goldilocks",
+          "choice_idx": 126
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "purple_pepper",
+          "choice_idx": 126
+        }
+      ]
+    },
+    {
+      "cycle_index": 19,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 151,
+          "coins_before": 2954,
+          "coins_after": 3005,
+          "coin_change": 51,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "hustler",
+            "miner"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 152,
+          "coins_before": 3005,
+          "coins_after": 3055,
+          "coin_change": 50,
+          "main_symbol": null,
+          "skipped_options": [
+            "removal_capsule",
+            "big_urn",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 153,
+          "coins_before": 3057,
+          "coins_after": 3109,
+          "coin_change": 52,
+          "main_symbol": null,
+          "skipped_options": [
+            "removal_capsule",
+            "bronze_arrow",
+            "king_midas"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 154,
+          "coins_before": 3111,
+          "coins_after": 3163,
+          "coin_change": 52,
+          "main_symbol": null,
+          "skipped_options": [
+            "big_urn",
+            "buffing_powder",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 155,
+          "coins_before": 3165,
+          "coins_after": 3217,
+          "coin_change": 52,
+          "main_symbol": null,
+          "skipped_options": [
+            "wine",
+            "rabbit",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 156,
+          "coins_before": 3219,
+          "coins_after": 3271,
+          "coin_change": 52,
+          "main_symbol": null,
+          "skipped_options": [
+            "bounty_hunter",
+            "hex_of_draining",
+            "coconut_half"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 157,
+          "coins_before": 3273,
+          "coins_after": 3323,
+          "coin_change": 50,
+          "main_symbol": "pufferfish",
+          "skipped_options": [
+            "candy",
+            "coconut_half"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 158,
+          "coins_before": 3323,
+          "coins_after": 3374,
+          "coin_change": 51,
+          "main_symbol": null,
+          "skipped_options": [
+            "witch",
+            "midas_bomb",
+            "card_shark"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 159,
+          "coins_before": 3376,
+          "coins_after": 3429,
+          "coin_change": 53,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "d5",
+            "peach"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 160,
+          "coins_before": 3429,
+          "coins_after": 3482,
+          "coin_change": 53,
+          "main_symbol": null,
+          "skipped_options": [
+            "oyster",
+            "bar_of_soap",
+            "bounty_hunter"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 3482
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "undertaker_essence",
+          "source": "choice",
+          "choice_idx": 129
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "nori_the_rabbit_essence",
+          "choice_idx": 129
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "tax_evasion_essence",
+          "choice_idx": 129
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "dwarven_anvil",
+          "source": "choice",
+          "choice_idx": 130
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "symbol_bomb_quantum",
+          "choice_idx": 130
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lucky_seven",
+          "choice_idx": 130
+        }
+      ]
+    },
+    {
+      "cycle_index": 20,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 161,
+          "coins_before": 3484,
+          "coins_after": 3535,
+          "coin_change": 51,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "void_fruit",
+            "big_urn"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 162,
+          "coins_before": 3535,
+          "coins_after": 3587,
+          "coin_change": 52,
+          "main_symbol": null,
+          "skipped_options": [
+            "toddler",
+            "thief",
+            "honey"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 163,
+          "coins_before": 3589,
+          "coins_after": 3641,
+          "coin_change": 52,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_midas",
+            "matryoshka_doll_1",
+            "sun"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 164,
+          "coins_before": 3643,
+          "coins_after": 3695,
+          "coin_change": 52,
+          "main_symbol": null,
+          "skipped_options": [
+            "billionaire",
+            "big_ore",
+            "urn"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 165,
+          "coins_before": 3697,
+          "coins_after": 3751,
+          "coin_change": 54,
+          "main_symbol": "pufferfish",
+          "skipped_options": [
+            "jellyfish",
+            "hooligan"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 166,
+          "coins_before": 3751,
+          "coins_after": 3804,
+          "coin_change": 53,
+          "main_symbol": null,
+          "skipped_options": [
+            "void_fruit",
+            "bounty_hunter",
+            "buffing_powder"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 167,
+          "coins_before": 3806,
+          "coins_after": 3861,
+          "coin_change": 55,
+          "main_symbol": null,
+          "skipped_options": [
+            "coconut_half",
+            "lucky_capsule",
+            "void_stone"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 168,
+          "coins_before": 3863,
+          "coins_after": 3920,
+          "coin_change": 57,
+          "main_symbol": null,
+          "skipped_options": [
+            "card_shark",
+            "omelette",
+            "silver_arrow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 169,
+          "coins_before": 3922,
+          "coins_after": 3983,
+          "coin_change": 61,
+          "main_symbol": "item_capsule",
+          "skipped_options": [
+            "jellyfish",
+            "goose"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 170,
+          "coins_before": 3983,
+          "coins_after": 4044,
+          "coin_change": 61,
+          "main_symbol": "essence_capsule",
+          "skipped_options": [
+            "sloth",
+            "mouse"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 4044
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "adoption_papers",
+          "source": "choice",
+          "choice_idx": 134
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "purple_pepper",
+          "choice_idx": 134
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "wanted_poster",
+          "choice_idx": 134
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "lockpick",
+          "source": "shop",
+          "choice_idx": 0
+        }
+      ]
+    },
+    {
+      "cycle_index": 21,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 171,
+          "coins_before": 4044,
+          "coins_after": 4086,
+          "coin_change": 42,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "wine",
+            "goose"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 172,
+          "coins_before": 4086,
+          "coins_after": 4141,
+          "coin_change": 55,
+          "main_symbol": null,
+          "skipped_options": [
+            "void_stone",
+            "d5",
+            "pinata"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 173,
+          "coins_before": 4143,
+          "coins_after": 4200,
+          "coin_change": 57,
+          "main_symbol": null,
+          "skipped_options": [
+            "wolf",
+            "bronze_arrow",
+            "sapphire"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 174,
+          "coins_before": 4202,
+          "coins_after": 4257,
+          "coin_change": 55,
+          "main_symbol": null,
+          "skipped_options": [
+            "hustler",
+            "sloth",
+            "light_bulb"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 175,
+          "coins_before": 4259,
+          "coins_after": 4312,
+          "coin_change": 53,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_thievery",
+            "safe",
+            "turtle"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 176,
+          "coins_before": 4314,
+          "coins_after": 4367,
+          "coin_change": 53,
+          "main_symbol": null,
+          "skipped_options": [
+            "bear",
+            "sloth",
+            "coconut"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 177,
+          "coins_before": 4369,
+          "coins_after": 4424,
+          "coin_change": 55,
+          "main_symbol": "item_capsule",
+          "skipped_options": [
+            "coconut_half",
+            "jellyfish"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 178,
+          "coins_before": 4424,
+          "coins_after": 4480,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "strawberry",
+            "witch",
+            "mrs_fruit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 179,
+          "coins_before": 4482,
+          "coins_after": 4537,
+          "coin_change": 55,
+          "main_symbol": null,
+          "skipped_options": [
+            "void_stone",
+            "wine",
+            "hex_of_draining"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 180,
+          "coins_before": 4539,
+          "coins_after": 4594,
+          "coin_change": 55,
+          "main_symbol": null,
+          "skipped_options": [
+            "wine",
+            "rarity_capsule",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 4594
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "black_pepper",
+          "source": "shop",
+          "choice_idx": 0
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "void_party_essence",
+          "source": "choice",
+          "choice_idx": 139
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "symbol_bomb_quantum_essence",
+          "choice_idx": 139
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "ancient_lizard_blade_essence",
+          "choice_idx": 139
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "zaroffs_contract_essence",
+          "source": "choice",
+          "choice_idx": 140
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "red_pepper_essence",
+          "choice_idx": 140
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lefty_the_rabbit_essence",
+          "choice_idx": 140
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "popsicle",
+          "source": "choice",
+          "choice_idx": 141
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "coin_on_a_string",
+          "choice_idx": 141
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fish_bowl",
+          "choice_idx": 141
+        }
+      ]
+    },
+    {
+      "cycle_index": 22,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 181,
+          "coins_before": 4596,
+          "coins_after": 4649,
+          "coin_change": 53,
+          "main_symbol": null,
+          "skipped_options": [
+            "goldfish",
+            "hex_of_hoarding",
+            "goose"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 182,
+          "coins_before": 4651,
+          "coins_after": 4704,
+          "coin_change": 53,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "hex_of_destruction",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 183,
+          "coins_before": 4704,
+          "coins_after": 4760,
+          "coin_change": 56,
+          "main_symbol": "reroll_capsule",
+          "skipped_options": [
+            "buffing_powder",
+            "chef"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 184,
+          "coins_before": 4760,
+          "coins_after": 4817,
+          "coin_change": 57,
+          "main_symbol": null,
+          "skipped_options": [
+            "dog",
+            "ninja",
+            "key"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 185,
+          "coins_before": 4819,
+          "coins_after": 4873,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "bounty_hunter",
+            "removal_capsule",
+            "lockbox"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 186,
+          "coins_before": 4875,
+          "coins_after": 4929,
+          "coin_change": 54,
+          "main_symbol": "time_capsule",
+          "skipped_options": [
+            "sand_dollar",
+            "bronze_arrow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 187,
+          "coins_before": 4929,
+          "coins_after": 4987,
+          "coin_change": 58,
+          "main_symbol": null,
+          "skipped_options": [
+            "orange",
+            "void_fruit",
+            "big_ore"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 188,
+          "coins_before": 4989,
+          "coins_after": 5045,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "mrs_fruit",
+            "treasure_chest",
+            "chicken"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 189,
+          "coins_before": 5047,
+          "coins_after": 5103,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "rain",
+            "lucky_capsule",
+            "beastmaster"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 190,
+          "coins_before": 5105,
+          "coins_after": 5159,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "bubble",
+            "bronze_arrow",
+            "bear"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 5159
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "fish_bowl",
+          "source": "choice",
+          "choice_idx": 145
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "time_machine",
+          "choice_idx": 145
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "triple_coins",
+          "choice_idx": 145
+        }
+      ]
+    },
+    {
+      "cycle_index": 23,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 191,
+          "coins_before": 5161,
+          "coins_after": 5217,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "d5",
+            "toddler",
+            "cherry"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 192,
+          "coins_before": 5219,
+          "coins_after": 5273,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "tedium_capsule",
+            "peach",
+            "big_urn"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 193,
+          "coins_before": 5275,
+          "coins_after": 5331,
+          "coin_change": 56,
+          "main_symbol": "time_capsule",
+          "skipped_options": [
+            "rain",
+            "watermelon"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 194,
+          "coins_before": 5331,
+          "coins_after": 5389,
+          "coin_change": 58,
+          "main_symbol": null,
+          "skipped_options": [
+            "void_fruit",
+            "removal_capsule",
+            "hex_of_destruction"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 195,
+          "coins_before": 5391,
+          "coins_after": 5447,
+          "coin_change": 56,
+          "main_symbol": "item_capsule",
+          "skipped_options": [
+            "hex_of_draining",
+            "ninja"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 196,
+          "coins_before": 5447,
+          "coins_after": 5502,
+          "coin_change": 55,
+          "main_symbol": null,
+          "skipped_options": [
+            "coconut_half",
+            "chick",
+            "lucky_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 197,
+          "coins_before": 5504,
+          "coins_after": 5558,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "crow",
+            "peach",
+            "hooligan"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 198,
+          "coins_before": 5560,
+          "coins_after": 5614,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "strawberry",
+            "sun",
+            "joker"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 199,
+          "coins_before": 5616,
+          "coins_after": 5670,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_midas",
+            "banana_peel",
+            "bronze_arrow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 200,
+          "coins_before": 5672,
+          "coins_after": 5726,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "monkey",
+            "wine",
+            "rarity_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 5726
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "blue_suits",
+          "source": "shop",
+          "choice_idx": 0
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "devils_deal_essence",
+          "source": "choice",
+          "choice_idx": 148
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "popsicle_essence",
+          "choice_idx": 148
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "red_pepper_essence",
+          "choice_idx": 148
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "symbol_bomb_small",
+          "source": "choice",
+          "choice_idx": 149
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "watering_can",
+          "choice_idx": 149
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "turtle_and_rabbit",
+          "choice_idx": 149
+        }
+      ]
+    },
+    {
+      "cycle_index": 24,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 201,
+          "coins_before": 5728,
+          "coins_after": 5782,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "big_ore",
+            "big_urn",
+            "hex_of_hoarding"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 202,
+          "coins_before": 5784,
+          "coins_after": 5840,
+          "coin_change": 56,
+          "main_symbol": "time_capsule",
+          "skipped_options": [
+            "rabbit",
+            "diamonds"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 203,
+          "coins_before": 5840,
+          "coins_after": 5936,
+          "coin_change": 96,
+          "main_symbol": null,
+          "skipped_options": [
+            "sand_dollar",
+            "matryoshka_doll_1",
+            "d5"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 204,
+          "coins_before": 5938,
+          "coins_after": 5992,
+          "coin_change": 54,
+          "main_symbol": "essence_capsule",
+          "skipped_options": [
+            "hex_of_draining",
+            "martini"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 205,
+          "coins_before": 5992,
+          "coins_after": 6038,
+          "coin_change": 46,
+          "main_symbol": null,
+          "skipped_options": [
+            "wine",
+            "hustler",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 206,
+          "coins_before": 6038,
+          "coins_after": 6094,
+          "coin_change": 56,
+          "main_symbol": "pufferfish",
+          "skipped_options": [
+            "tedium_capsule",
+            "ninja"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 207,
+          "coins_before": 6094,
+          "coins_after": 6151,
+          "coin_change": 57,
+          "main_symbol": "time_capsule",
+          "skipped_options": [
+            "sapphire",
+            "wine"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 208,
+          "coins_before": 6151,
+          "coins_after": 6219,
+          "coin_change": 68,
+          "main_symbol": null,
+          "skipped_options": [
+            "diver",
+            "king_midas",
+            "magic_key"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 209,
+          "coins_before": 6221,
+          "coins_after": 6276,
+          "coin_change": 55,
+          "main_symbol": "hustler",
+          "skipped_options": [
+            "rabbit",
+            "void_fruit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 210,
+          "coins_before": 6276,
+          "coins_after": 6327,
+          "coin_change": 51,
+          "main_symbol": "essence_capsule",
+          "skipped_options": [
+            "hex_of_midas",
+            "orange"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 6327
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "swapping_device_essence",
+          "source": "choice",
+          "choice_idx": 154
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "horseshoe_essence",
+          "choice_idx": 154
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "four_leaf_clover_essence",
+          "choice_idx": 154
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "bag_of_holding",
+          "source": "choice",
+          "choice_idx": 155
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "symbol_bomb_quantum",
+          "choice_idx": 155
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "watering_can",
+          "choice_idx": 155
+        }
+      ]
+    },
+    {
+      "cycle_index": 25,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 211,
+          "coins_before": 6327,
+          "coins_after": 6373,
+          "coin_change": 46,
+          "main_symbol": null,
+          "skipped_options": [
+            "target",
+            "wine",
+            "removal_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 212,
+          "coins_before": 6375,
+          "coins_after": 6439,
+          "coin_change": 64,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_destruction",
+            "chemical_seven",
+            "hooligan"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 213,
+          "coins_before": 6441,
+          "coins_after": 6499,
+          "coin_change": 58,
+          "main_symbol": null,
+          "skipped_options": [
+            "orange",
+            "dog",
+            "rain"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 214,
+          "coins_before": 6501,
+          "coins_after": 6559,
+          "coin_change": 58,
+          "main_symbol": null,
+          "skipped_options": [
+            "hustler",
+            "hex_of_hoarding",
+            "peach"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 215,
+          "coins_before": 6561,
+          "coins_after": 6619,
+          "coin_change": 58,
+          "main_symbol": null,
+          "skipped_options": [
+            "sloth",
+            "safe",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 216,
+          "coins_before": 6621,
+          "coins_after": 6677,
+          "coin_change": 56,
+          "main_symbol": null,
+          "skipped_options": [
+            "rain",
+            "tedium_capsule",
+            "snail"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 217,
+          "coins_before": 6677,
+          "coins_after": 6735,
+          "coin_change": 58,
+          "main_symbol": null,
+          "skipped_options": [
+            "bar_of_soap",
+            "golem",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 218,
+          "coins_before": 6737,
+          "coins_after": 6795,
+          "coin_change": 58,
+          "main_symbol": null,
+          "skipped_options": [
+            "honey",
+            "beastmaster",
+            "dove"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 219,
+          "coins_before": 6797,
+          "coins_after": 6853,
+          "coin_change": 56,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "lucky_capsule",
+            "chemical_seven",
+            "big_urn",
+            "item_capsule",
+            "clubs"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 220,
+          "coins_before": 6855,
+          "coins_after": 6915,
+          "coin_change": 60,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "essence_capsule",
+            "item_capsule",
+            "coconut",
+            "chick",
+            "item_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 6915
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "frozen_pizza_essence",
+          "source": "choice",
+          "choice_idx": 158
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "chili_powder_essence",
+          "choice_idx": 158
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "holy_water_essence",
+          "choice_idx": 158
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "capsule_machine_essence",
+          "source": "choice",
+          "choice_idx": 159
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "treasure_map_essence",
+          "choice_idx": 159
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "void_portal_essence",
+          "choice_idx": 159
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "red_pepper",
+          "source": "choice",
+          "choice_idx": 160
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "shattered_mirror",
+          "choice_idx": 160
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "mining_pick",
+          "choice_idx": 160
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "dark_humor",
+          "source": "choice",
+          "choice_idx": 161
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "treasure_map",
+          "choice_idx": 161
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lime_pepper",
+          "choice_idx": 161
+        }
+      ]
+    },
+    {
+      "cycle_index": 26,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 221,
+          "coins_before": 6917,
+          "coins_after": 6985,
+          "coin_change": 68,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "target",
+            "pinata",
+            "tedium_capsule",
+            "lucky_capsule"
+          ],
+          "extra_actions": [
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "essence_capsule",
+              "source": "choice"
+            }
+          ]
+        },
+        {
+          "spin_num": 222,
+          "coins_before": 6985,
+          "coins_after": 7039,
+          "coin_change": 54,
+          "main_symbol": null,
+          "skipped_options": [
+            "bar_of_soap",
+            "d5",
+            "turtle",
+            "hex_of_tedium",
+            "bear",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 223,
+          "coins_before": 7043,
+          "coins_after": 7107,
+          "coin_change": 64,
+          "main_symbol": null,
+          "skipped_options": [
+            "reroll_capsule",
+            "wolf",
+            "rabbit_fluff",
+            "hex_of_thievery",
+            "bee",
+            "crab"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 224,
+          "coins_before": 7111,
+          "coins_after": 7199,
+          "coin_change": 88,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "bee",
+            "pufferfish",
+            "hex_of_tedium",
+            "peach",
+            "safe"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 225,
+          "coins_before": 7201,
+          "coins_after": 7273,
+          "coin_change": 72,
+          "main_symbol": null,
+          "skipped_options": [
+            "peach",
+            "dwarf",
+            "hex_of_hoarding",
+            "thief",
+            "bar_of_soap",
+            "safe"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 226,
+          "coins_before": 7277,
+          "coins_after": 7367,
+          "coin_change": 90,
+          "main_symbol": "essence_capsule",
+          "skipped_options": [
+            "bounty_hunter",
+            "void_stone",
+            "big_ore",
+            "hex_of_midas",
+            "bronze_arrow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 227,
+          "coins_before": 7369,
+          "coins_after": 7425,
+          "coin_change": 56,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "wine",
+            "matryoshka_doll_1",
+            "hooligan",
+            "sloth",
+            "target"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 228,
+          "coins_before": 7427,
+          "coins_after": 7519,
+          "coin_change": 92,
+          "main_symbol": null,
+          "skipped_options": [
+            "golden_egg",
+            "farmer",
+            "joker",
+            "pufferfish",
+            "toddler",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 229,
+          "coins_before": 7523,
+          "coins_after": 7597,
+          "coin_change": 74,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "pufferfish",
+            "void_stone",
+            "void_creature",
+            "lucky_capsule",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 230,
+          "coins_before": 7599,
+          "coins_after": 7675,
+          "coin_change": 76,
+          "main_symbol": "essence_capsule",
+          "skipped_options": [
+            "peach",
+            "bronze_arrow",
+            "item_capsule",
+            "egg",
+            "lucky_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 7675
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "holy_water_essence",
+          "source": "choice",
+          "choice_idx": 169
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "symbol_bomb_quantum_essence",
+          "choice_idx": 169
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "watering_can_essence",
+          "choice_idx": 169
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "coin_on_a_string_essence",
+          "source": "choice",
+          "choice_idx": 170
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "ninja_and_mouse_essence",
+          "choice_idx": 170
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "horseshoe_essence",
+          "choice_idx": 170
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "maxwell_the_bear",
+          "source": "choice",
+          "choice_idx": 171
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "symbol_bomb_quantum",
+          "choice_idx": 171
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "coin_on_a_string",
+          "choice_idx": 171
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "treasure_map",
+          "source": "choice",
+          "choice_idx": 172
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "time_machine",
+          "choice_idx": 172
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "lucky_seven",
+          "choice_idx": 172
+        }
+      ]
+    },
+    {
+      "cycle_index": 27,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 231,
+          "coins_before": 7677,
+          "coins_after": 7737,
+          "coin_change": 60,
+          "main_symbol": null,
+          "skipped_options": [
+            "lucky_capsule",
+            "bronze_arrow",
+            "sloth",
+            "hooligan",
+            "rabbit",
+            "hex_of_emptiness"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 232,
+          "coins_before": 7741,
+          "coins_after": 7835,
+          "coin_change": 94,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_tedium",
+            "peach",
+            "sand_dollar",
+            "sapphire",
+            "bear",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 233,
+          "coins_before": 7839,
+          "coins_after": 7933,
+          "coin_change": 94,
+          "main_symbol": null,
+          "skipped_options": [
+            "lucky_capsule",
+            "coconut",
+            "sapphire",
+            "king_midas",
+            "target",
+            "ore"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 234,
+          "coins_before": 7937,
+          "coins_after": 8013,
+          "coin_change": 76,
+          "main_symbol": null,
+          "skipped_options": [
+            "jellyfish",
+            "bounty_hunter",
+            "diamonds",
+            "tedium_capsule",
+            "hustler",
+            "hooligan"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 235,
+          "coins_before": 8017,
+          "coins_after": 8087,
+          "coin_change": 70,
+          "main_symbol": null,
+          "skipped_options": [
+            "time_capsule",
+            "jellyfish",
+            "hex_of_midas",
+            "thief",
+            "light_bulb",
+            "void_stone"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 236,
+          "coins_before": 8091,
+          "coins_after": 8167,
+          "coin_change": 76,
+          "main_symbol": null,
+          "skipped_options": [
+            "rabbit",
+            "billionaire",
+            "sand_dollar",
+            "item_capsule",
+            "hex_of_destruction",
+            "rabbit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 237,
+          "coins_before": 8171,
+          "coins_after": 8319,
+          "coin_change": 148,
+          "main_symbol": null,
+          "skipped_options": [
+            "coconut",
+            "matryoshka_doll_1",
+            "wolf",
+            "big_urn",
+            "pufferfish",
+            "rain"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 238,
+          "coins_before": 8323,
+          "coins_after": 8399,
+          "coin_change": 76,
+          "main_symbol": null,
+          "skipped_options": [
+            "treasure_chest",
+            "mine",
+            "beehive",
+            "sloth",
+            "d5",
+            "sapphire"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 239,
+          "coins_before": 8403,
+          "coins_after": 8551,
+          "coin_change": 148,
+          "main_symbol": "comedian",
+          "skipped_options": [
+            "hex_of_midas",
+            "tedium_capsule",
+            "void_fruit",
+            "chick"
+          ],
+          "extra_actions": [
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "frozen_pizza_essence"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "essence_capsule",
+              "source": "choice"
+            }
+          ]
+        },
+        {
+          "spin_num": 240,
+          "coins_before": 8551,
+          "coins_after": 8619,
+          "coin_change": 68,
+          "main_symbol": null,
+          "skipped_options": [
+            "sand_dollar",
+            "rarity_capsule",
+            "hooligan"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 8619
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "quigley_the_wolf_essence",
+          "source": "choice",
+          "choice_idx": 175
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "void_portal_essence",
+          "choice_idx": 175
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "white_pepper_essence",
+          "choice_idx": 175
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "booster_pack_essence",
+          "source": "choice",
+          "choice_idx": 176
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "mobius_strip_essence",
+          "choice_idx": 176
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "anthropology_degree_essence",
+          "choice_idx": 176
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "turtle_and_rabbit",
+          "source": "choice",
+          "choice_idx": 177
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "time_machine",
+          "choice_idx": 177
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "oswald_the_monkey",
+          "choice_idx": 177
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "watering_can",
+          "source": "choice",
+          "choice_idx": 178
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "piggy_bank",
+          "choice_idx": 178
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "cursed_katana",
+          "choice_idx": 178
+        }
+      ]
+    },
+    {
+      "cycle_index": 28,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 241,
+          "coins_before": 8621,
+          "coins_after": 8933,
+          "coin_change": 312,
+          "main_symbol": null,
+          "skipped_options": [
+            "sloth",
+            "removal_capsule",
+            "hex_of_midas"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 242,
+          "coins_before": 8935,
+          "coins_after": 9085,
+          "coin_change": 150,
+          "main_symbol": null,
+          "skipped_options": [
+            "thief",
+            "coconut",
+            "pear"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 243,
+          "coins_before": 9087,
+          "coins_after": 9165,
+          "coin_change": 78,
+          "main_symbol": null,
+          "skipped_options": [
+            "hex_of_draining",
+            "wolf",
+            "diamonds"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 244,
+          "coins_before": 9167,
+          "coins_after": 9239,
+          "coin_change": 72,
+          "main_symbol": null,
+          "skipped_options": [
+            "golem",
+            "wolf",
+            "target"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 245,
+          "coins_before": 9241,
+          "coins_after": 9391,
+          "coin_change": 150,
+          "main_symbol": null,
+          "skipped_options": [
+            "sloth",
+            "matryoshka_doll_1",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 246,
+          "coins_before": 9393,
+          "coins_after": 9705,
+          "coin_change": 312,
+          "main_symbol": null,
+          "skipped_options": [
+            "void_fruit",
+            "matryoshka_doll_1",
+            "hustler"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 247,
+          "coins_before": 9707,
+          "coins_after": 9803,
+          "coin_change": 96,
+          "main_symbol": null,
+          "skipped_options": [
+            "thief",
+            "ninja",
+            "coconut_half"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 248,
+          "coins_before": 9805,
+          "coins_after": 10117,
+          "coin_change": 312,
+          "main_symbol": null,
+          "skipped_options": [
+            "king_midas",
+            "strawberry",
+            "bartender"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 249,
+          "coins_before": 10119,
+          "coins_after": 10215,
+          "coin_change": 96,
+          "main_symbol": null,
+          "skipped_options": [
+            "goose",
+            "target",
+            "thief"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 250,
+          "coins_before": 10217,
+          "coins_after": 10313,
+          "coin_change": 96,
+          "main_symbol": null,
+          "skipped_options": [
+            "shiny_pebble",
+            "wolf",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 10313
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "guillotine_essence",
+          "source": "choice",
+          "choice_idx": 181
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "piggy_bank_essence",
+          "choice_idx": 181
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "horseshoe_essence",
+          "choice_idx": 181
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "gray_pepper",
+          "source": "choice",
+          "choice_idx": 182
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "conveyor_belt",
+          "choice_idx": 182
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fertilizer",
+          "choice_idx": 182
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "swear_jar",
+          "source": "choice",
+          "choice_idx": 183
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fruit_basket",
+          "choice_idx": 183
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "brown_pepper",
+          "choice_idx": 183
+        }
+      ]
+    },
+    {
+      "cycle_index": 29,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 251,
+          "coins_before": 10313,
+          "coins_after": 10411,
+          "coin_change": 98,
+          "main_symbol": null,
+          "skipped_options": [
+            "wine",
+            "hex_of_hoarding",
+            "sapphire"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 252,
+          "coins_before": 10413,
+          "coins_after": 10509,
+          "coin_change": 96,
+          "main_symbol": null,
+          "skipped_options": [
+            "safe",
+            "big_urn",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 253,
+          "coins_before": 10511,
+          "coins_after": 10823,
+          "coin_change": 312,
+          "main_symbol": null,
+          "skipped_options": [
+            "sloth",
+            "rabbit_fluff",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 254,
+          "coins_before": 10825,
+          "coins_after": 10903,
+          "coin_change": 78,
+          "main_symbol": null,
+          "skipped_options": [
+            "wine",
+            "hex_of_midas",
+            "silver_arrow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 255,
+          "coins_before": 10905,
+          "coins_after": 11001,
+          "coin_change": 96,
+          "main_symbol": null,
+          "skipped_options": [
+            "removal_capsule",
+            "void_creature",
+            "d5"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 256,
+          "coins_before": 11003,
+          "coins_after": 11081,
+          "coin_change": 78,
+          "main_symbol": "pufferfish",
+          "skipped_options": [
+            "mrs_fruit",
+            "void_creature"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 257,
+          "coins_before": 11081,
+          "coins_after": 11232,
+          "coin_change": 151,
+          "main_symbol": null,
+          "skipped_options": [
+            "cherry",
+            "removal_capsule",
+            "wolf"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 258,
+          "coins_before": 11234,
+          "coins_after": 11309,
+          "coin_change": 75,
+          "main_symbol": null,
+          "skipped_options": [
+            "archaeologist",
+            "midas_bomb",
+            "sun"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 259,
+          "coins_before": 11311,
+          "coins_after": 11395,
+          "coin_change": 84,
+          "main_symbol": "item_capsule",
+          "skipped_options": [
+            "pinata",
+            "big_urn"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 260,
+          "coins_before": 11395,
+          "coins_after": 11498,
+          "coin_change": 103,
+          "main_symbol": null,
+          "skipped_options": [
+            "sloth",
+            "dog",
+            "void_fruit"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 11498
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "ritual_candle_essence",
+          "source": "choice",
+          "choice_idx": 185
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "swear_jar_essence",
+          "choice_idx": 185
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "blue_suits_essence",
+          "choice_idx": 185
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "purple_pepper",
+          "source": "choice",
+          "choice_idx": 186
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "oswald_the_monkey",
+          "choice_idx": 186
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "fifth_ace",
+          "choice_idx": 186
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "fifth_ace",
+          "source": "choice",
+          "choice_idx": 187
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "shattered_mirror",
+          "choice_idx": 187
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "cleaning_rag",
+          "choice_idx": 187
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "white_pepper",
+          "source": "shop",
+          "choice_idx": 0
+        }
+      ]
+    },
+    {
+      "cycle_index": 30,
+      "rent_required": 0,
+      "spins_in_cycle": 10,
+      "spins": [
+        {
+          "spin_num": 261,
+          "coins_before": 11500,
+          "coins_after": 11656,
+          "coin_change": 156,
+          "main_symbol": null,
+          "skipped_options": [
+            "present",
+            "thief",
+            "orange"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 262,
+          "coins_before": 11658,
+          "coins_after": 11742,
+          "coin_change": 84,
+          "main_symbol": null,
+          "skipped_options": [
+            "hooligan",
+            "gambler",
+            "sand_dollar"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 263,
+          "coins_before": 11744,
+          "coins_after": 11822,
+          "coin_change": 78,
+          "main_symbol": "jellyfish",
+          "skipped_options": [
+            "void_creature",
+            "tedium_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 264,
+          "coins_before": 11822,
+          "coins_after": 11927,
+          "coin_change": 105,
+          "main_symbol": null,
+          "skipped_options": [
+            "egg",
+            "hex_of_tedium",
+            "pinata"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 265,
+          "coins_before": 11929,
+          "coins_after": 12008,
+          "coin_change": 79,
+          "main_symbol": null,
+          "skipped_options": [
+            "tedium_capsule",
+            "wolf",
+            "void_fruit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 266,
+          "coins_before": 12010,
+          "coins_after": 12095,
+          "coin_change": 85,
+          "main_symbol": null,
+          "skipped_options": [
+            "rabbit_fluff",
+            "void_creature",
+            "bronze_arrow"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 267,
+          "coins_before": 12097,
+          "coins_after": 12182,
+          "coin_change": 85,
+          "main_symbol": null,
+          "skipped_options": [
+            "chick",
+            "present",
+            "void_fruit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 268,
+          "coins_before": 12184,
+          "coins_after": 12287,
+          "coin_change": 103,
+          "main_symbol": null,
+          "skipped_options": [
+            "beastmaster",
+            "emerald",
+            "mine"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 269,
+          "coins_before": 12289,
+          "coins_after": 12374,
+          "coin_change": 85,
+          "main_symbol": null,
+          "skipped_options": [
+            "flower",
+            "rain",
+            "miner"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 270,
+          "coins_before": 12376,
+          "coins_after": 12695,
+          "coin_change": 319,
+          "main_symbol": null,
+          "skipped_options": [
+            "hustler",
+            "crab",
+            "time_capsule"
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 12695
+      },
+      "end_actions": [
+        {
+          "action": "added",
+          "type": "item",
+          "id": "ninja_and_mouse",
+          "source": "choice",
+          "choice_idx": 190
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "reroll",
+          "choice_idx": 190
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "cursed_katana",
+          "choice_idx": 190
+        },
+        {
+          "action": "added",
+          "type": "item",
+          "id": "ricky_the_banana",
+          "source": "choice",
+          "choice_idx": 191
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "birdhouse",
+          "choice_idx": 191
+        },
+        {
+          "action": "skipped",
+          "type": "item",
+          "id": "brown_pepper",
+          "choice_idx": 191
+        }
+      ]
+    },
+    {
+      "cycle_index": 31,
+      "rent_required": 0,
+      "spins_in_cycle": 8,
+      "spins": [
+        {
+          "spin_num": 271,
+          "coins_before": 12697,
+          "coins_after": 12800,
+          "coin_change": 103,
+          "main_symbol": null,
+          "skipped_options": [
+            "hearts",
+            "beer",
+            "egg"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 272,
+          "coins_before": 12802,
+          "coins_after": 12887,
+          "coin_change": 85,
+          "main_symbol": "banana",
+          "skipped_options": [
+            "shiny_pebble",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 273,
+          "coins_before": 12887,
+          "coins_after": 13046,
+          "coin_change": 159,
+          "main_symbol": null,
+          "skipped_options": [
+            "flower",
+            "hearts",
+            "turtle"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 274,
+          "coins_before": 13048,
+          "coins_after": 13393,
+          "coin_change": 345,
+          "main_symbol": "monkey",
+          "skipped_options": [
+            "snail",
+            "bee",
+            "removal_capsule",
+            "crab",
+            "sand_dollar",
+            "snail",
+            "wolf",
+            "mouse",
+            "jellyfish",
+            "sand_dollar",
+            "goose",
+            "crab",
+            "sapphire",
+            "spades",
+            "void_creature",
+            "cherry"
+          ],
+          "extra_actions": [
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "adoption_papers"
+            },
+            {
+              "action": "destroyed",
+              "type": "item",
+              "id": "symbol_bomb_small"
+            },
+            {
+              "action": "added",
+              "type": "symbol",
+              "id": "cat",
+              "source": "choice"
+            }
+          ]
+        },
+        {
+          "spin_num": 275,
+          "coins_before": 13401,
+          "coins_after": 20939,
+          "coin_change": 7538,
+          "main_symbol": null,
+          "skipped_options": [
+            "bear",
+            "removal_capsule",
+            "sloth"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 276,
+          "coins_before": 20941,
+          "coins_after": 26372,
+          "coin_change": 5431,
+          "main_symbol": null,
+          "skipped_options": [
+            "coconut",
+            "big_ore",
+            "void_fruit"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 277,
+          "coins_before": 26374,
+          "coins_after": 29385,
+          "coin_change": 3011,
+          "main_symbol": null,
+          "skipped_options": [
+            "jellyfish",
+            "pinata",
+            "void_creature"
+          ],
+          "extra_actions": [
+
+          ]
+        },
+        {
+          "spin_num": 278,
+          "coins_before": 29387,
+          "coins_after": 27980657662,
+          "coin_change": 27980628275,
+          "main_symbol": null,
+          "skipped_options": [
+
+          ],
+          "extra_actions": [
+
+          ]
+        }
+      ],
+      "rent_payment": {
+        "paid_successfully": true,
+        "coins_left_after_pay": 27980657662
+      },
+      "end_actions": [
+
+      ]
+    }
+  ]
+}

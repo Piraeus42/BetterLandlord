@@ -1,5 +1,5 @@
-using System.Text.RegularExpressions;
-using GDWeave.Modding;
+﻿using System.Text.RegularExpressions;
+using SlotWeave.Modding;
 
 namespace Piraeus.BetterHistoryMod.Patches;
 

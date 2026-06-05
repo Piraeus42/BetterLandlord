@@ -1,5 +1,5 @@
-using GDWeave.GameState;
-using GDWeave.NativeInterop;
+﻿using SlotWeave.GameState;
+using SlotWeave.NativeInterop;
 
 namespace Piraeus.BetterHistoryMod.Ipc;
 
