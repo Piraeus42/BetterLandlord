@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Globalization;
-using System.IO;
+using System.Reflection;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
@@ -8,23 +8,22 @@ namespace Piraeus.BetterLandlord.UI.Converters;
 
 /// <summary>
 /// Converts an icon name (e.g. "bee", "coin") to a cached BitmapImage
-/// loaded from Assets/Icons/{name}.png. Returns null if not found.
+/// loaded from embedded assembly resources (Assets/Icons/{name}.png).
+/// Returns null if not found.
 /// </summary>
 public class IconNameToImageConverter : IValueConverter
 {
     private static readonly ConcurrentDictionary<string, BitmapImage?> Cache = new();
-    private static readonly string IconDir;
+    private static readonly Assembly Assembly;
+    private const string ResourcePrefix = "Piraeus.BetterLandlord.UI.Assets.Icons.";
 
     static IconNameToImageConverter()
     {
-        // Icons are copied to the output directory as Content/PreserveNewest
-        var exeDir = AppDomain.CurrentDomain.BaseDirectory;
-        IconDir = Path.Combine(exeDir, "Assets", "Icons");
+        Assembly = typeof(IconNameToImageConverter).Assembly;
     }
 
     public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        // Prefer explicit parameter (e.g. ConverterParameter=coin), else use bound value
         var name = (parameter as string) ?? value?.ToString();
         if (string.IsNullOrEmpty(name)) return null;
 
@@ -36,35 +35,23 @@ public class IconNameToImageConverter : IValueConverter
 
     private static BitmapImage? LoadIcon(string name)
     {
-        try
+        // Try exact case first, then lowercase
+        var names = new[] { name, name.ToLowerInvariant() };
+        foreach (var n in names)
         {
-            // Try exact match first
-            var path = Path.Combine(IconDir, $"{name}.png");
-            if (File.Exists(path))
-                return CreateImage(path);
+            var resourceName = ResourcePrefix + n + ".png";
+            using var stream = Assembly.GetManifestResourceStream(resourceName);
+            if (stream == null) continue;
 
-            // Try lowercase
-            path = Path.Combine(IconDir, $"{name.ToLowerInvariant()}.png");
-            if (File.Exists(path))
-                return CreateImage(path);
-
-            return null;
+            var img = new BitmapImage();
+            img.BeginInit();
+            img.CacheOption = BitmapCacheOption.OnLoad;
+            img.StreamSource = stream;
+            img.EndInit();
+            img.Freeze();
+            return img;
         }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private static BitmapImage CreateImage(string path)
-    {
-        var img = new BitmapImage();
-        img.BeginInit();
-        img.CacheOption = BitmapCacheOption.OnLoad;
-        img.UriSource = new Uri(path);
-        img.EndInit();
-        img.Freeze(); // make cross-thread safe
-        return img;
+        return null;
     }
 }
 

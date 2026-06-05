@@ -23,16 +23,14 @@
     <Compile Include="..\Piraeus.BetterLandlord\Ipc\PipeProtocol.cs" Link="Ipc\PipeProtocol.cs" />
   </ItemGroup>
 
-  <!-- Game icons as content (loaded on demand, not embedded) -->
+  <!-- Game icons embedded as assembly resources (no separate files on disk) -->
   <ItemGroup>
-    <Content Include="Assets\Icons\*.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Assets\Icons\*.png" />
   </ItemGroup>
 
-  <!-- Copy UI exe + icons to mod directory so the game can launch it -->
+  <!-- Copy UI exe + dlls to mod directory so the game can launch it -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord&quot;&#xD;&#xA;if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.exe&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.dll&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.runtimeconfig.json&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)Assets\Icons\*.png&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\Assets\Icons\&quot;" />
+    <Exec Command="if not exist &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord&quot; mkdir &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.exe&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.dll&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;&#xD;&#xA;xcopy /Y /I &quot;$(TargetDir)*.runtimeconfig.json&quot; &quot;D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\&quot;" />
   </Target>
 
 </Project>
