@@ -1,10 +1,10 @@
-﻿<div align="center">
+﻿# Better Landlord
+
+<div align="center">
 
 [English](README.md) · **简体中文**
 
 </div>
-
-# Better Landlord
 
 *Luck be a Landlord* 全方位游戏体验增强 Mod。运行于 [SlotWeave](https://github.com/Piraeus42/SlotWeave) 框架。
 
