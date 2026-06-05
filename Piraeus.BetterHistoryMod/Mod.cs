@@ -37,6 +37,10 @@ public class Mod : IMod
         // ISourceMod: clipboard preservation (TTButton clears clipboard for TTS)
         _modInterface.RegisterSourceMod(new ClipboardPreserveMod());
 
+        // ISourceMod: guillotine end-run trigger at Coins/Items trigger point
+        // (replaces GuillotineEndPatch — fires before animation, board intact)
+        _modInterface.RegisterSourceMod(new GuillotineTriggerSourceMod());
+
         // ISourceMod: seed UI on Title node (Main.tscn::6)
         _modInterface.RegisterSourceMod(new TitleSeedSourceMod());
 

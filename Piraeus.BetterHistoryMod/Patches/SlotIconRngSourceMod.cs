@@ -15,12 +15,19 @@ public class SlotIconRngSourceMod : ISourceMod
     {
         if (source.Contains("func _sir_shuffle")) return source;
 
-        source = source.Replace("str(floor(rand_range(0, sfx_total_num)))", "str(_scr_randi_max(sfx_total_num))");
-        source = source.Replace("floor(rand_range(-1, 2))", "floor(_scr_rand_range(-1, 2))");
+        // Order matters: general rand_range( → _sir_rand_range( FIRST,
+        // then override the specific cosmetic lines with _scr_* variants.
+        // If the overrides run first, the general replacement corrupts
+        // _scr_rand_range into _scr__sir_rand_range (double replacement).
 
         source = Regex.Replace(source, @"^(\t+)randomize\(\s*\)[ \t]*$", "$1# randomize() removed", RegexOptions.Multiline);
         source = source.Replace("rand_range(", "_sir_rand_range(");
         source = Regex.Replace(source, @"(\w[\w\[\]""'\.]*)\.shuffle\(\s*\)", "_sir_shuffle($1)");
+
+        // Now override the cosmetic lines — _sir_* is already in place,
+        // so these replacements target the final function names safely.
+        source = source.Replace("str(floor(_sir_rand_range(0, sfx_total_num)))", "str(_scr_randi_max(sfx_total_num))");
+        source = source.Replace("floor(_sir_rand_range(-1, 2))", "floor(_scr_rand_range(-1, 2))");
 
         return source + "\n" + @"
 
