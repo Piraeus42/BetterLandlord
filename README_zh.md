@@ -37,6 +37,12 @@
 
 ## 安装
 
+### 推荐：[SlotWeave Launcher](https://github.com/Piraeus42/SlotWeave.Launcher)
+
+一键安装和自动更新 SlotWeave Mod。自动下载框架、安装 Mod、保持最新。
+
+### 手动安装
+
 1. 确保已安装 **SlotWeave**（`winmm.dll` 在游戏根目录，`SlotWeave/` 目录就位）
 2. 将本 Mod 文件夹放入 `SlotWeave/mods/Piraeus.BetterLandlord/`
 3. 启动游戏

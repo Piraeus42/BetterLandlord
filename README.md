@@ -22,6 +22,12 @@
 
 ## Installation
 
+### Recommended: [SlotWeave Launcher](https://github.com/Piraeus42/SlotWeave.Launcher)
+
+One-click install and auto-update for SlotWeave mods. Downloads the framework, installs the mod, and keeps everything current.
+
+### Manual
+
 1. Install **SlotWeave** (`winmm.dll` in game root, `SlotWeave/` directory in place)
 2. Extract the mod into `SlotWeave/mods/Piraeus.BetterLandlord/`
 
