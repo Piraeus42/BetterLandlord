@@ -7,5 +7,7 @@ node_modules/
 *.suo
 *.bak
 dist/
+game_source_code/
+docs/
 _bh_inject_diag.txt
 ui_config.json.bak
