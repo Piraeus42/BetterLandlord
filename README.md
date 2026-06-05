@@ -1,3 +1,9 @@
+<div align="center">
+
+**English** · [简体中文](README_zh.md)
+
+</div>
+
 # Better Landlord
 
 *Luck be a Landlord* companion mod. Runs on the [SlotWeave](https://github.com/Piraeus42/SlotWeave) framework.

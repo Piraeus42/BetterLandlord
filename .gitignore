@@ -9,5 +9,8 @@ node_modules/
 dist/
 game_source_code/
 docs/
+*.bat
+TODOS.md
+version.json
 _bh_inject_diag.txt
 ui_config.json.bak
