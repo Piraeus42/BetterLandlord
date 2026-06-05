@@ -8,18 +8,6 @@
 
 *Luck be a Landlord* companion mod. Runs on the [SlotWeave](https://github.com/Piraeus42/SlotWeave) framework.
 
-> **Compliance & Fairness**
->
-> This mod does **not** include, modify, or redistribute any original game source code or art assets.
-> Icons displayed in the timeline viewer are embedded as program resources — the original game files
-> are never read, extracted, or repackaged.
->
-> **Custom-seeded runs are automatically excluded from native stats and Steam achievements.**
-> This is enforced at the engine level — seeded runs do not increment your play count, win/loss
-> record, or unlock achievements. The mod's own win-rate tracker also filters them out.
-
----
-
 ## Features
 
 - **Structured run history** — Every spin, symbol choice, item pick, destruction, and rent cycle saved as JSON
@@ -117,5 +105,15 @@ landlord_seed (FNV-1a hash of seed string)
 | Data after uninstall? | JSON files are not auto-deleted. Remove `betterHistory/` manually if needed |
 
 ---
+
+> **Compliance & Fairness**
+>
+> This mod does **not** include, modify, or redistribute any original game source code or art assets.
+> Icons displayed in the timeline viewer are embedded as program resources — the original game files
+> are never read, extracted, or repackaged.
+>
+> **Custom-seeded runs are automatically excluded from native stats and Steam achievements.**
+> This is enforced at the engine level — seeded runs do not increment your play count, win/loss
+> record, or unlock achievements. The mod's own win-rate tracker also filters them out.
 
 [中文文档](README_zh.md)
