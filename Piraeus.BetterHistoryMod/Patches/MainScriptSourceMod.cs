@@ -35,6 +35,9 @@ var _bh_choice_idx = 0
 var _bh_saved_clip = ''
 var _bh_clip_timer = 0.0
 func _bh_clip_sample():
+    if not OS.is_debug_build():
+        _bh_clip_timer = 0.0
+        return
     _bh_clip_timer = 0.0
     var clip = OS.get_clipboard()
     var _prefix = 'clip_sample'
@@ -82,6 +85,8 @@ func _bh_add_event(type_str, payload):
     })
 
 func _bh_debug_log(msg: String):
+    if not OS.is_debug_build():
+        return
     var _df = File.new()
     if _df.file_exists('user://betterHistory/debug.log'):
         _df.open('user://betterHistory/debug.log', File.READ_WRITE)

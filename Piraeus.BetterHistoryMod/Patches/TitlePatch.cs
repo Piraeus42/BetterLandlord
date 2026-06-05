@@ -3,22 +3,23 @@ using GDWeave.Scripting;
 namespace Piraeus.BetterHistoryMod.Patches;
 
 /// <summary>
-/// Snapshot flush: when returning to title mid-run, write the current events
-/// to JSON (so WPF history refreshes), then dump to sidecar for cold-boot
-/// Continue recovery.
+/// Snapshot flush: when returning to title mid-run, call _bh_end_run("quit")
+/// to capture the final board state BEFORE title() clears it (Prefix),
+/// write the JSON (so WPF shows "Quit" not "Defeat"), and dump to sidecar
+/// for cold-boot Continue recovery.
 ///
-/// _bh_flush() is now non-destructive — events remain in memory, so the
-/// old save/restore dance is unnecessary.  Any later ending (guillotine,
-/// coin-loss, force-close) re-flushes the full buffer in place.
+/// _bh_end_run is re-entrant and spin-count debounced — safe to call
+/// even if the run was already flushed (victory/loss).  The debounce
+/// also prevents TitleSetFloorPatch from doing a redundant quit flush.
 /// </summary>
 [Patch("res://Main.tscn::1", "title")]
 class TitlePatch
 {
     [Prefix]
     static string PrefixCode() => GdscriptUtil.TabifyIndent("""
-        if has_method("_bh_flush") and has_method("_bh_dump_raw_events"):
+        if has_method("_bh_end_run") and has_method("_bh_dump_raw_events"):
             if _bh_events.size() > 0:
-                _bh_flush()
+                _bh_end_run("quit")
                 _bh_dump_raw_events()
         """);
 }

@@ -115,7 +115,9 @@ public class GamePipeServer : IDisposable
                         if (TryWrite(server, "{\"type\":\"seed_request\"}"))
                         {
                             _ackedSeedSeq = ps;
+#if DEBUG
                             _logger.Information("[Push] seed_request delivered (seq={Seq})", ps);
+#endif
                             sent = true;
                         }
                         else break; // Write failed → WPF disconnected
@@ -127,7 +129,9 @@ public class GamePipeServer : IDisposable
                         if (TryWrite(server, "{\"type\":\"show_history\"}"))
                         {
                             _ackedHistorySeq = ph;
+#if DEBUG
                             _logger.Information("[Push] show_history delivered (seq={Seq})", ph);
+#endif
                             sent = true;
                         }
                         else break;
@@ -140,7 +144,11 @@ public class GamePipeServer : IDisposable
             catch (OperationCanceledException) { break; }
             catch (IOException ex)
             {
+#if DEBUG
                 _logger.Information("[Push] Connection ended: {Msg}", ex.Message);
+#else
+                _ = ex; // suppress CS0168 in Release
+#endif
             }
             catch (Exception ex)
             {
@@ -185,7 +193,11 @@ public class GamePipeServer : IDisposable
             var exeName = Path.GetFileNameWithoutExtension(UiExeName);
             foreach (var p in Process.GetProcessesByName(exeName))
             {
+#if DEBUG
                 try { _logger.Information("[PipeServer] Killing previous UI PID={Pid}", p.Id); p.Kill(); p.WaitForExit(3000); }
+#else
+                try { p.Kill(); p.WaitForExit(3000); }
+#endif
                 catch { }
             }
 
@@ -243,7 +255,9 @@ public class GamePipeServer : IDisposable
                 if (req == null) continue;
 
                 var msgType = PipeProtocol.PeekType(req);
+#if DEBUG
                 _logger.Information("[PipeServer] Got: {Type}", msgType ?? "?");
+#endif
 
                 string? response = null;
                 switch (msgType)
@@ -297,7 +311,11 @@ public class GamePipeServer : IDisposable
             catch (OperationCanceledException) { break; }
             catch (IOException ex)
             {
+#if DEBUG
                 _logger.Information("[PipeServer] Connection ended: {Msg}", ex.Message);
+#else
+                _ = ex; // suppress CS0168 in Release
+#endif
             }
             catch (Exception ex)
             {
@@ -427,7 +445,9 @@ public class GamePipeServer : IDisposable
                 }
                 catch { }
             }
+#if DEBUG
             _logger.Information("[PipeServer] Merged {Count} new runs not in manifest", newIds.Count);
+#endif
         }
 
         items.Sort((a, b) => string.CompareOrdinal(b.RunId, a.RunId));
