@@ -122,18 +122,17 @@ var _bh_rng_seed_type: String = ''      # 'random' | 'custom'
 var _bh_rng_seed_input: String = ''     # 10-char or user input
 var _bh_rng_landlord_seed: int = 0      # hash result
 
-# 20 persistent (cross-spin) RNG instances
+# Persistent (cross-spin) RNG instances + item sequence state
 var _bh_rng_sym_rarity: PCGRng = null
 var _bh_rng_itm_rarity: PCGRng = null
 var _bh_rng_sym_common: PCGRng = null
 var _bh_rng_sym_uncommon: PCGRng = null
 var _bh_rng_sym_rare: PCGRng = null
 var _bh_rng_sym_vrare: PCGRng = null
-var _bh_rng_itm_common: PCGRng = null
-var _bh_rng_itm_uncommon: PCGRng = null
-var _bh_rng_itm_rare: PCGRng = null
-var _bh_rng_itm_vrare: PCGRng = null
-var _bh_rng_ess: PCGRng = null
+# Item pool selection moved to skip-owned sequences (per-round deterministic shuffle)
+var _bh_item_seq: Dictionary = {}         # rarity → Array[String]
+var _bh_item_cursor: Dictionary = {}      # rarity → int
+var _bh_item_seq_round: int = -1
 var _bh_rng_fineprint: PCGRng = null
 var _bh_rng_cosmetic: PCGRng = null
 var _bh_rng_forced_rarity: PCGRng = null
@@ -167,18 +166,13 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     _bh_rng_landlord_seed = landlord_seed
     var s: int = landlord_seed
 
-    # === Phase 1: Create ALL 20 instances to local variables ===
+    # === Phase 1: Create persistent RNG instances (10) + per-spin placeholders (2) ===
     var _new_sym_rarity = PCGRng.new(_bh_derive_seed(s, 'sym_rarity'))
     var _new_itm_rarity    = PCGRng.new(_bh_derive_seed(s, 'itm_rarity'))
     var _new_sym_common     = PCGRng.new(_bh_derive_seed(s, 'sym_common'))
     var _new_sym_uncommon   = PCGRng.new(_bh_derive_seed(s, 'sym_uncommon'))
     var _new_sym_rare       = PCGRng.new(_bh_derive_seed(s, 'sym_rare'))
     var _new_sym_vrare      = PCGRng.new(_bh_derive_seed(s, 'sym_vrare'))
-    var _new_itm_common     = PCGRng.new(_bh_derive_seed(s, 'itm_common'))
-    var _new_itm_uncommon   = PCGRng.new(_bh_derive_seed(s, 'itm_uncommon'))
-    var _new_itm_rare       = PCGRng.new(_bh_derive_seed(s, 'itm_rare'))
-    var _new_itm_vrare      = PCGRng.new(_bh_derive_seed(s, 'itm_vrare'))
-    var _new_ess            = PCGRng.new(_bh_derive_seed(s, 'ess'))
     var _new_fineprint      = PCGRng.new(_bh_derive_seed(s, 'fineprint'))
     var _new_cosmetic       = PCGRng.new(_bh_derive_seed(s, 'cosmetic'))
     var _new_forced_rarity  = PCGRng.new(_bh_derive_seed(s, 'forced_rarity'))
@@ -193,11 +187,6 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     _bh_rng_sym_uncommon   = _new_sym_uncommon
     _bh_rng_sym_rare       = _new_sym_rare
     _bh_rng_sym_vrare      = _new_sym_vrare
-    _bh_rng_itm_common     = _new_itm_common
-    _bh_rng_itm_uncommon   = _new_itm_uncommon
-    _bh_rng_itm_rare       = _new_itm_rare
-    _bh_rng_itm_vrare      = _new_itm_vrare
-    _bh_rng_ess            = _new_ess
     _bh_rng_fineprint      = _new_fineprint
     _bh_rng_cosmetic       = _new_cosmetic
     _bh_rng_forced_rarity  = _new_forced_rarity
@@ -265,11 +254,6 @@ func _bh_save_rng_state():
             ""sym_uncommon"":   [str(_bh_rng_sym_uncommon.state),str(_bh_rng_sym_uncommon.inc)],
             ""sym_rare"":       [str(_bh_rng_sym_rare.state),  str(_bh_rng_sym_rare.inc)],
             ""sym_vrare"":      [str(_bh_rng_sym_vrare.state), str(_bh_rng_sym_vrare.inc)],
-            ""itm_common"":     [str(_bh_rng_itm_common.state),str(_bh_rng_itm_common.inc)],
-            ""itm_uncommon"":   [str(_bh_rng_itm_uncommon.state),str(_bh_rng_itm_uncommon.inc)],
-            ""itm_rare"":       [str(_bh_rng_itm_rare.state),  str(_bh_rng_itm_rare.inc)],
-            ""itm_vrare"":      [str(_bh_rng_itm_vrare.state), str(_bh_rng_itm_vrare.inc)],
-            ""ess"":            [str(_bh_rng_ess.state),       str(_bh_rng_ess.inc)],
             ""fineprint"":      [str(_bh_rng_fineprint.state), str(_bh_rng_fineprint.inc)],
             ""cosmetic"":       [str(_bh_rng_cosmetic.state),  str(_bh_rng_cosmetic.inc)],
             ""forced_rarity"":  [str(_bh_rng_forced_rarity.state), str(_bh_rng_forced_rarity.inc)],
@@ -279,7 +263,9 @@ func _bh_save_rng_state():
             ""reel_shuffle"":   [str(_bh_rng_reel_shuffle.state), str(_bh_rng_reel_shuffle.inc)],
             ""effect_shuffle"": [str(_bh_rng_effect_shuffle.state), str(_bh_rng_effect_shuffle.inc)],
             ""oil_can"":        [str(_bh_rng_oil_can.state), str(_bh_rng_oil_can.inc)],
-        }
+        },
+        ""item_cursor"":    _bh_item_cursor.duplicate(true),
+        ""item_seq_round"": _bh_item_seq_round,
     }))
     f.close()
 
@@ -351,11 +337,6 @@ func _bh_restore_rng_state():
     _bh_rng_sym_uncommon = _bh_make_rng_from(st[""sym_uncommon""])
     _bh_rng_sym_rare     = _bh_make_rng_from(st[""sym_rare""])
     _bh_rng_sym_vrare    = _bh_make_rng_from(st[""sym_vrare""])
-    _bh_rng_itm_common   = _bh_make_rng_from(st[""itm_common""])
-    _bh_rng_itm_uncommon = _bh_make_rng_from(st[""itm_uncommon""])
-    _bh_rng_itm_rare     = _bh_make_rng_from(st[""itm_rare""])
-    _bh_rng_itm_vrare    = _bh_make_rng_from(st[""itm_vrare""])
-    _bh_rng_ess        = _bh_make_rng_from(st[""ess""])
     _bh_rng_fineprint    = _bh_make_rng_from(st[""fineprint""])
     _bh_rng_cosmetic     = _bh_make_rng_from(st[""cosmetic""])
     _bh_rng_forced_rarity = _bh_make_rng_from(st[""forced_rarity""])
@@ -365,6 +346,15 @@ func _bh_restore_rng_state():
     _bh_rng_reel_shuffle   = _bh_make_rng_from(st[""reel_shuffle""])
     _bh_rng_effect_shuffle = _bh_make_rng_from(st[""effect_shuffle""])
     _bh_rng_oil_can        = _bh_make_rng_from(st[""oil_can""])
+
+    # Restore item sequence cursors (JSON float → int, B3 fix)
+    if data.has(""item_cursor""):
+        _bh_item_cursor = {}
+        for k in data[""item_cursor""].keys():
+            _bh_item_cursor[k] = int(data[""item_cursor""][k])
+    if data.has(""item_seq_round""):
+        _bh_item_seq_round = int(data[""item_seq_round""])
+    _bh_item_seq = {}   # clear; will be rebuilt on next ensure
 
     # Sync Godot global RNG
     seed(_bh_rng_landlord_seed)
@@ -402,12 +392,54 @@ func _notification(what: int):
         if _bh_events.size() > 0:
             _bh_end_run(""quit"")
 
-func _bh_item_rng_for_rarity(rarity: String) -> PCGRng:
-    match rarity:
-        'common':     return _bh_rng_itm_common
-        'uncommon':   return _bh_rng_itm_uncommon
-        'rare':       return _bh_rng_itm_rare
-        'very_rare':  return _bh_rng_itm_vrare
-        _:            return _bh_rng_itm_common
+# ============================================================
+# skip-owned item sequences — deterministic, prefix-stable
+# ============================================================
+
+# Build the shuffle domain for a rarity: full set minus structural exclusions
+# (NOT minus owned/destroyed — that's handled by the pool filter at call site)
+func _bh_item_shuffle_domain(rarity: String) -> Array:
+    var db = $""/root/Main"".rarity_database['items']
+    if not db.has(rarity):
+        return []
+    var domain = db[rarity].duplicate(true)
+    var tbe = []
+    for c in domain:
+        if $""/root/Main"".is_mod_disabled(c):
+            tbe.push_back(c)
+    if not $""/root/Main/Stats Sprite/Stats"".essences_unlocked and not $""/root/Main"".demo:
+        if domain.has('dishwasher'):
+            tbe.push_back('dishwasher')
+        if domain.has('popsicle'):
+            tbe.push_back('popsicle')
+    for c in tbe:
+        domain.erase(c)
+    return domain
+
+# Build shuffle sequences for all five item rarities for a given round.
+# Does NOT touch _bh_item_cursor (cursor is managed by _bh_ensure_item_seqs).
+func _bh_build_item_seqs(round_num: int):
+    _bh_item_seq = {}
+    for rar in ['common', 'uncommon', 'rare', 'very_rare', 'essence']:
+        var domain = _bh_item_shuffle_domain(rar)
+        domain.sort()   # normalise input order
+        var rng = PCGRng.new(_bh_derive_seed(_bh_rng_landlord_seed,
+            'itemseq_' + rar + '_' + str(round_num)))
+        rng.custom_shuffle(domain)
+        _bh_item_seq[rar] = domain
+
+# Ensure the per-round item sequences are ready.
+# New round: rebuild seqs + reset cursors.
+# Same round after load: rebuild seqs only, preserve cursors.
+func _bh_ensure_item_seqs():
+    var r = $'Pop-up Sprite/Pop-up'.times_rent_paid
+    if _bh_item_seq_round != r:
+        _bh_item_seq_round = r
+        _bh_build_item_seqs(r)
+        _bh_item_cursor = {}
+        for rar in _bh_item_seq.keys():
+            _bh_item_cursor[rar] = 0
+    elif _bh_item_seq.empty():
+        _bh_build_item_seqs(r)
 ";
 }

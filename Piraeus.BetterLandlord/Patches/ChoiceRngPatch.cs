@@ -51,19 +51,67 @@ func _bh_c_pick_symbol(rarity, pool):
         return pool[0] if pool.size() > 0 else null
     return pool[_r.randi_max(pool.size())]
 
+# skip-owned item pick: deterministic per-round shuffle, prefix-stable.
+# Iterates the shuffle sequence for `rarity`, returns the first candidate
+# found in `pool` that is not already owned.  Cursor advances monotonically
+# within a round; reset on new round.
 func _bh_c_pick_item(rarity, pool):
-    var _r
-    match rarity:
-        ""common"":    _r = $""/root/Main""._bh_rng_itm_common
-        ""uncommon"":  _r = $""/root/Main""._bh_rng_itm_uncommon
-        ""rare"":      _r = $""/root/Main""._bh_rng_itm_rare
-        ""very_rare"": _r = $""/root/Main""._bh_rng_itm_vrare
-        ""essence"":   _r = $""/root/Main""._bh_rng_ess
-        _:             _r = $""/root/Main""._bh_rng_itm_common
-    if _r == null:
-        printerr(""[BetterHistory] FATAL: item RNG for rarity='"", rarity, ""' is NULL!"")
-        return pool[0] if pool.size() > 0 else null
-    return pool[_r.randi_max(pool.size())]
+    var _main = $""/root/Main""
+    _main._bh_ensure_item_seqs()
+
+    # Belt-and-suspenders: filter pool against owned / recently-destroyed.
+    # The main add_cards branch already filters, but the else branch
+    # (Pop-up:1424) rebuilds an unfiltered pool — we catch that here.
+    var _items = $""/root/Main/Items""
+    var _filtered = []
+    for cand in pool:
+        var _skip = false
+        for it in _items.items:
+            if it.type == cand:
+                _skip = true
+                break
+        if not _skip:
+            for it in _items.recently_destroyed_items:
+                if it.type == cand:
+                    _skip = true
+                    break
+        if not _skip:
+            _filtered.push_back(cand)
+
+    if not _main._bh_item_seq.has(rarity):
+        return _bh_item_fallback(rarity, _filtered)
+    var seq = _main._bh_item_seq[rarity]
+    var n = seq.size()
+    if n == 0:
+        return _bh_item_fallback(rarity, _filtered)
+    var i = _main._bh_item_cursor.get(rarity, 0)
+    while i < n:
+        var cand = seq[i]
+        i += 1
+        if _filtered.has(cand):
+            _main._bh_item_cursor[rarity] = i
+            return cand
+    _main._bh_item_cursor[rarity] = n
+    return _bh_item_fallback(rarity, _filtered)
+
+# Fallback when the shuffle sequence is exhausted for a rarity.
+# Essence: always pool_ball_essence (original behaviour).
+# Non-essence: deterministic pick from remaining pool, with a
+#   mod-disabled safety filter (optional cleanup per review).
+func _bh_item_fallback(rarity, pool):
+    if rarity == ""essence"":
+        return ""pool_ball_essence""
+    var _safe = []
+    for cand in pool:
+        if not $""/root/Main"".is_mod_disabled(cand):
+            _safe.push_back(cand)
+    if _safe.size() > 0:
+        var _main = $""/root/Main""
+        var idx = $""/root/Main""._bh_derive_seed(_main._bh_rng_landlord_seed,
+            ""itemfb_"" + rarity + ""_"" + str(_main._bh_item_seq_round) + ""_""
+            + str(_main._bh_item_cursor.get(rarity, 0)))
+        return _safe[((idx % _safe.size()) + _safe.size()) % _safe.size()]
+    return ""pool_ball_essence""
 
 func _bh_c_pick_from_pool(rarity, pool):
     var _popup = $""/root/Main/Pop-up Sprite/Pop-up""
