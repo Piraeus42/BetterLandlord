@@ -138,12 +138,13 @@ var _bh_rng_fineprint: PCGRng = null
 var _bh_rng_cosmetic: PCGRng = null
 var _bh_rng_forced_rarity: PCGRng = null
 
+var _bh_rng_scratch: PCGRng = null  # persistent — cosmetic (SFX/shake), must survive spin boundary
+
 # Per-spin temporary instances (recreated each spin)
 var _bh_rng_reel: PCGRng = null
 var _bh_rng_reel_shuffle: PCGRng = null
 var _bh_rng_effect: PCGRng = null
 var _bh_rng_effect_shuffle: PCGRng = null
-var _bh_rng_scratch: PCGRng = null  # cosmetic/frame-driven discard stream
 var _bh_rng_oil_can: PCGRng = null
 
 # ============================================================
@@ -183,7 +184,7 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     var _new_forced_rarity  = PCGRng.new(_bh_derive_seed(s, 'forced_rarity'))
     var _new_reel           = PCGRng.new(_bh_derive_seed(s, 'reel_init'))
     var _new_effect         = PCGRng.new(_bh_derive_seed(s, 'effect_init'))
-    var _new_scratch        = PCGRng.new(_bh_derive_seed(s, 'scratch_init'))
+    var _new_scratch        = PCGRng.new(_bh_derive_seed(s, 'scratch'))
 
     # === Phase 2: Atomically assign — ALL or NOTHING ===
     _bh_rng_sym_rarity    = _new_sym_rarity
@@ -218,9 +219,8 @@ func _bh_begin_spin_rng():
         _bh_init_rng('random', '')
     # Spin RNG is derived deterministically from seed + spin_num,
     # NOT from any RNG consumption. This guarantees that
-    # spin N always produces the same reel/effect/scratch seeds
-    # regardless of Deck mode, Oil Can, or any other inter-spin
-    # inter-spin events.
+    # spin N always produces the same reel/effect seeds
+    # regardless of Deck mode, Oil Can, or any other inter-spin events.
     var spin_num: int = 1
     var _popup = $'Pop-up Sprite/Pop-up'
     if _popup != null and _popup.has('spins'):
@@ -228,7 +228,6 @@ func _bh_begin_spin_rng():
     var spin_val: int = _bh_derive_seed(_bh_rng_landlord_seed, 'spin_' + str(spin_num))
     _bh_rng_reel   = PCGRng.new(_bh_derive_seed(spin_val, 'reel'))
     _bh_rng_effect = PCGRng.new(_bh_derive_seed(spin_val, 'effect'))
-    _bh_rng_scratch = PCGRng.new(_bh_derive_seed(spin_val, 'scratch'))
     _bh_rng_reel_shuffle = PCGRng.new(_bh_derive_seed(spin_val, 'reel_shuffle'))
     _bh_rng_effect_shuffle = PCGRng.new(_bh_derive_seed(spin_val, 'effect_shuffle'))
     _bh_rng_oil_can = PCGRng.new(_bh_derive_seed(spin_val, 'oil_can'))
