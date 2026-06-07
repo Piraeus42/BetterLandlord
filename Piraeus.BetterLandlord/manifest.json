@@ -4,7 +4,7 @@
   "Dependencies": [],
   "Metadata": {
     "Name": "Better Landlord",
-    "Version": "1.1.0",
+    "Version": "1.1.1",
     "Author": "Piraeus",
     "Description": "Structured run history database with timeline viewer for Luck be a Landlord"
   }
