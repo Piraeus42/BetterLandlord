@@ -78,39 +78,40 @@ func _bh_c_pick_item(rarity, pool):
         if not _skip:
             _filtered.push_back(cand)
 
-    if not _main._bh_item_seq.has(rarity):
-        return _bh_item_fallback(rarity, _filtered)
-    var seq = _main._bh_item_seq[rarity]
-    var n = seq.size()
-    if n == 0:
-        return _bh_item_fallback(rarity, _filtered)
-    var i = _main._bh_item_cursor.get(rarity, 0)
-    while i < n:
-        var cand = seq[i]
-        i += 1
-        if _filtered.has(cand):
-            _main._bh_item_cursor[rarity] = i
-            return cand
-    _main._bh_item_cursor[rarity] = n
-    return _bh_item_fallback(rarity, _filtered)
+    # skip-owned main loop: match against filtered pool (C1 — prevents
+    # the ELSE branch's unfiltered pool from returning an owned item).
+    # Fallback passes the ORIGINAL pool, matching upstream semantics:
+    # the ELSE branch draws from the full rebuilt pool (owned items
+    # included, disabled items included), exactly like vanilla line 1427.
+    if _main._bh_item_seq.has(rarity):
+        var seq = _main._bh_item_seq[rarity]
+        var n = seq.size()
+        if n > 0:
+            var i = _main._bh_item_cursor.get(rarity, 0)
+            while i < n:
+                var cand = seq[i]
+                i += 1
+                if _filtered.has(cand):
+                    _main._bh_item_cursor[rarity] = i
+                    return cand
+            _main._bh_item_cursor[rarity] = n
+
+    return _bh_item_fallback(rarity, pool)
 
 # Fallback when the shuffle sequence is exhausted for a rarity.
-# Essence: always pool_ball_essence (original behaviour).
-# Non-essence: deterministic pick from remaining pool, with a
-#   mod-disabled safety filter (optional cleanup per review).
+# Receives the ORIGINAL pool (caller's parameter, not filtered).
+# Essence: vanilla always returns pool_ball_essence.
+# Non-essence: deterministic pick from pool, whose domain matches
+#   vanilla's ELSE-branch rebuilt pool (full rarity set minus same-choice).
 func _bh_item_fallback(rarity, pool):
     if rarity == ""essence"":
         return ""pool_ball_essence""
-    var _safe = []
-    for cand in pool:
-        if not $""/root/Main"".is_mod_disabled(cand):
-            _safe.push_back(cand)
-    if _safe.size() > 0:
+    if pool.size() > 0:
         var _main = $""/root/Main""
         var idx = $""/root/Main""._bh_derive_seed(_main._bh_rng_landlord_seed,
             ""itemfb_"" + rarity + ""_"" + str(_main._bh_item_seq_round) + ""_""
             + str(_main._bh_item_cursor.get(rarity, 0)))
-        return _safe[((idx % _safe.size()) + _safe.size()) % _safe.size()]
+        return pool[((idx % pool.size()) + pool.size()) % pool.size()]
     return ""pool_ball_essence""
 
 func _bh_c_pick_from_pool(rarity, pool):
