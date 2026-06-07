@@ -124,7 +124,6 @@ var _bh_rng_landlord_seed: int = 0      # hash result
 
 # Persistent (cross-spin) RNG instances + item sequence state
 var _bh_rng_sym_rarity: PCGRng = null
-var _bh_rng_itm_rarity: PCGRng = null
 var _bh_rng_sym_common: PCGRng = null
 var _bh_rng_sym_uncommon: PCGRng = null
 var _bh_rng_sym_rare: PCGRng = null
@@ -133,6 +132,7 @@ var _bh_rng_sym_vrare: PCGRng = null
 var _bh_item_seq: Dictionary = {}         # rarity → Array[String]
 var _bh_item_cursor: Dictionary = {}      # rarity → int
 var _bh_item_seq_round: int = -1
+var _bh_item_rarity_ctr: int = 0          # per-round counter for deterministic rarity
 var _bh_rng_fineprint: PCGRng = null
 var _bh_rng_cosmetic: PCGRng = null
 var _bh_rng_forced_rarity: PCGRng = null
@@ -166,9 +166,8 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     _bh_rng_landlord_seed = landlord_seed
     var s: int = landlord_seed
 
-    # === Phase 1: Create persistent RNG instances (10) + per-spin placeholders (2) ===
+    # === Phase 1: Create persistent RNG instances (9) + per-spin placeholders (2) ===
     var _new_sym_rarity = PCGRng.new(_bh_derive_seed(s, 'sym_rarity'))
-    var _new_itm_rarity    = PCGRng.new(_bh_derive_seed(s, 'itm_rarity'))
     var _new_sym_common     = PCGRng.new(_bh_derive_seed(s, 'sym_common'))
     var _new_sym_uncommon   = PCGRng.new(_bh_derive_seed(s, 'sym_uncommon'))
     var _new_sym_rare       = PCGRng.new(_bh_derive_seed(s, 'sym_rare'))
@@ -182,7 +181,6 @@ func _bh_init_rng(seed_type: String, seed_input: String):
 
     # === Phase 2: Atomically assign — ALL or NOTHING ===
     _bh_rng_sym_rarity    = _new_sym_rarity
-    _bh_rng_itm_rarity    = _new_itm_rarity
     _bh_rng_sym_common     = _new_sym_common
     _bh_rng_sym_uncommon   = _new_sym_uncommon
     _bh_rng_sym_rare       = _new_sym_rare
@@ -249,7 +247,6 @@ func _bh_save_rng_state():
         },
         ""streams"": {
             ""sym_rarity"":    [str(_bh_rng_sym_rarity.state), str(_bh_rng_sym_rarity.inc)],
-            ""itm_rarity"":    [str(_bh_rng_itm_rarity.state), str(_bh_rng_itm_rarity.inc)],
             ""sym_common"":     [str(_bh_rng_sym_common.state),str(_bh_rng_sym_common.inc)],
             ""sym_uncommon"":   [str(_bh_rng_sym_uncommon.state),str(_bh_rng_sym_uncommon.inc)],
             ""sym_rare"":       [str(_bh_rng_sym_rare.state),  str(_bh_rng_sym_rare.inc)],
@@ -332,7 +329,6 @@ func _bh_restore_rng_state():
         return false
 
     _bh_rng_sym_rarity  = _bh_make_rng_from(st[""sym_rarity""])
-    _bh_rng_itm_rarity  = _bh_make_rng_from(st[""itm_rarity""])
     _bh_rng_sym_common   = _bh_make_rng_from(st[""sym_common""])
     _bh_rng_sym_uncommon = _bh_make_rng_from(st[""sym_uncommon""])
     _bh_rng_sym_rare     = _bh_make_rng_from(st[""sym_rare""])
@@ -435,11 +431,23 @@ func _bh_ensure_item_seqs():
     var r = $'Pop-up Sprite/Pop-up'.times_rent_paid
     if _bh_item_seq_round != r:
         _bh_item_seq_round = r
+        _bh_item_rarity_ctr = 0
         _bh_build_item_seqs(r)
         _bh_item_cursor = {}
         for rar in _bh_item_seq.keys():
             _bh_item_cursor[rar] = 0
     elif _bh_item_seq.empty():
         _bh_build_item_seqs(r)
+
+# Deterministic per-card rarity roll for add_item.
+# Uses (seed, round, counter) — decoupled from consumption history.
+# Called by _bh_c_rarity_randf (ChoiceRngPatch) for add_item emails.
+func _bh_item_rarity_randf() -> float:
+    var r = $'Pop-up Sprite/Pop-up'.times_rent_paid
+    var c = _bh_item_rarity_ctr
+    _bh_item_rarity_ctr = c + 1
+    var rng = PCGRng.new(_bh_derive_seed(_bh_rng_landlord_seed,
+        'itmrarity_' + str(r) + '_' + str(c)))
+    return rng.randf()
 ";
 }

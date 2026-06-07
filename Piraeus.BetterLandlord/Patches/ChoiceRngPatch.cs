@@ -23,9 +23,7 @@ func _bh_c_rarity_randf():
     if _popup != null and _popup.emails.size() > 0:
         var _type = _popup.emails[0].type
         if _type == ""add_item"" or _type == ""add_item_prompt"":
-            var _r = $""/root/Main""._bh_rng_itm_rarity
-            if _r != null: return _r.randf()
-            return 0.0
+            return $""/root/Main""._bh_item_rarity_randf()
     var _r = $""/root/Main""._bh_rng_sym_rarity
     if _r != null: return _r.randf()
     return 0.0
