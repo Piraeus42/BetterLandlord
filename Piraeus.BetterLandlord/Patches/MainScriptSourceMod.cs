@@ -209,17 +209,17 @@ func _bh_flush():
                                 symbol_first_spin[_vid] = _sn
                             symbol_last_spin[_vid] = _sn
                             # Badge data: use the game's already-rendered display strings.
-                            # update_value_text() ran before us — strings are already formatted.
-                            # Use composite key id|badge_text so variants stay distinct.
+                            # update_value_text() ran before us -- strings are already formatted.
+                            # Use all badge channels so permanent-bonus variants stay distinct.
                             var _bt = str(_v.get('badge_text', ''))
+                            var _bm = str(_v.get('badge_mult', ''))
+                            var _bb = str(_v.get('badge_bonus', ''))
                             var _bkey = _vid
-                            if _bt != '':
-                                _bkey = _vid + '|' + _bt
+                            if _bt != '' or _bm != '' or _bb != '':
+                                _bkey = _vid + '|t=' + _bt + '|b=' + _bb + '|m=' + _bm
                             var _badge = symbol_badge.get(_bkey, {})
                             if _bt != '': _badge['badge_text'] = _bt
-                            var _bm = str(_v.get('badge_mult', ''))
                             if _bm != '': _badge['badge_mult'] = _bm
-                            var _bb = str(_v.get('badge_bonus', ''))
                             if _bb != '': _badge['badge_bonus'] = _bb
                             if _badge.size() > 0:
                                 symbol_badge[_bkey] = _badge
@@ -469,17 +469,21 @@ func _bh_flush():
         if typeof(fs) == TYPE_DICTIONARY:
             var sid = str(fs.get('id', ''))
             if sid != '' and sid != 'null':
-                # Get badge_text from last board snapshot (matched by position index)
+                # Get badge data from last board snapshot (matched by position index)
                 var _bt = ''
+                var _bm = ''
+                var _bb = ''
                 if _bs_idx < _bh_last_board_snapshot.size():
                     var _snap = _bh_last_board_snapshot[_bs_idx]
                     if typeof(_snap) == TYPE_DICTIONARY:
                         _bt = str(_snap.get('badge_text', ''))
+                        _bm = str(_snap.get('badge_mult', ''))
+                        _bb = str(_snap.get('badge_bonus', ''))
                 _bs_idx += 1
-                # Composite key: id + badge_text (different badges → different entries)
+                # Composite key: id + full badge tuple (different badges -> different entries)
                 var skey = sid
-                if _bt != '':
-                    skey = sid + '|' + _bt
+                if _bt != '' or _bm != '' or _bb != '':
+                    skey = sid + '|t=' + _bt + '|b=' + _bb + '|m=' + _bm
                 sym_counts[skey] = sym_counts.get(skey, 0) + 1
                 if not sym_badges.has(skey):
                     sym_badges[skey] = {'saved_value': 0, 'item_count': 0, 'id': sid}
