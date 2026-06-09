@@ -55,7 +55,8 @@ func _bh_c_pick_symbol(rarity, pool):
 # within a round; reset on new round.
 func _bh_c_pick_item(rarity, pool):
     var _main = $""/root/Main""
-    _main._bh_ensure_item_seqs()
+    # Event boundary is at add_cards loop start (_bh_begin_item_pick_event);
+    # this function is a pure consumer — filter + advance cursor, no rebuild.
 
     # Belt-and-suspenders: filter pool against owned / recently-destroyed.
     # The main add_cards branch already filters, but the else branch
@@ -107,7 +108,7 @@ func _bh_item_fallback(rarity, pool):
     if pool.size() > 0:
         var _main = $""/root/Main""
         var idx = $""/root/Main""._bh_derive_seed(_main._bh_rng_landlord_seed,
-            ""itemfb_"" + rarity + ""_"" + str(_main._bh_item_seq_round) + ""_""
+            ""itemfb_"" + rarity + ""_"" + str(_main._bh_item_pick_event) + ""_""
             + str(_main._bh_item_cursor.get(rarity, 0)))
         return pool[((idx % pool.size()) + pool.size()) % pool.size()]
     return ""pool_ball_essence""
@@ -144,6 +145,13 @@ func _bh_c_cosmetic_randf():
 # === end Choice RNG helpers ===
 ";
         source += helpers;
+
+        // Inject event-boundary signal before add_cards card loop.
+        // This rebuilds shuffle sequences + resets cursor once per three-pick event,
+        // so unpicked items are re-scattered into the pool (vanilla-semantic).
+        source = source.Replace(
+            "\t\tfor c in range(stcf - cards.size()):",
+            "\t\t$\"/root/Main\"._bh_begin_item_pick_event()\n\t\tfor c in range(stcf - cards.size()):");
 
         source = source.Replace("\t\t\t\t\trandomize()", "\t\t\t\t\t# randomize() removed");
         source = source.Replace("\t\t\t\t\t\t\t\t\trandomize()", "\t\t\t\t\t\t\t\t\t# randomize() removed");

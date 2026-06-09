@@ -128,10 +128,12 @@ var _bh_rng_sym_common: PCGRng = null
 var _bh_rng_sym_uncommon: PCGRng = null
 var _bh_rng_sym_rare: PCGRng = null
 var _bh_rng_sym_vrare: PCGRng = null
-# Item pool selection moved to skip-owned sequences (per-round deterministic shuffle)
-var _bh_item_seq: Dictionary = {}         # rarity → Array[String]
-var _bh_item_cursor: Dictionary = {}      # rarity → int
-var _bh_item_seq_round: int = -1
+# Item pool selection: per-event deterministic shuffle + cursor.
+# Sequence rebuilt + cursor reset at each add_cards call (event boundary).
+# Transient — not persisted across save/restore.
+var _bh_item_seq: Dictionary = {}         # rarity → Array[String] (transient)
+var _bh_item_cursor: Dictionary = {}      # rarity → int (transient)
+var _bh_item_pick_event: int = 0          # persistent — event counter for seed derivation
 var _bh_item_rarity_ctr: int = 0          # per-round counter for deterministic rarity
 var _bh_rng_fineprint: PCGRng = null
 var _bh_rng_cosmetic: PCGRng = null
@@ -261,8 +263,7 @@ func _bh_save_rng_state():
             ""effect_shuffle"": [str(_bh_rng_effect_shuffle.state), str(_bh_rng_effect_shuffle.inc)],
             ""oil_can"":        [str(_bh_rng_oil_can.state), str(_bh_rng_oil_can.inc)],
         },
-        ""item_cursor"":    _bh_item_cursor.duplicate(true),
-        ""item_seq_round"": _bh_item_seq_round,
+        ""item_pick_event"": _bh_item_pick_event,
     }))
     f.close()
 
@@ -344,13 +345,10 @@ func _bh_restore_rng_state():
     _bh_rng_oil_can        = _bh_make_rng_from(st[""oil_can""])
 
     # Restore item sequence cursors (JSON float → int, B3 fix)
-    if data.has(""item_cursor""):
-        _bh_item_cursor = {}
-        for k in data[""item_cursor""].keys():
-            _bh_item_cursor[k] = int(data[""item_cursor""][k])
-    if data.has(""item_seq_round""):
-        _bh_item_seq_round = int(data[""item_seq_round""])
-    _bh_item_seq = {}   # clear; will be rebuilt on next ensure
+    if data.has(""item_pick_event""):
+        _bh_item_pick_event = int(data[""item_pick_event""])
+    _bh_item_seq = {}
+    _bh_item_cursor = {}
 
     # Sync Godot global RNG
     seed(_bh_rng_landlord_seed)
@@ -412,32 +410,31 @@ func _bh_item_shuffle_domain(rarity: String) -> Array:
         domain.erase(c)
     return domain
 
-# Build shuffle sequences for all five item rarities for a given round.
-# Does NOT touch _bh_item_cursor (cursor is managed by _bh_ensure_item_seqs).
-func _bh_build_item_seqs(round_num: int):
+# Build shuffle sequences for all five item rarities.
+# round_num + event_num together form the seed dimension, so each
+# add_cards event gets an independent shuffle.
+# Does NOT touch _bh_item_cursor (cursor is managed by _bh_begin_item_pick_event).
+func _bh_build_item_seqs(round_num: int, event_num: int):
     _bh_item_seq = {}
     for rar in ['common', 'uncommon', 'rare', 'very_rare', 'essence']:
         var domain = _bh_item_shuffle_domain(rar)
         domain.sort()   # normalise input order
         var rng = PCGRng.new(_bh_derive_seed(_bh_rng_landlord_seed,
-            'itemseq_' + rar + '_' + str(round_num)))
+            'itemseq_' + rar + '_' + str(round_num) + '_' + str(event_num)))
         rng.custom_shuffle(domain)
         _bh_item_seq[rar] = domain
 
-# Ensure the per-round item sequences are ready.
-# New round: rebuild seqs + reset cursors.
-# Same round after load: rebuild seqs only, preserve cursors.
-func _bh_ensure_item_seqs():
+# Called at the start of each add_cards call (event boundary).
+# Rebuilds shuffle sequences fresh and resets cursor, so unpicked
+# items from previous events are re-scattered into the pool.
+# Event counter is persistent across save/restore.
+func _bh_begin_item_pick_event():
     var r = $'Pop-up Sprite/Pop-up'.times_rent_paid
-    if _bh_item_seq_round != r:
-        _bh_item_seq_round = r
-        _bh_item_rarity_ctr = 0
-        _bh_build_item_seqs(r)
-        _bh_item_cursor = {}
-        for rar in _bh_item_seq.keys():
-            _bh_item_cursor[rar] = 0
-    elif _bh_item_seq.empty():
-        _bh_build_item_seqs(r)
+    _bh_item_pick_event += 1
+    _bh_build_item_seqs(r, _bh_item_pick_event)
+    _bh_item_cursor = {}
+    for rar in _bh_item_seq.keys():
+        _bh_item_cursor[rar] = 0
 
 # Deterministic per-card rarity roll for add_item.
 # Uses (seed, round, counter) — decoupled from consumption history.
