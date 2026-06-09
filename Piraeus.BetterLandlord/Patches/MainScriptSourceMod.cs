@@ -122,8 +122,6 @@ func _bh_flush():
     var symbol_spin_count = {}     # {id: times_on_grid}
     var symbol_first_spin = {}     # {id: first_spin_num}
     var symbol_last_spin = {}      # {id: last_spin_num}
-    var symbol_badge = {}          # {id: {permanent_bonus, times_displayed, saved_value, item_count}}
-    var _bh_last_board_snapshot = []  # last board_value._grid_vals (per-position badge data)
     var current_spin_num = 0       # tracked from spin_start
     var run_number = 0
     var end_run_number = 0
@@ -197,7 +195,6 @@ func _bh_flush():
             current_spin_num = _sn
             var _vals = pl.get('values', [])
             if typeof(_vals) == TYPE_ARRAY:
-                _bh_last_board_snapshot = _vals
                 for _v in _vals:
                     if typeof(_v) == TYPE_DICTIONARY:
                         var _vid = str(_v.get('id', ''))
@@ -214,16 +211,6 @@ func _bh_flush():
                             var _bt = str(_v.get('badge_text', ''))
                             var _bm = str(_v.get('badge_mult', ''))
                             var _bb = str(_v.get('badge_bonus', ''))
-                            var _bkey = _vid
-                            if _bt != '' or _bm != '' or _bb != '':
-                                _bkey = _vid + '|t=' + _bt + '|b=' + _bb + '|m=' + _bm
-                            var _badge = symbol_badge.get(_bkey, {})
-                            if _bt != '': _badge['badge_text'] = _bt
-                            if _bm != '': _badge['badge_mult'] = _bm
-                            if _bb != '': _badge['badge_bonus'] = _bb
-                            if _badge.size() > 0:
-                                symbol_badge[_bkey] = _badge
-
         elif et == 'symbol_added':
             var s = str(pl.get('symbol', ''))
             var src = str(pl.get('source', 'choice'))
@@ -286,7 +273,8 @@ func _bh_flush():
 
         elif et == 'symbol_removed':
             var sr = str(pl.get('symbol', ''))
-            if sr != '':
+            var src = str(pl.get('source', ''))
+            if sr != '' and src == 'removal_token':
                 var rc = removed_symbol_accum.get(sr, 0)
                 removed_symbol_accum[sr] = rc + 1
 
@@ -314,12 +302,6 @@ func _bh_flush():
                     if typeof(_e) == TYPE_DICTIONARY:
                         var _d = {'id': str(_e.get('id', '')), 'count': int(_e.get('count', 1))}
                         des_it.append(_d)
-            var _raw_rs = pl.get('removed_symbols', [])
-            if typeof(_raw_rs) == TYPE_ARRAY and _raw_rs.size() > 0:
-                for _e in _raw_rs:
-                    if typeof(_e) == TYPE_DICTIONARY:
-                        var _d = {'id': str(_e.get('id', '')), 'count': int(_e.get('count', 1))}
-                        rem_sym.append(_d)
 
     # Flush final spin
     if cur_spin != null:
@@ -464,29 +446,21 @@ func _bh_flush():
     # ============================================================
     var sym_counts = {}      # {composite_key: count}
     var sym_badges = {}      # {composite_key: {item_count, saved_value, id}}
-    var _bs_idx = 0
     for fs in f_symbols:
         if typeof(fs) == TYPE_DICTIONARY:
             var sid = str(fs.get('id', ''))
             if sid != '' and sid != 'null':
-                # Get badge data from last board snapshot (matched by position index)
-                var _bt = ''
-                var _bm = ''
-                var _bb = ''
-                if _bs_idx < _bh_last_board_snapshot.size():
-                    var _snap = _bh_last_board_snapshot[_bs_idx]
-                    if typeof(_snap) == TYPE_DICTIONARY:
-                        _bt = str(_snap.get('badge_text', ''))
-                        _bm = str(_snap.get('badge_mult', ''))
-                        _bb = str(_snap.get('badge_bonus', ''))
-                _bs_idx += 1
+                # Badge data read directly from fs entry (populated by _bh_end_run from icon properties)
+                var _bt = str(fs.get('badge_text', ''))
+                var _bm = str(fs.get('badge_mult', ''))
+                var _bb = str(fs.get('badge_bonus', ''))
                 # Composite key: id + full badge tuple (different badges -> different entries)
                 var skey = sid
                 if _bt != '' or _bm != '' or _bb != '':
                     skey = sid + '|t=' + _bt + '|b=' + _bb + '|m=' + _bm
                 sym_counts[skey] = sym_counts.get(skey, 0) + 1
                 if not sym_badges.has(skey):
-                    sym_badges[skey] = {'saved_value': 0, 'item_count': 0, 'id': sid}
+                    sym_badges[skey] = {'saved_value': 0, 'item_count': 0, 'id': sid, 'badge_text': _bt, 'badge_mult': _bm, 'badge_bonus': _bb}
                 var sv = int(fs.get('saved_value', 0))
                 if sv > sym_badges[skey].saved_value:
                     sym_badges[skey].saved_value = sv
@@ -503,14 +477,13 @@ func _bh_flush():
                 entry['saved_value'] = b.saved_value
             if b.get('item_count', 0) > 0:
                 entry['item_count'] = b.item_count
-            # Badge data: from composite key's symbol_badge entry
-            var _badge = symbol_badge.get(skey, {})
-            if _badge.has('badge_text') and str(_badge.get('badge_text', '')) != '':
-                entry['badge_text'] = str(_badge.get('badge_text', ''))
-            if _badge.has('badge_mult') and str(_badge.get('badge_mult', '')) != '':
-                entry['badge_mult'] = str(_badge.get('badge_mult', ''))
-            if _badge.has('badge_bonus') and str(_badge.get('badge_bonus', '')) != '':
-                entry['badge_bonus'] = str(_badge.get('badge_bonus', ''))
+            # Badge data: from sym_badges (populated from fs entries / icon properties)
+            var _badge_text = str(b.get('badge_text', ''))
+            var _badge_mult = str(b.get('badge_mult', ''))
+            var _badge_bonus = str(b.get('badge_bonus', ''))
+            if _badge_text != '': entry['badge_text'] = _badge_text
+            if _badge_mult != '': entry['badge_mult'] = _badge_mult
+            if _badge_bonus != '': entry['badge_bonus'] = _badge_bonus
             # DPT metrics (keyed by base symbol ID — merged across badge variants)
             var _tv = symbol_value_sum.get(sid, 0)
             var _sc = symbol_spin_count.get(sid, 0)
@@ -792,15 +765,12 @@ func _bh_end_run(result):
     var fi = []
     if typeof($'Reels') != TYPE_NIL:
         _bh_debug_log('endrun_reading_reels')
-        # Row-major iteration (same order as BoardValuePatch.check_values)
-        # so Phase 4 badge matching by position index is correct.
+        # Iterate ALL icons on every reel (not just the visible grid)
+        # so symbols outside the displayed_icons window are captured.
+        # Badge data read directly from icon properties.
         var _reels = $'Reels'
-        var _rw = _reels.reel_width
-        var _rh = _reels.reel_height
-        var _di = _reels.displayed_icons
-        for _y in range(_rh):
-            for _x in range(_rw):
-                var i = _di[_y][_x]
+        for _r in _reels.reels:
+            for i in _r.icons:
                 if i.type != 'empty' and i.type != 'dud':
                     var iv = 0
                     if typeof(i.value) == TYPE_REAL:
@@ -814,8 +784,12 @@ func _bh_end_run(result):
                     var entry = {'id': str(i.type), 'value': iv, 'saved_value': sv}
                     if ic > 0:
                         entry['item_count'] = ic
-                    # Badge data is now captured in board_value events
-                    # (at _bh_end_run time the board is already cleared)
+                    var _bt = str(i.displayed_text_value)
+                    var _bm = str(i.displayed_multiplier_value)
+                    var _bb = str(i.displayed_bonus_value)
+                    if _bt != '': entry['badge_text'] = _bt
+                    if _bm != '': entry['badge_mult'] = _bm
+                    if _bb != '': entry['badge_bonus'] = _bb
                     fs.append(entry)
     if typeof($'Items') != TYPE_NIL:
         for it in $'Items'.items:
@@ -849,7 +823,6 @@ func _bh_end_run(result):
         _actual_rn = $'Pop-up Sprite/Pop-up'.total_runs
     var _ds = []
     var _di = []
-    var _rs = []
     if typeof($'Pop-up Sprite/Pop-up') != TYPE_NIL:
         var _popup = $'Pop-up Sprite/Pop-up'
         # destroyed_symbol_types accumulates globally across the run (SlotIcon pushes on destroy)
@@ -860,14 +833,6 @@ func _bh_end_run(result):
                 _ds_counts[_sk] = _ds_counts.get(_sk, 0) + 1
             for _k in _ds_counts.keys():
                 _ds.append({'id': _k, 'count': _ds_counts[_k]})
-        # removed_symbol_types accumulates globally across the run
-        if _popup.has('removed_symbol_types'):
-            var _rs_counts = {}
-            for _s in _popup.removed_symbol_types:
-                var _sk = str(_s)
-                _rs_counts[_sk] = _rs_counts.get(_sk, 0) + 1
-            for _k in _rs_counts.keys():
-                _rs.append({'id': _k, 'count': _rs_counts[_k]})
     # destroyed_item_types lives on $/root/Main/Items, not Pop-up
     if typeof($'/root/Main/Items') != TYPE_NIL:
         var _items_node = $'/root/Main/Items'
@@ -884,7 +849,7 @@ func _bh_end_run(result):
         'victory_achieved': _bh_victory_achieved,
         'floor': fl, 'coins': cc,
         'final_symbols': fs, 'final_items': fi,
-        'destroyed_symbols': _ds, 'destroyed_items': _di, 'removed_symbols': _rs,
+        'destroyed_symbols': _ds, 'destroyed_items': _di,
         'run_number': _actual_rn,
         'seed_type': _bh_rng_seed_type,
         'seed_input': _bh_rng_seed_input,
