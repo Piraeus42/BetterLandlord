@@ -194,6 +194,10 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     _bh_rng_effect         = _new_effect
     _bh_rng_scratch        = _new_scratch
 
+    # === Reset per-run counters (prevents cross-run contamination) ===
+    _bh_item_pick_event = 0
+    _bh_item_rarity_ctr = 0
+
     # === Fix C: Capture Godot global RNG ===
     seed(landlord_seed)
 
