@@ -134,7 +134,13 @@ var _bh_rng_sym_vrare: PCGRng = null
 var _bh_item_seq: Dictionary = {}         # rarity → Array[String] (transient)
 var _bh_item_cursor: Dictionary = {}      # rarity → int (transient)
 var _bh_item_pick_event: int = 0          # persistent — event counter for seed derivation
-var _bh_item_rarity_ctr: int = 0          # per-round counter for deterministic rarity
+var _bh_item_rarity_ctr: int = 0          # per-card counter for deterministic rarity
+
+# Essence pool: independent stream, fully decoupled from items.
+# Single pool (no rarity branching), skip-owned, deterministic.
+var _bh_essence_seq: Array = []           # Array[String] (transient)
+var _bh_essence_cursor: int = 0           # int (transient)
+var _bh_essence_pick_event: int = 0       # persistent — event counter for seed derivation
 var _bh_rng_fineprint: PCGRng = null
 var _bh_rng_cosmetic: PCGRng = null
 var _bh_rng_forced_rarity: PCGRng = null
@@ -197,6 +203,7 @@ func _bh_init_rng(seed_type: String, seed_input: String):
     # === Reset per-run counters (prevents cross-run contamination) ===
     _bh_item_pick_event = 0
     _bh_item_rarity_ctr = 0
+    _bh_essence_pick_event = 0
 
     # === Fix C: Capture Godot global RNG ===
     seed(landlord_seed)
@@ -268,6 +275,7 @@ func _bh_save_rng_state():
             ""oil_can"":        [str(_bh_rng_oil_can.state), str(_bh_rng_oil_can.inc)],
         },
         ""item_pick_event"": _bh_item_pick_event,
+        ""essence_pick_event"": _bh_essence_pick_event,
     }))
     f.close()
 
@@ -351,8 +359,12 @@ func _bh_restore_rng_state():
     # Restore item sequence cursors (JSON float → int, B3 fix)
     if data.has(""item_pick_event""):
         _bh_item_pick_event = int(data[""item_pick_event""])
+    if data.has(""essence_pick_event""):
+        _bh_essence_pick_event = int(data[""essence_pick_event""])
     _bh_item_seq = {}
     _bh_item_cursor = {}
+    _bh_essence_seq = []
+    _bh_essence_cursor = 0
 
     # Sync Godot global RNG
     seed(_bh_rng_landlord_seed)
@@ -420,11 +432,11 @@ func _bh_item_shuffle_domain(rarity: String) -> Array:
 # Does NOT touch _bh_item_cursor (cursor is managed by _bh_begin_item_pick_event).
 func _bh_build_item_seqs(round_num: int, event_num: int):
     _bh_item_seq = {}
-    for rar in ['common', 'uncommon', 'rare', 'very_rare', 'essence']:
+    for rar in ['common', 'uncommon', 'rare', 'very_rare']:
         var domain = _bh_item_shuffle_domain(rar)
         domain.sort()   # normalise input order
-        var rng = PCGRng.new(_bh_derive_seed(_bh_rng_landlord_seed,
-            'itemseq_' + rar + '_' + str(round_num) + '_' + str(event_num)))
+        var seed_str = 'itemseq_' + rar + '_' + str(round_num) + '_' + str(event_num)
+        var rng = PCGRng.new(_bh_derive_seed(_bh_rng_landlord_seed, seed_str))
         rng.custom_shuffle(domain)
         _bh_item_seq[rar] = domain
 
@@ -432,13 +444,40 @@ func _bh_build_item_seqs(round_num: int, event_num: int):
 # Rebuilds shuffle sequences fresh and resets cursor, so unpicked
 # items from previous events are re-scattered into the pool.
 # Event counter is persistent across save/restore.
+# Essence-forced emails dispatch to the independent essence stream.
 func _bh_begin_item_pick_event():
-    var r = $'Pop-up Sprite/Pop-up'.times_rent_paid
+    var popup = $'Pop-up Sprite/Pop-up'
+    if popup.emails.size() > 0:
+        var email = popup.emails[0]
+        # add_tile events are symbol picks — they don't consume item/essence sequences.
+        if str(email.type).begins_with('add_tile'):
+            return
+        if email.has('extra_values') and email.extra_values.has('forced_rarity'):
+            var fr = email.extra_values.forced_rarity
+            if typeof(fr) == TYPE_ARRAY and fr.size() > 0 and fr[0] == 'essence':
+                _bh_begin_essence_pick_event()
+                return
+    var r = popup.times_rent_paid
     _bh_item_pick_event += 1
     _bh_build_item_seqs(r, _bh_item_pick_event)
     _bh_item_cursor = {}
     for rar in _bh_item_seq.keys():
         _bh_item_cursor[rar] = 0
+
+# Build shuffle sequence for essence items (single pool, no rarity branching).
+func _bh_build_essence_seq(round_num: int, event_num: int):
+    var domain = _bh_item_shuffle_domain('essence')
+    domain.sort()
+    var seed_str = 'essenceseq_' + str(round_num) + '_' + str(event_num)
+    var rng = PCGRng.new(_bh_derive_seed(_bh_rng_landlord_seed, seed_str))
+    rng.custom_shuffle(domain)
+    _bh_essence_seq = domain
+
+func _bh_begin_essence_pick_event():
+    var r = $'Pop-up Sprite/Pop-up'.times_rent_paid
+    _bh_essence_pick_event += 1
+    _bh_build_essence_seq(r, _bh_essence_pick_event)
+    _bh_essence_cursor = 0
 
 # Deterministic per-card rarity roll for add_item.
 # Uses (seed, round, counter) — decoupled from consumption history.

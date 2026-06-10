@@ -23,13 +23,25 @@ func _bh_c_rarity_randf():
     if _popup != null and _popup.emails.size() > 0:
         var _type = _popup.emails[0].type
         if _type == ""add_item"" or _type == ""add_item_prompt"":
+            # Essence-forced emails: rarity is deterministic, no roll consumed
+            var _email = _popup.emails[0]
+            if _email.has('extra_values') and _email.extra_values.has('forced_rarity'):
+                var _fr = _email.extra_values.forced_rarity
+                if typeof(_fr) == TYPE_ARRAY and _fr.size() > 0 and _fr[0] == 'essence':
+                    return 0.0
             return $""/root/Main""._bh_item_rarity_randf()
+    # add_tile path: uses symbol rarity RNG
     var _r = $""/root/Main""._bh_rng_sym_rarity
-    if _r != null: return _r.randf()
+    if _r != null:
+        var _val = _r.randf()
+        return _val
     return 0.0
 
 func _bh_c_rarity_shuffle(arr):
     if typeof(arr) != TYPE_ARRAY: return
+    # Essence forced_rarity_arr = ['essence','essence','essence'] — no-op shuffle
+    if arr.size() > 0 and arr[0] == 'essence':
+        return
     var _r = $""/root/Main""._bh_rng_forced_rarity
     if _r == null:
         printerr(""[BetterHistory] FATAL: _bh_rng_forced_rarity is NULL in shuffle!"")
@@ -47,7 +59,9 @@ func _bh_c_pick_symbol(rarity, pool):
     if _r == null:
         printerr(""[BetterHistory] FATAL: symbol RNG for rarity='"", rarity, ""' is NULL!"")
         return pool[0] if pool.size() > 0 else null
-    return pool[_r.randi_max(pool.size())]
+    var idx = _r.randi_max(pool.size())
+    var result = pool[idx]
+    return result
 
 # skip-owned item pick: deterministic per-round shuffle, prefix-stable.
 # Iterates the shuffle sequence for `rarity`, returns the first candidate
@@ -95,7 +109,8 @@ func _bh_c_pick_item(rarity, pool):
                     return cand
             _main._bh_item_cursor[rarity] = n
 
-    return _bh_item_fallback(rarity, pool)
+    var fb = _bh_item_fallback(rarity, pool)
+    return fb
 
 # Fallback when the shuffle sequence is exhausted for a rarity.
 # Receives the ORIGINAL pool (caller's parameter, not filtered).
@@ -113,11 +128,56 @@ func _bh_item_fallback(rarity, pool):
         return pool[((idx % pool.size()) + pool.size()) % pool.size()]
     return ""pool_ball_essence""
 
+# Essence skip-owned pick — independent essence stream, fully decoupled from items.
+# Uses _bh_essence_seq / _bh_essence_cursor / _bh_essence_pick_event (NOT _bh_item_*).
+func _bh_c_pick_essence(pool):
+    var _main = $""/root/Main""
+
+    # Filter pool against owned / recently-destroyed (same logic as _bh_c_pick_item)
+    var _items = $""/root/Main/Items""
+    var _filtered = []
+    for cand in pool:
+        var _skip = false
+        for it in _items.items:
+            if it.type == cand:
+                _skip = true
+                break
+        if not _skip:
+            for it in _items.recently_destroyed_items:
+                if it.type == cand:
+                    _skip = true
+                    break
+        if not _skip:
+            _filtered.push_back(cand)
+
+    # Skip-owned from essence sequence
+    var seq = _main._bh_essence_seq
+    var n = seq.size()
+    if n > 0:
+        var i = _main._bh_essence_cursor
+        while i < n:
+            var cand = seq[i]
+            i += 1
+            if _filtered.has(cand):
+                _main._bh_essence_cursor = i
+                return cand
+        _main._bh_essence_cursor = n
+
+    # Fallback: deterministic pick from pool
+    if pool.size() > 0:
+        var idx = $""/root/Main""._bh_derive_seed(_main._bh_rng_landlord_seed,
+            ""essfb_"" + str(_main._bh_essence_pick_event) + ""_"" + str(_main._bh_essence_cursor))
+        var fb = pool[((idx % pool.size()) + pool.size()) % pool.size()]
+        return fb
+    return ""pool_ball_essence""
+
 func _bh_c_pick_from_pool(rarity, pool):
     var _popup = $""/root/Main/Pop-up Sprite/Pop-up""
     if _popup != null and _popup.emails.size() > 0:
         var _type = _popup.emails[0].type
         if _type == ""add_item"" or _type == ""add_item_prompt"":
+            if rarity == ""essence"":
+                return _bh_c_pick_essence(pool)
             return _bh_c_pick_item(rarity, pool)
     return _bh_c_pick_symbol(rarity, pool)
 
