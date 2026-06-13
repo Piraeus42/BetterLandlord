@@ -785,7 +785,12 @@ func _bh_end_run(result):
                     if ic > 0:
                         entry['item_count'] = ic
                     var _bt = str(i.displayed_text_value)
-                    var _bm = str(i.displayed_multiplier_value)
+                    # Use permanent_multiplier as truth source, not displayed string.
+                    # change_type() reliably resets permanent_multiplier but not
+                    # displayed_multiplier_value, so the string can be stale.
+                    var _bm = ''
+                    if i.permanent_multiplier != 1:
+                        _bm = str(i.displayed_multiplier_value)
                     var _bb = str(i.displayed_bonus_value)
                     if _bt != '': entry['badge_text'] = _bt
                     if _bm != '': entry['badge_mult'] = _bm
