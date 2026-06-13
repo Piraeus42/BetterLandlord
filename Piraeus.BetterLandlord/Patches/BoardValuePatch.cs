@@ -26,7 +26,7 @@ class BoardValuePatch
                         # (update_value_text() already computed these per symbol type)
                         if typeof(_icon.displayed_text_value) == TYPE_STRING and _icon.displayed_text_value != '':
                             _entry['badge_text'] = str(_icon.displayed_text_value)
-                        if typeof(_icon.displayed_multiplier_value) == TYPE_STRING and _icon.displayed_multiplier_value != '':
+                        if typeof(_icon.displayed_multiplier_value) == TYPE_STRING and _icon.displayed_multiplier_value != '' and _icon.get_child(2).raw_string != '':
                             _entry['badge_mult'] = str(_icon.displayed_multiplier_value)
                         if typeof(_icon.displayed_bonus_value) == TYPE_STRING and _icon.displayed_bonus_value != '':
                             _entry['badge_bonus'] = str(_icon.displayed_bonus_value)

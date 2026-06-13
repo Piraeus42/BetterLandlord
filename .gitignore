@@ -2,6 +2,7 @@ bin/
 obj/
 .vs/
 .claude/
+.codegraph/
 node_modules/
 *.user
 *.suo
@@ -14,3 +15,6 @@ TODOS.md
 version.json
 _bh_inject_diag.txt
 ui_config.json.bak
+__pycache__/
+game_source_code.zip
+*.pyc

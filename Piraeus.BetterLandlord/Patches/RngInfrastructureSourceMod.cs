@@ -25,34 +25,35 @@ public class RngInfrastructureSourceMod : ISourceMod
 
 const PCG_DEFAULT_INC: int = 1442695040888963407
 const PCG_MULT: int = 6364136223846793005
-const MASK_63: int = 0x7FFFFFFFFFFFFFFF  # max positive signed 64-bit
-const MASK_31: int = 0x7FFFFFFF
+const MASK_63: int = 0x7FFFFFFFFFFFFFFF  # max positive signed 64-bit (for hashes)
+const MASK_31: int = 0x7FFFFFFF          # 31-bit positive (for hashes)
 
 class PCGRng:
-    var state: int  # kept in [0, 2^63) — always non-negative
-    var inc: int    # stream id
+    var state: int  # full 64-bit (can be negative in signed interpretation)
+    var inc: int    # stream id (full 64-bit)
 
     func _init(seed_val: int):
         state = seed_val
         inc = (PCG_DEFAULT_INC << 1) | 1
         _step()
-        state = (state + PCG_MULT) & MASK_63
+        state = state + PCG_MULT    # natural 64-bit signed overflow = complement wrap
         _step()
         _step()
 
     func _step():
         var old: int = state
-        state = ((old * PCG_MULT) + inc) & MASK_63
+        state = old * PCG_MULT + inc    # natural 64-bit signed overflow = complement wrap
         return old
 
-    # Returns float in [0, 1)
+    # Returns float in [0, 1) -- standard PCG32 XSH RR, full 32-bit output
     func randf() -> float:
         var old: int = _step()
-        var x: int = (old >> 18) ^ old
-        x = x >> 27
-        var rot: int = old >> 59        # PCG32 standard: top 6 bits for rotation
-        var result: int = ((x >> rot) | (x << ((-rot) & 31))) & MASK_31
-        return float(result) / 2147483648.0
+        var lsr18: int = (old >> 18) & 0x3FFFFFFFFFFF   # logical R-shift (mask sign-ext)
+        var x: int = lsr18 ^ old
+        x = (x >> 27) & 0xFFFFFFFF                       # lower 32 bits of shifted XOR
+        var rot: int = (old >> 59) & 0x1F                # rotation amount 0..31
+        var result: int = ((x >> rot) | (x << ((-rot) & 31))) & 0xFFFFFFFF
+        return float(result) / 4294967296.0              # 2^32 denominator
 
     # Returns int in [0, max_val)
     func randi_max(max_val: int) -> int:

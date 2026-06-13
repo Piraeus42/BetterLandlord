@@ -29,6 +29,7 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new ReelRngRefSourceMod());
 
         _modInterface.RegisterSourceMod(new SlotIconRngSourceMod());
+        _modInterface.RegisterSourceMod(new HoverIconRemovalSourceMod());
         _modInterface.RegisterSourceMod(new ItemRngSourceMod());
         _modInterface.RegisterSourceMod(new ReelExtraRngSourceMod());
         _modInterface.RegisterSourceMod(new LandlordRngRefSourceMod());
