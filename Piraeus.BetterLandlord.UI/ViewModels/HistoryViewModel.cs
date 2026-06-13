@@ -52,6 +52,7 @@ public class HistoryViewModel : INotifyPropertyChanged
         {
             if (SetProperty(ref _currentRecord, value))
             {
+                _currentRecord?.MigrateDptIfNeeded();
                 RefreshMeta();
                 OnPropertyChanged(nameof(TimelineRounds));
                 OnPropertyChanged(nameof(Summary));
@@ -110,45 +111,18 @@ public class HistoryViewModel : INotifyPropertyChanged
     public void RefreshRanking()
     {
         DptRanking.Clear();
-        var syms = _currentRecord?.Summary?.Symbols;
-        if (syms == null || syms.Count == 0) return;
+        var dpt = _currentRecord?.Summary?.DptSummary;
+        if (dpt == null || dpt.Count == 0) return;
 
-        // Merge same symbol IDs by summing
-        var merged = new Dictionary<string, SymbolInSummary>();
-        foreach (var s in syms)
+        double GetValue(DptEntry d) => _rankMode switch
         {
-            if (merged.TryGetValue(s.Id, out var existing))
-            {
-                existing.Count += s.Count;
-                existing.TotalValue += s.TotalValue;
-                existing.TurnsPresent = Math.Max(existing.TurnsPresent, s.TurnsPresent);
-                existing.TurnsContributing += s.TurnsContributing;
-            }
-            else
-            {
-                merged[s.Id] = new SymbolInSummary
-                {
-                    Id = s.Id,
-                    Count = s.Count,
-                    TotalValue = s.TotalValue,
-                    TurnsPresent = s.TurnsPresent,
-                    TurnsContributing = s.TurnsContributing,
-                    DptActual = s.DptActual,
-                    DptEffective = s.DptEffective
-                };
-            }
-        }
-
-        // Select value based on rank mode
-        double GetValue(SymbolInSummary s) => _rankMode switch
-        {
-            DptMode.TotalValue => s.TotalValue,
-            DptMode.DptActual => s.DptActual,
-            DptMode.DptEffective => s.DptEffective,
-            _ => s.TotalValue
+            DptMode.TotalValue => d.TotalValue,
+            DptMode.DptActual => d.DptActual,
+            DptMode.DptEffective => d.DptEffective,
+            _ => d.TotalValue
         };
 
-        var ranked = merged.Values
+        var ranked = dpt
             .OrderByDescending(GetValue)
             .Take(10)
             .ToList();
@@ -156,24 +130,25 @@ public class HistoryViewModel : INotifyPropertyChanged
         MaxRankValue = ranked.Count > 0 ? GetValue(ranked[0]) : 1;
         if (MaxRankValue <= 0) MaxRankValue = 1;
 
-        const double barMaxPx = 120; // max bar width in pixels
+        const double barMaxPx = 120;
         int rank = 1;
-        foreach (var s in ranked)
+        foreach (var d in ranked)
         {
-            var val = GetValue(s);
+            var val = GetValue(d);
             DptRanking.Add(new DptRankEntry
             {
                 Rank = rank++,
-                IconId = s.Id,
-                Name = s.Id,
-                Count = s.Count,
+                IconId = d.Id,
+                Name = d.Id,
+                Count = 0,  // DPT is per-base, no badge count
+                Departed = d.Departed,
                 Value = val,
                 BarWidthPx = val / MaxRankValue * barMaxPx,
                 DetailText = _rankMode switch
                 {
-                    DptMode.TotalValue => $"{s.TotalValue} coins · {s.TurnsContributing} spins on grid",
-                    DptMode.DptActual => $"{s.DptActual:F1}/spin · {s.TurnsPresent} turns present",
-                    DptMode.DptEffective => $"{s.DptEffective:F1}/spin · {s.TurnsContributing} spins on grid",
+                    DptMode.TotalValue => $"{d.TotalValue} coins · {d.TurnsContributing} spins on grid",
+                    DptMode.DptActual => $"{d.DptActual:F1}/spin · {d.TurnsPresent} turns present",
+                    DptMode.DptEffective => $"{d.DptEffective:F1}/spin · {d.TurnsContributing} spins on grid",
                     _ => ""
                 }
             });
@@ -646,6 +621,7 @@ public class DptRankEntry
     public double Value { get; set; }
     public double BarWidthPx { get; set; }
     public string DetailText { get; set; } = "";
+    public bool Departed { get; set; }
     public string ValueDisplay => Value >= 10 ? $"{Value:F0}" : $"{Value:F1}";
 }
 

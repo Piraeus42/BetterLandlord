@@ -39,7 +39,9 @@ public class HistoryStore
         if (!File.Exists(path)) return null;
 
         var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<RunRecord>(json, JsonOptions);
+        var record = JsonSerializer.Deserialize<RunRecord>(json, JsonOptions);
+        record?.MigrateDptIfNeeded();
+        return record;
     }
 
     public void Save(RunRecord record)
@@ -146,23 +148,38 @@ public class HistoryStore
             : null;
     }
 
-    /// <summary>Extract top 3 symbol IDs from summary.symbols sorted by total_value. Returns null if no data.</summary>
+    /// <summary>Extract top 3 symbol IDs from dpt_summary (new) or symbols[].total_value (old). Returns null if no data.</summary>
     public static List<string>? ExtractTopSymbols(JsonDocument doc)
     {
         var root = doc.RootElement;
         if (!root.TryGetProperty("summary", out var summary)) return null;
-        if (!summary.TryGetProperty("symbols", out var syms) || syms.ValueKind != System.Text.Json.JsonValueKind.Array) return null;
-
         var ranked = new List<(string id, double value)>();
-        foreach (var s in syms.EnumerateArray())
-        {
-            var id = s.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? "" : "";
-            var val = s.TryGetProperty("total_value", out var tv) && tv.ValueKind != System.Text.Json.JsonValueKind.Null ? tv.GetDouble() : 0;
-            if (!string.IsNullOrEmpty(id) && val > 0)
-                ranked.Add((id, val));
-        }
-        if (ranked.Count == 0) return null;
 
+        // New format: read from dpt_summary (per-base, no duplicate badge variants)
+        if (summary.TryGetProperty("dpt_summary", out var dpt) && dpt.ValueKind == System.Text.Json.JsonValueKind.Array)
+        {
+            foreach (var d in dpt.EnumerateArray())
+            {
+                var id = d.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? "" : "";
+                var val = d.TryGetProperty("total_value", out var tv) && tv.ValueKind != System.Text.Json.JsonValueKind.Null ? tv.GetDouble() : 0;
+                if (!string.IsNullOrEmpty(id) && val > 0)
+                    ranked.Add((id, val));
+            }
+        }
+        else if (summary.TryGetProperty("symbols", out var syms) && syms.ValueKind == System.Text.Json.JsonValueKind.Array)
+        {
+            // Old format fallback: deduplicate by base ID (badge variants share total_value)
+            var seen = new HashSet<string>();
+            foreach (var s in syms.EnumerateArray())
+            {
+                var id = s.TryGetProperty("id", out var idEl) ? idEl.GetString() ?? "" : "";
+                var val = s.TryGetProperty("total_value", out var tv) && tv.ValueKind != System.Text.Json.JsonValueKind.Null ? tv.GetDouble() : 0;
+                if (!string.IsNullOrEmpty(id) && val > 0 && seen.Add(id))
+                    ranked.Add((id, val));
+            }
+        }
+
+        if (ranked.Count == 0) return null;
         ranked.Sort((a, b) => b.value.CompareTo(a.value));
         return ranked.Take(3).Select(r => r.id).ToList();
     }

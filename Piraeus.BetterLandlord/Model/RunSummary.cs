@@ -25,6 +25,9 @@ public class RunSummary
 
     [JsonPropertyName("landlord_fine_print")]
     public List<FinePrintEntry> LandlordFinePrint { get; set; } = new();
+
+    [JsonPropertyName("dpt_summary")]
+    public List<DptEntry> DptSummary { get; set; } = new();
 }
 
 public class StatusBarSummary
@@ -57,6 +60,10 @@ public class SymbolInSummary
 
     [JsonPropertyName("count")]
     public int Count { get; set; } = 1;
+
+    [JsonPropertyName("departed")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool Departed { get; set; }
 
     [JsonPropertyName("saved_value")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
@@ -177,4 +184,34 @@ public class FinePrintEntry
     [JsonPropertyName("description")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Description { get; set; }
+}
+
+public class DptEntry
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = "";
+
+    [JsonPropertyName("total_value")]
+    public double TotalValue { get; set; }
+
+    [JsonPropertyName("turns_present")]
+    public int TurnsPresent { get; set; }
+
+    [JsonPropertyName("turns_contributing")]
+    public int TurnsContributing { get; set; }
+
+    [JsonPropertyName("dpt_actual")]
+    public double DptActual { get; set; }
+
+    [JsonPropertyName("dpt_effective")]
+    public double DptEffective { get; set; }
+
+    [JsonPropertyName("departed")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool Departed { get; set; }
+
+    [JsonIgnore]
+    public string DptDisplay => TotalValue > 0
+        ? $"{TotalValue} coins · {DptActual:F1}/spin · {DptEffective:F1}/有效"
+        : "";
 }

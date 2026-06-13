@@ -117,12 +117,10 @@ func _bh_flush():
     var des_sym = []
     var des_it = []
     var rem_sym = []
-    # DPT accumulators: per-symbol value tracking
-    var symbol_value_sum = {}      # {id: total_coins}
-    var symbol_spin_count = {}     # {id: times_on_grid}
-    var symbol_first_spin = {}     # {id: first_spin_num}
-    var symbol_last_spin = {}      # {id: last_spin_num}
-    var current_spin_num = 0       # tracked from spin_start
+    # DPT accumulators: per-symbol value tracking (base symbol ID keyed)
+    var symbol_value_sum = {}          # {id: total_coins}
+    var symbol_present_count = {}      # {id: turns_present (board_value appearances)}
+    var symbol_contributing_count = {} # {id: turns_contributing (value > 0 appearances)}
     var run_number = 0
     var end_run_number = 0
     var seed_type = ''
@@ -192,25 +190,20 @@ func _bh_flush():
 
         elif et == 'board_value':
             var _sn = int(pl.get('spin_num', 0))
-            current_spin_num = _sn
-            var _vals = pl.get('values', [])
-            if typeof(_vals) == TYPE_ARRAY:
-                for _v in _vals:
-                    if typeof(_v) == TYPE_DICTIONARY:
-                        var _vid = str(_v.get('id', ''))
-                        var _vv = int(_v.get('value', 0))
-                        if _vid != '' and _vid != 'null':
-                            symbol_value_sum[_vid] = symbol_value_sum.get(_vid, 0) + _vv
-                            symbol_spin_count[_vid] = symbol_spin_count.get(_vid, 0) + 1
-                            if not symbol_first_spin.has(_vid) or _sn < symbol_first_spin[_vid]:
-                                symbol_first_spin[_vid] = _sn
-                            symbol_last_spin[_vid] = _sn
-                            # Badge data: use the game's already-rendered display strings.
-                            # update_value_text() ran before us -- strings are already formatted.
-                            # Use all badge channels so permanent-bonus variants stay distinct.
-                            var _bt = str(_v.get('badge_text', ''))
-                            var _bm = str(_v.get('badge_mult', ''))
-                            var _bb = str(_v.get('badge_bonus', ''))
+            # spin 0 is the initial board display -- not a real production turn.
+            # Skip it to avoid double-counting with spin 1 and inflating turns_present.
+            if _sn > 0:
+                var _vals = pl.get('values', [])
+                if typeof(_vals) == TYPE_ARRAY:
+                    for _v in _vals:
+                        if typeof(_v) == TYPE_DICTIONARY:
+                            var _vid = str(_v.get('id', ''))
+                            var _vv = int(_v.get('value', 0))
+                            if _vid != '' and _vid != 'null':
+                                symbol_value_sum[_vid] = symbol_value_sum.get(_vid, 0) + _vv
+                                symbol_present_count[_vid] = symbol_present_count.get(_vid, 0) + 1
+                                if _vv > 0:
+                                    symbol_contributing_count[_vid] = symbol_contributing_count.get(_vid, 0) + 1
         elif et == 'symbol_added':
             var s = str(pl.get('symbol', ''))
             var src = str(pl.get('source', 'choice'))
@@ -484,26 +477,50 @@ func _bh_flush():
             if _badge_text != '': entry['badge_text'] = _badge_text
             if _badge_mult != '': entry['badge_mult'] = _badge_mult
             if _badge_bonus != '': entry['badge_bonus'] = _badge_bonus
-            # DPT metrics (keyed by base symbol ID — merged across badge variants)
-            var _tv = symbol_value_sum.get(sid, 0)
-            var _sc = symbol_spin_count.get(sid, 0)
-            var _fs = symbol_first_spin.get(sid, 0)
-            var _ls = symbol_last_spin.get(sid, 0)
-            var _tp = 0
-            if _fs > 0 and _ls > 0:
-                _tp = _ls - _fs + 1
-            entry['total_value'] = _tv
-            entry['turns_present'] = _tp
-            entry['turns_contributing'] = _sc
-            if _tp > 0:
-                entry['dpt_actual'] = stepify(float(_tv) / float(_tp), 0.1)
-            else:
-                entry['dpt_actual'] = 0.0
-            if _sc > 0:
-                entry['dpt_effective'] = stepify(float(_tv) / float(_sc), 0.1)
-            else:
-                entry['dpt_effective'] = 0.0
             sym_summary.append(entry)
+
+    # ============================================================
+    # DPT summary: per-base-symbol aggregation, independent of badge variants.
+    # Covers ALL symbols with DPT data (present + departed).
+    # ============================================================
+    var dpt_summary = []
+    var _dpt_seen = {}  # {base_id: true}
+    # Present symbols first (in f_symbols)
+    for skey in sym_counts.keys():
+        if sym_counts[skey] > 0:
+            var _sid = str(sym_badges.get(skey, {}).get('id', skey))
+            if not _dpt_seen.has(_sid):
+                var _tv = symbol_value_sum.get(_sid, 0)
+                var _tp = symbol_present_count.get(_sid, 0)
+                var _tc = symbol_contributing_count.get(_sid, 0)
+                var _de = {'id': _sid, 'total_value': _tv, 'turns_present': _tp, 'turns_contributing': _tc}
+                if _tp > 0:
+                    _de['dpt_actual'] = stepify(float(_tv) / float(_tp), 0.1)
+                else:
+                    _de['dpt_actual'] = 0.0
+                if _tc > 0:
+                    _de['dpt_effective'] = stepify(float(_tv) / float(_tc), 0.1)
+                else:
+                    _de['dpt_effective'] = 0.0
+                dpt_summary.append(_de)
+                _dpt_seen[_sid] = true
+    # Departed symbols: in DPT accumulators but not in end-of-run snapshot
+    for _sid in symbol_present_count.keys():
+        if not _dpt_seen.has(_sid):
+            var _tv = symbol_value_sum.get(_sid, 0)
+            var _tp = symbol_present_count.get(_sid, 0)
+            var _tc = symbol_contributing_count.get(_sid, 0)
+            var _dd = {'id': _sid, 'total_value': _tv, 'turns_present': _tp, 'turns_contributing': _tc, 'departed': true}
+            if _tp > 0:
+                _dd['dpt_actual'] = stepify(float(_tv) / float(_tp), 0.1)
+            else:
+                _dd['dpt_actual'] = 0.0
+            if _tc > 0:
+                _dd['dpt_effective'] = stepify(float(_tv) / float(_tc), 0.1)
+            else:
+                _dd['dpt_effective'] = 0.0
+            dpt_summary.append(_dd)
+            _dpt_seen[_sid] = true
 
     var it_summary = []
     var seen_items = {}
@@ -561,9 +578,10 @@ func _bh_flush():
         'destroyed_symbols': des_sym,
         'destroyed_items': des_it,
         'removed_symbols': rem_sym,
-        'landlord_fine_print': []
+        'landlord_fine_print': [],
+        'dpt_summary': dpt_summary
     }
-    _bh_debug_log('phase4_done symbols=' + str(sym_summary.size()))
+    _bh_debug_log('phase4_done symbols=' + str(sym_summary.size()) + ' dpt=' + str(dpt_summary.size()))
 
     # ============================================================
     # Phase 5: Write JSON
