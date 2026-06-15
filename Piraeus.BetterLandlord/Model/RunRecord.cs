@@ -46,54 +46,79 @@ public class RunRecord
     {
         var s = Summary;
         if (s == null) return;
-        if (s.DptSummary.Count > 0) return; // already migrated or new-format
 
-        var syms = s.Symbols;
-        if (syms == null || syms.Count == 0) return;
-
-        // Check if any symbol entry carries old-format DPT data
-        bool hasDpt = false;
-        foreach (var sym in syms)
+        // Phase 1: migrate old-format records where DPT fields lived on symbols[] entries
+        if (s.DptSummary.Count == 0)
         {
-            if (sym.TotalValue > 0 || sym.TurnsPresent > 0)
+            var syms = s.Symbols;
+            if (syms != null && syms.Count > 0)
             {
-                hasDpt = true;
-                break;
+                bool hasDpt = false;
+                foreach (var sym in syms)
+                {
+                    if (sym.TotalValue > 0 || sym.TurnsPresent > 0)
+                    {
+                        hasDpt = true;
+                        break;
+                    }
+                }
+                if (hasDpt)
+                {
+                    // Group by base ID, keep the entry with max TotalValue per group
+                    var best = new Dictionary<string, SymbolInSummary>();
+                    foreach (var sym in syms)
+                    {
+                        if (string.IsNullOrEmpty(sym.Id)) continue;
+                        if (best.TryGetValue(sym.Id, out var cur))
+                        {
+                            if (sym.TotalValue > cur.TotalValue)
+                                best[sym.Id] = sym;
+                        }
+                        else
+                        {
+                            best[sym.Id] = sym;
+                        }
+                    }
+                    foreach (var kv in best)
+                    {
+                        var sym = kv.Value;
+                        if (sym.TotalValue <= 0 && sym.TurnsPresent <= 0) continue;
+                        s.DptSummary.Add(new DptEntry
+                        {
+                            Id = sym.Id,
+                            TotalValue = sym.TotalValue,
+                            TurnsPresent = sym.TurnsPresent,
+                            TurnsContributing = sym.TurnsContributing,
+                            DptActual = sym.DptActual,
+                            DptEffective = sym.DptEffective,
+                            Departed = false
+                        });
+                    }
+                }
             }
         }
-        if (!hasDpt) return;
 
-        // Group by base ID, keep the entry with max TotalValue per group
-        var best = new Dictionary<string, SymbolInSummary>();
-        foreach (var sym in syms)
+        // Phase 2: backfill SymbolInSummary DPT fields from dpt_summary
+        // v1.2.0+ records carry DPT only in dpt_summary; symbols[] entries have
+        // TotalValue=0, so DptDisplay tooltips would be blank without backfill.
+        if (s.DptSummary.Count > 0)
         {
-            if (string.IsNullOrEmpty(sym.Id)) continue;
-            if (best.TryGetValue(sym.Id, out var cur))
-            {
-                if (sym.TotalValue > cur.TotalValue)
-                    best[sym.Id] = sym;
-            }
-            else
-            {
-                best[sym.Id] = sym;
-            }
-        }
+            var dptMap = new Dictionary<string, DptEntry>();
+            foreach (var d in s.DptSummary)
+                if (!string.IsNullOrEmpty(d.Id)) dptMap[d.Id] = d;
 
-        // Build dpt_summary from the best entry per base ID
-        foreach (var kv in best)
-        {
-            var sym = kv.Value;
-            if (sym.TotalValue <= 0 && sym.TurnsPresent <= 0) continue;
-            s.DptSummary.Add(new DptEntry
+            foreach (var sym in s.Symbols)
             {
-                Id = sym.Id,
-                TotalValue = sym.TotalValue,
-                TurnsPresent = sym.TurnsPresent,
-                TurnsContributing = sym.TurnsContributing,
-                DptActual = sym.DptActual,
-                DptEffective = sym.DptEffective,
-                Departed = false  // old format couldn't track departed symbols
-            });
+                if (string.IsNullOrEmpty(sym.Id)) continue;
+                if (dptMap.TryGetValue(sym.Id, out var dpt))
+                {
+                    sym.TotalValue = dpt.TotalValue;
+                    sym.TurnsPresent = dpt.TurnsPresent;
+                    sym.TurnsContributing = dpt.TurnsContributing;
+                    sym.DptActual = dpt.DptActual;
+                    sym.DptEffective = dpt.DptEffective;
+                }
+            }
         }
     }
 }
