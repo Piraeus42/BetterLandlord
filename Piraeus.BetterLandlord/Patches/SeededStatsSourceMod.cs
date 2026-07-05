@@ -8,6 +8,8 @@ namespace Piraeus.BetterLandlord.Patches;
 /// Custom-seeded runs are excluded from:
 ///   - add_stat()              — per-stat counters (guillotine, executions, etc.)
 ///   - add_to_games_played()   — games played / win-rate tracking
+///   - add_to_games_won()      — win count / win-streak increment
+///   - add_to_games_lost()     — win-streak reset / loss count
 ///   - unlock_achievement()    — Steam achievement unlocks
 ///
 /// Guards are early returns inserted right after each function signature,
@@ -26,8 +28,8 @@ public class SeededStatsSourceMod : ISourceMod
 	if $""/root/Main"".has_method(""_bh_is_seeded"") and $""/root/Main""._bh_is_seeded():
 		return";
 
-        // All three functions get the same early-return guard after the
-        // function signature, before the first body statement.
+        // All five guarded functions get the same early-return guard after
+        // the function signature, before the first body statement.
 
         source = Regex.Replace(source,
             @"^(func add_stat\(.*\):)\r?$",
@@ -36,6 +38,16 @@ public class SeededStatsSourceMod : ISourceMod
 
         source = Regex.Replace(source,
             @"^(func add_to_games_played\(.*\):)\r?$",
+            @"$1" + guard,
+            RegexOptions.Multiline);
+
+        source = Regex.Replace(source,
+            @"^(func add_to_games_won\(.*\):)\r?$",
+            @"$1" + guard,
+            RegexOptions.Multiline);
+
+        source = Regex.Replace(source,
+            @"^(func add_to_games_lost\(.*\):)\r?$",
             @"$1" + guard,
             RegexOptions.Multiline);
 
