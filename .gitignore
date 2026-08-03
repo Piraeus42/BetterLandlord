@@ -18,3 +18,4 @@ ui_config.json.bak
 __pycache__/
 game_source_code.zip
 *.pyc
+CLAUDE.md
