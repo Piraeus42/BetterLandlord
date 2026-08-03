@@ -19,3 +19,6 @@ __pycache__/
 game_source_code.zip
 *.pyc
 CLAUDE.md
+RNG_INVESTIGATION.md
+empirical_test/
+rng_fix_session/
