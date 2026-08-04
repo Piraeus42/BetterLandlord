@@ -19,6 +19,7 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new MainScriptSourceMod());
         _modInterface.RegisterSourceMod(new PerformanceProfileSourceMod());
         _modInterface.RegisterSourceMod(new ResolveEventProfileSourceMod());
+        _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node
         _modInterface.RegisterSourceMod(new RngInfrastructureSourceMod());
