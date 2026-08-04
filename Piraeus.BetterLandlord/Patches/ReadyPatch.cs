@@ -9,5 +9,7 @@ class ReadyPatch
     static string PostfixCode() => GdscriptUtil.TabifyIndent("""
         if $"/root/Main".has_method("_bh_init"):
             $"/root/Main"._bh_init()
+        if $"/root/Main".has_method("_bh_profile_init"):
+            $"/root/Main"._bh_profile_init()
         """);
 }

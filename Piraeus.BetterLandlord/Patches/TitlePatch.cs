@@ -17,9 +17,9 @@ class TitlePatch
 {
     [Prefix]
     static string PrefixCode() => GdscriptUtil.TabifyIndent("""
-        if has_method("_bh_end_run") and has_method("_bh_dump_raw_events"):
+        if has_method("_bh_end_run") and has_method("_bh_force_persist_raw_events"):
             if _bh_events.size() > 0:
                 _bh_end_run("quit")
-                _bh_dump_raw_events()
+                _bh_force_persist_raw_events()
         """);
 }

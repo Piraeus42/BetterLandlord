@@ -1,4 +1,4 @@
-﻿using SlotWeave.Scripting;
+using SlotWeave.Scripting;
 
 namespace Piraeus.BetterLandlord.Patches;
 
@@ -12,6 +12,7 @@ class SpinPatch
     [Prefix]
     static string PrefixCode() => GdscriptUtil.TabifyIndent("""
         # Mirror spin()'s guard — only record if spin would actually execute
+        var __bh_prof_spin_start_us = -1
         if $"/root/Main".has_method("_bh_add_event"):
             var _popup = $"/root/Main/Pop-up Sprite/Pop-up"
             var _reels = $"/root/Main/Reels"
@@ -30,6 +31,9 @@ class SpinPatch
                     if _r.spinning:
                         _can_spin = false
                 if _can_spin:
+                    if $"/root/Main".has_method("_bh_profile_begin"):
+                        __bh_prof_spin_start_us = OS.get_ticks_usec()
+                        $"/root/Main"._bh_profile_begin("spin", "spin", str(_popup.spins + 1))
                     # Initialize per-spin RNG before the spin executes
                     if $"/root/Main".has_method("_bh_begin_spin_rng"):
                         $"/root/Main"._bh_begin_spin_rng()
@@ -39,5 +43,13 @@ class SpinPatch
                         "floor": _popup.current_floor,
                         "rent_paid": _popup.times_rent_paid
                     })
+        """);
+
+    [Postfix]
+    static string PostfixCode() => GdscriptUtil.TabifyIndent("""
+        if __bh_prof_spin_start_us >= 0 and $"/root/Main".has_method("_bh_profile_record"):
+            $"/root/Main"._bh_profile_record("reels.spin", __bh_prof_spin_start_us)
+            $"/root/Main"._bh_profile_schedule_flush()
+            $"/root/Main"._bh_profile_end()
         """);
 }

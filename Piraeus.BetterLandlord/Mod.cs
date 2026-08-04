@@ -17,6 +17,8 @@ public class Mod : IMod
 
         // ISourceMod: event capture helpers on Main node (Main.tscn::1)
         _modInterface.RegisterSourceMod(new MainScriptSourceMod());
+        _modInterface.RegisterSourceMod(new PerformanceProfileSourceMod());
+        _modInterface.RegisterSourceMod(new ResolveEventProfileSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node
         _modInterface.RegisterSourceMod(new RngInfrastructureSourceMod());
