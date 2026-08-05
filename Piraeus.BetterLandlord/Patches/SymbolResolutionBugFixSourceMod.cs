@@ -43,7 +43,6 @@ public sealed class SymbolResolutionBugFixSourceMod : ISourceMod
                                                    "\t\t\tprev_final_value += round((int(p[p_v_str]) + int(p_value_bonus) + int(p[pb_str])) * float(p_value_multiplier) * float(p[pm_str]))";
 
         if (!InjectDoveNoDestroyerGrowth(ref source, eol) ||
-            !InjectDoveGrowthApplyTrace(ref source, eol) ||
             !ReplaceOnce(ref source, wildcardSnapshotOriginal, wildcardSnapshotReplacement, eol) ||
             !ReplaceOnceAfter(ref source, "func get_value(currency):", prevValueOriginal, prevValueReplacement, eol) ||
             !ReplaceOnceAfter(ref source, "func get_value(currency):", prevValueFormulaOriginal, prevValueFormulaReplacement, eol))
@@ -86,39 +85,13 @@ public sealed class SymbolResolutionBugFixSourceMod : ISourceMod
             "\t\t\t\t\t\t\t\t# current_effect_hashes intentionally deduplicate identical effects, while",
             "\t\t\t\t\t\t\t\t# each protected symbol must emit one independent growth event.",
             "\t\t\t\t\t\t\t\tcomparison_target.dove_destroyed = true",
-            "\t\t\t\t\t\t\t\tif $\"/root/Main\".has_method(\"write_log\"):",
-            "\t\t\t\t\t\t\t\t\t$\"/root/Main\".write_log(\"[BL DOVE TRACE] intercepted | source=\" + str(type) + \" target=\" + str(comparison_target.type) + \" dove=(\" + str(x) + \",\" + str(y) + \") bonus_before=\" + str(reels.displayed_icons[y][x].permanent_bonus))",
-            "\t\t\t\t\t\t\t\tcomparison_target.add_effect_to_symbol(comparison_target.grid_position.y, comparison_target.grid_position.x, {\"comparisons\": [{\"a\": \"dove_destroyed\", \"b\": true}], \"anim\": \"circle\", \"anim_targets\": [comparison_target, reels.displayed_icons[y][x]], \"sfx_override\": \"coo\", \"target\": reels.displayed_icons[y][x], \"value_to_change\": \"permanent_bonus\", \"diff\": reels.displayed_icons[y][x].values[0], \"bl_dove_intercept_growth\": true})",
-            "\t\t\t\t\t\t\t\tif $\"/root/Main\".has_method(\"write_log\"):",
-            "\t\t\t\t\t\t\t\t\t$\"/root/Main\".write_log(\"[BL DOVE TRACE] queued growth | owner=\" + str(comparison_target.type) + \" dove=(\" + str(x) + \",\" + str(y) + \") diff=\" + str(reels.displayed_icons[y][x].values[0]))"
+            "\t\t\t\t\t\t\t\tcomparison_target.add_effect_to_symbol(comparison_target.grid_position.y, comparison_target.grid_position.x, {\"comparisons\": [{\"a\": \"dove_destroyed\", \"b\": true}], \"anim\": \"circle\", \"anim_targets\": [comparison_target, reels.displayed_icons[y][x]], \"sfx_override\": \"coo\", \"target\": reels.displayed_icons[y][x], \"value_to_change\": \"permanent_bonus\", \"diff\": reels.displayed_icons[y][x].values[0]})",
         }) + eol;
 
         // Insert at the beginning of the existing adjacent_dove line.
         // SlotWeave source mods can create mixed-EOL scripts; do not assume the
         // line ending before this anchor matches the file-wide dominant EOL.
         source = source.Insert(adjacent, insertion);
-        return true;
-    }
-
-    private static bool InjectDoveGrowthApplyTrace(ref string source, string eol)
-    {
-        const string permanentBonusBranch = "\telif c.value_to_change == \"permanent_bonus\" or c.value_to_change == \"reroll_token_permanent_bonus\" or c.value_to_change == \"removal_token_permanent_bonus\" or c.value_to_change == \"essence_token_permanent_bonus\":";
-        const string increment = "\t\ttarget[c.value_to_change] += c.diff";
-
-        var branchStart = source.IndexOf(permanentBonusBranch, StringComparison.Ordinal);
-        if (branchStart < 0)
-            return false;
-
-        var incrementStart = source.IndexOf(increment, branchStart, StringComparison.Ordinal);
-        if (incrementStart < 0)
-            return false;
-
-        var trace = eol + string.Join(eol, new[]
-        {
-            "\t\tif c.has(\"bl_dove_intercept_growth\") and $\"/root/Main\".has_method(\"write_log\"):",
-            "\t\t\t$\"/root/Main\".write_log(\"[BL DOVE TRACE] growth applied | owner=\" + str(type) + \" target=\" + str(target.type) + \" bonus_after=\" + str(target.permanent_bonus) + \" diff=\" + str(c.diff) + \" giver=\" + str(c.get(\"giver\", null)))"
-        });
-        source = source.Insert(incrementStart + increment.Length, trace);
         return true;
     }
 

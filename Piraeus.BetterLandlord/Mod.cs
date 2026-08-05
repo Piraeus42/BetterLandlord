@@ -29,6 +29,8 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new DestroyedTypeCountCacheSourceMod());
         // ISourceMod: keeps native Sandbox symbol/item state between spins for multi-turn testing.
         _modInterface.RegisterSourceMod(new SandboxStatePersistenceSourceMod());
+        // ISourceMod: sandbox_consistent preserves only the first configured spin.
+        _modInterface.RegisterSourceMod(new SandboxFirstSpinLayoutSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node
         _modInterface.RegisterSourceMod(new RngInfrastructureSourceMod());

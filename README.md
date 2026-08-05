@@ -18,6 +18,11 @@
 - **Win-rate tracker** — 50/100/200 game sliding window + overall (seeded runs excluded)
 - **End-state handling** — Guillotine, mid-run quit, force-close, and post-victory continue all handled correctly
 
+### Game Bug Fixes
+
+- Fixes Dove not growing after protecting an adjacent symbol
+- Fixes Midas Bomb destroying Wildcard without producing coins
+
 ---
 
 ## Installation
