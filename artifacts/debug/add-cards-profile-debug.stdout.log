@@ -1,0 +1,36 @@
+
+E:\code\betterLandlord>锘緻echo off 
+
+E:\code\betterLandlord>set "MOD_NAME=Piraeus.BetterLandlord" 
+
+E:\code\betterLandlord>set "LBL_PATH=D:\steam\steamapps\common\Luck be a Landlord" 
+
+E:\code\betterLandlord>set "MODS_PATH=D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods" 
+
+E:\code\betterLandlord>set "MOD_DEST_PATH=D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord" 
+
+E:\code\betterLandlord>set "BUILD_SOURCE_PATH=.\Piraeus.BetterLandlord\bin\release\net8.0" 
+
+E:\code\betterLandlord>echo "Copying mod files..." 
+"Copying mod files..."
+
+E:\code\betterLandlord>if not exist "D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord" (mkdir "D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord" ) 
+
+E:\code\betterLandlord>copy /Y ".\Piraeus.BetterLandlord\bin\release\net8.0\Piraeus.BetterLandlord.dll" "D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\" 
+已复制         1 个文件。
+
+E:\code\betterLandlord>copy /Y ".\Piraeus.BetterLandlord\manifest.json" "D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\mods\Piraeus.BetterLandlord\manifest.json" 
+已复制         1 个文件。
+
+E:\code\betterLandlord>echo "Starting game..." 
+"Starting game..."
+
+E:\code\betterLandlord>set GDWEAVE_CONSOLE=1 
+
+E:\code\betterLandlord>set GDWEAVE_NO_CACHE=1 
+
+E:\code\betterLandlord>set GDWEAVE_DUMP_SOURCE=1 
+
+E:\code\betterLandlord>set GDWEAVE_DUMP_PATCHED=1 
+
+E:\code\betterLandlord>"D:\steam\steamapps\common\Luck be a Landlord\Luck be a Landlord.exe" --verbose 
