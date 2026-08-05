@@ -63,6 +63,15 @@ class ProfilePopupDisplayPatch
     [Prefix]
     static string PrefixCode() => GdscriptUtil.TabifyIndent("""
         var __bh_prof_popup_display_start_us = -1
+        var __bh_prof_popup_display_reroll_start_us = -1
+        var __bh_prof_popup_display_reroll_resolve_end_us = -1
+        var __bh_prof_popup_display_reroll_id = 0
+        if has_meta('__bh_prof_reroll_start_us'):
+            __bh_prof_popup_display_reroll_start_us = int(get_meta('__bh_prof_reroll_start_us'))
+            if has_meta('__bh_prof_reroll_resolve_end_us'):
+                __bh_prof_popup_display_reroll_resolve_end_us = int(get_meta('__bh_prof_reroll_resolve_end_us'))
+            if has_meta('__bh_prof_reroll_id'):
+                __bh_prof_popup_display_reroll_id = int(get_meta('__bh_prof_reroll_id'))
         if $"/root/Main".has_method("_bh_profile_record"):
             __bh_prof_popup_display_start_us = OS.get_ticks_usec()
         """);
@@ -70,7 +79,17 @@ class ProfilePopupDisplayPatch
     [Postfix]
     static string PostfixCode() => GdscriptUtil.TabifyIndent("""
         if __bh_prof_popup_display_start_us >= 0:
-            $"/root/Main"._bh_profile_record("popup.display", __bh_prof_popup_display_start_us, {"emails_after": emails.size()})
+            var __bh_prof_popup_display_end_us = OS.get_ticks_usec()
+            var __bh_prof_popup_display_trigger = "reroll" if __bh_prof_popup_display_reroll_start_us >= 0 else "normal"
+            $"/root/Main"._bh_profile_record("popup.display", __bh_prof_popup_display_start_us, {"emails_after": emails.size(), "trigger": __bh_prof_popup_display_trigger, "reroll_id": __bh_prof_popup_display_reroll_id})
+            if __bh_prof_popup_display_reroll_start_us >= 0:
+                if __bh_prof_popup_display_reroll_resolve_end_us >= 0:
+                    $"/root/Main"._bh_profile_record("popup.reroll.queue_wait", __bh_prof_popup_display_reroll_resolve_end_us, {"reroll_id": __bh_prof_popup_display_reroll_id, "email_type": str(emails[0].type) if emails.size() > 0 else "none"})
+                $"/root/Main"._bh_profile_record("popup.reroll.display", __bh_prof_popup_display_start_us, {"reroll_id": __bh_prof_popup_display_reroll_id, "email_type": str(emails[0].type) if emails.size() > 0 else "none"})
+                $"/root/Main"._bh_profile_record("popup.reroll.total_to_display", __bh_prof_popup_display_reroll_start_us, {"reroll_id": __bh_prof_popup_display_reroll_id, "email_type": str(emails[0].type) if emails.size() > 0 else "none"})
+                remove_meta('__bh_prof_reroll_start_us')
+                if has_meta('__bh_prof_reroll_resolve_end_us'):
+                    remove_meta('__bh_prof_reroll_resolve_end_us')
         """);
 }
 
@@ -99,6 +118,8 @@ class ProfilePopupAddCardsPatch
     static string PrefixCode() => GdscriptUtil.TabifyIndent("""
         var __bh_prof_popup_add_cards_start_us = -1
         var __bh_prof_popup_add_cards_before = cards.size()
+        var __bh_prof_popup_add_cards_trigger = "reroll" if has_meta('__bh_prof_reroll_start_us') else "initial_or_normal"
+        var __bh_prof_popup_add_cards_reroll_id = int(get_meta('__bh_prof_reroll_id')) if has_meta('__bh_prof_reroll_start_us') and has_meta('__bh_prof_reroll_id') else 0
         if $"/root/Main".has_method("_bh_profile_record"):
             __bh_prof_popup_add_cards_start_us = OS.get_ticks_usec()
         """);
@@ -106,7 +127,7 @@ class ProfilePopupAddCardsPatch
     [Postfix]
     static string PostfixCode() => GdscriptUtil.TabifyIndent("""
         if __bh_prof_popup_add_cards_start_us >= 0:
-            $"/root/Main"._bh_profile_record("popup.display.add_cards", __bh_prof_popup_add_cards_start_us, {"email_type": str(emails[0].type), "cards_before": __bh_prof_popup_add_cards_before, "cards_after": cards.size(), "symbols_to_choose_from": symbols_to_choose_from, "items_to_choose_from": items_to_choose_from})
+            $"/root/Main"._bh_profile_record("popup.display.add_cards", __bh_prof_popup_add_cards_start_us, {"email_type": str(emails[0].type), "cards_before": __bh_prof_popup_add_cards_before, "cards_after": cards.size(), "symbols_to_choose_from": symbols_to_choose_from, "items_to_choose_from": items_to_choose_from, "trigger": __bh_prof_popup_add_cards_trigger, "reroll_id": __bh_prof_popup_add_cards_reroll_id})
         """);
 }
 

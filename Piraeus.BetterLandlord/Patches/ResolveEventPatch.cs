@@ -12,9 +12,21 @@ class ResolveEventPatch
         var __bh_prof_resolve_event_choice = '' if choice == null else str(choice)
         if emails.size() > 0:
             __bh_prof_resolve_event_type = str(emails[0].type)
+        var __bh_prof_reroll_start_us = -1
+        var __bh_prof_reroll_id = 0
         var __bh_prof_event_capture_start_us = -1
         if $"/root/Main".has_method("_bh_profile_record"):
             __bh_prof_resolve_event_start_us = OS.get_ticks_usec()
+            # A reroll's perceived delay ends only after the next popup display
+            # returns; retain this marker across the event queue/display boundary.
+            if __bh_prof_resolve_event_choice == 'reroll_pay' and (__bh_prof_resolve_event_type == 'add_tile' or __bh_prof_resolve_event_type == 'add_tile_prompt'):
+                __bh_prof_reroll_start_us = __bh_prof_resolve_event_start_us
+                if has_meta('__bh_prof_reroll_id'):
+                    __bh_prof_reroll_id = int(get_meta('__bh_prof_reroll_id')) + 1
+                else:
+                    __bh_prof_reroll_id = 1
+                set_meta('__bh_prof_reroll_id', __bh_prof_reroll_id)
+                set_meta('__bh_prof_reroll_start_us', __bh_prof_reroll_start_us)
             var __bh_prof_resolve_event_phase = 'popup'
             if __bh_prof_resolve_event_type == 'add_tile':
                 __bh_prof_resolve_event_phase = 'pick_symbol'
@@ -63,7 +75,11 @@ class ResolveEventPatch
     [Postfix]
     static string PostfixCode() => GdscriptUtil.TabifyIndent("""
         if __bh_prof_resolve_event_start_us >= 0 and $"/root/Main".has_method("_bh_profile_record"):
-            $"/root/Main"._bh_profile_record("popup.resolve_event", __bh_prof_resolve_event_start_us, {"email_type": __bh_prof_resolve_event_type, "choice": __bh_prof_resolve_event_choice})
+            $"/root/Main"._bh_profile_record("popup.resolve_event", __bh_prof_resolve_event_start_us, {"email_type": __bh_prof_resolve_event_type, "choice": __bh_prof_resolve_event_choice, "trigger": "reroll" if __bh_prof_reroll_start_us >= 0 else "normal", "reroll_id": __bh_prof_reroll_id})
+            if __bh_prof_reroll_start_us >= 0:
+                var __bh_prof_reroll_resolve_end_us = OS.get_ticks_usec()
+                set_meta('__bh_prof_reroll_resolve_end_us', __bh_prof_reroll_resolve_end_us)
+                $"/root/Main"._bh_profile_record("popup.reroll.resolve_event", __bh_prof_reroll_start_us, {"email_type": __bh_prof_resolve_event_type, "reroll_id": __bh_prof_reroll_id, "cards_before": cards.size(), "emails_after": emails.size()})
             $"/root/Main"._bh_profile_schedule_flush()
             $"/root/Main"._bh_profile_end()
         """);

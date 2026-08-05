@@ -1,4 +1,4 @@
-ï»¿using SlotWeave;
+using SlotWeave;
 using Piraeus.BetterLandlord.Ipc;
 using Piraeus.BetterLandlord.Patches;
 using Piraeus.BetterLandlord.Storage;
@@ -20,6 +20,10 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new PerformanceProfileSourceMod());
         _modInterface.RegisterSourceMod(new ResolveEventProfileSourceMod());
         _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
+        // Fine-grained add_cards() timing spans; startup-validated against the patched Pop-up source.
+        _modInterface.RegisterSourceMod(new AddCardsProfileSourceMod());
+        // Choice-card reuse remains disabled pending a separate lifecycle validation.
+        // _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
         _modInterface.RegisterSourceMod(new DestroyedTypeCountCacheSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node
@@ -28,7 +32,7 @@ public class Mod : IMod
         // ISourceMod: Choice RNG replacements in Pop-up
         _modInterface.RegisterSourceMod(new ChoiceRngSourceMod());
 
-        // ReelRNG: inject wrappers only (no full-file Regex â€” regex on this
+        // ReelRNG: inject wrappers only (no full-file Regex â€?regex on this
         // heavily-instantiated script triggers GDScript reload crash)
         _modInterface.RegisterSourceMod(new ReelRngRefSourceMod());
 
@@ -44,7 +48,7 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new ClipboardPreserveMod());
 
         // ISourceMod: guillotine end-run trigger at Coins/Items trigger point
-        // (replaces GuillotineEndPatch â€” fires before animation, board intact)
+        // (replaces GuillotineEndPatch â€?fires before animation, board intact)
         _modInterface.RegisterSourceMod(new GuillotineTriggerSourceMod());
 
         // ISourceMod: seed UI on Title node (Main.tscn::6)
@@ -69,12 +73,12 @@ public class Mod : IMod
                      ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterLandlord");
         var store = new HistoryStore(userDataDir);
 
-        // Rebuild lightweight manifest (fast â€” uses JsonDocument, not full deserialization)
+        // Rebuild lightweight manifest (fast â€?uses JsonDocument, not full deserialization)
         store.RebuildManifest();
 
         _pipeServer = new GamePipeServer(store, userDataDir, modDir, _modInterface.Logger);
 
-        // Register GameStateBus reader for seed request signal (GDScript â†’ C#, ~16ms latency)
+        // Register GameStateBus reader for seed request signal (GDScript â†?C#, ~16ms latency)
         _modInterface.RegisterGameStateReader(_pipeServer.SeedReader);
 
         _pipeServer.Start();
@@ -90,7 +94,7 @@ public class Mod : IMod
 
             _modInterface.Logger.Information(
                 "[BetterLandlord] Migration done: {Migrated} complete + {Truncated} truncated + {Partial} partial " +
-                "({Skipped} skipped, {Empty} empty, {Corrupted} corrupted, {Failed} failed) â€” history db at {Dir}",
+                "({Skipped} skipped, {Empty} empty, {Corrupted} corrupted, {Failed} failed) â€?history db at {Dir}",
                 result.Migrated, result.MigratedTruncated, result.MigratedPartial,
                 result.Skipped, result.EmptyFiles, result.Corrupted, result.Failed,
                 runner.HistoryDir);
