@@ -22,10 +22,13 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
         // Fine-grained add_cards() timing spans; startup-validated against the patched Pop-up source.
         _modInterface.RegisterSourceMod(new AddCardsProfileSourceMod());
-        // Full Card initialization runs once at title time, then each cached Card is detached
-        // from the SceneTree until it is selected for a three-choice offer.
-        _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
+        // Disabled: ChoiceCardReuseSourceMod retains hundreds of detached Card UI trees for
+        // the process lifetime. Godot then reports leaked Pico/Icon/Control instances and
+        // blocks window close while it tears those trees down. Native Card lifetime is safer.
+        // _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
         _modInterface.RegisterSourceMod(new DestroyedTypeCountCacheSourceMod());
+        // ISourceMod: keeps native Sandbox symbol/item state between spins for multi-turn testing.
+        _modInterface.RegisterSourceMod(new SandboxStatePersistenceSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node
         _modInterface.RegisterSourceMod(new RngInfrastructureSourceMod());
@@ -38,6 +41,8 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new ReelRngRefSourceMod());
 
         _modInterface.RegisterSourceMod(new SlotIconRngSourceMod());
+        // ISourceMod: fixes Dove prevention growth and Midas Bomb x Wildcard scoring.
+        _modInterface.RegisterSourceMod(new SymbolResolutionBugFixSourceMod());
         _modInterface.RegisterSourceMod(new BadgeFixSourceMod());  // clears stale displayed_multiplier_value
         _modInterface.RegisterSourceMod(new HoverIconRemovalSourceMod());
         _modInterface.RegisterSourceMod(new ItemRngSourceMod());
