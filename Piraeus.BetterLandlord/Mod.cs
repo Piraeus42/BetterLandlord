@@ -22,9 +22,9 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
         // Fine-grained add_cards() timing spans; startup-validated against the patched Pop-up source.
         _modInterface.RegisterSourceMod(new AddCardsProfileSourceMod());
-        // Disabled: full Card-tree preloading regressed title-frame cost and popup layout.
-        // Retained for postmortem; do not re-enable without an isolated detached cache design.
-        // _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
+        // Full Card initialization runs once at title time, then each cached Card is detached
+        // from the SceneTree until it is selected for a three-choice offer.
+        _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
         _modInterface.RegisterSourceMod(new DestroyedTypeCountCacheSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node

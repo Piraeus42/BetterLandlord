@@ -4,9 +4,10 @@ namespace Piraeus.BetterLandlord.Patches;
 
 /// <summary>
 /// Warms one fully initialized Card for every currently loaded symbol and item
-/// (including essences) while the title screen is active. Ordinary three-card
-/// symbol/item offers then reparent those finished controls instead of running
-/// Card._ready(), text construction, and layout on the reroll input path.
+/// (including essences) while the title screen is active. Each card briefly enters
+/// Popup's native choice container for its one-time _ready() initialization, then
+/// is removed from the SceneTree and retained only by the cache dictionary. This
+/// avoids leaving hidden Card subtrees in Main's global per-frame UI groups.
 /// </summary>
 public sealed class ChoiceCardReuseSourceMod : ISourceMod
 {
@@ -47,7 +48,7 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\t\t__bl_choice_preload_start_us = OS.get_ticks_usec()",
             "\t$\"Pop-up Sprite/Pop-up\"._bl_preload_choice_cards()",
             "\tif __bl_choice_preload_start_us >= 0:",
-            "\t\t_bh_profile_record(\"popup.choice_card_cache.preload\", __bl_choice_preload_start_us, {\"symbols\": tile_database.size(), \"items_including_essences\": item_database.size()})"
+            "\t\t_bh_profile_record(\"popup.choice_card_cache.preload\", __bl_choice_preload_start_us, {\"symbols\": tile_database.size(), \"items_including_essences\": item_database.size(), \"storage\": \"detached\"})"
         })))
             return originalSource;
 
@@ -65,10 +66,12 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
         if (!Replace(ref source, "var cards = []", string.Join(eol, new[]
         {
             "var cards = []",
-            "# All cached controls remain under this Popup, so Card._free_if_orphaned",
-            "# never treats a card between offers as an orphan.",
+            "# Detached Card references only. Cached cards have no parent between offers,",
+            "# so their Card/Outline Label subtrees are absent from every SceneTree group.",
             "var _bl_choice_card_cache = {}",
-            "var _bl_choice_card_cache_host = null"
+            "# A title() call happens after every run.  The card database is static for the",
+            "# process lifetime, so retain a complete detached cache instead of rebuilding it.",
+            "var _bl_choice_card_cache_ready = false"
         })))
             return originalSource;
 
@@ -101,18 +104,30 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
         })))
             return originalSource;
 
+        // Keep the saved-card path explicitly scoped inside its native else block.
+        // The previous broad trailing-push replacement escaped this else and doubled
+        // a three-choice offer into six cards.
         if (!Replace(ref addCards, string.Join(eol, new[]
         {
+            "\t\t\telse:",
+            "\t\t\t\tif database.has(saved_card_types[c]):",
+            "\t\t\t\t\tcard.data = database[saved_card_types[c]]",
+            "\t\t\t\telif email.type == \"add_tile\":",
+            "\t\t\t\t\tcard.data = $\"/root/Main/\".tile_database[\"missing\"]",
             "\t\t\t\telif email.type == \"add_item\":",
             "\t\t\t\t\tcard.data = $\"/root/Main/\".item_database[\"item_missing\"]",
             "\t\t\t\tcards.push_back(card)"
         }), string.Join(eol, new[]
         {
+            "\t\t\telse:",
+            "\t\t\t\tif database.has(saved_card_types[c]):",
+            "\t\t\t\t\tcard.data = database[saved_card_types[c]]",
+            "\t\t\t\telif email.type == \"add_tile\":",
+            "\t\t\t\t\tcard.data = $\"/root/Main/\".tile_database[\"missing\"]",
             "\t\t\t\telif email.type == \"add_item\":",
             "\t\t\t\t\tcard.data = $\"/root/Main/\".item_database[\"item_missing\"]",
-            "\t\t\tif stcf <= 3:",
             "\t\t\t\tcard = _bl_take_or_mark_choice_card(card)",
-            "\t\t\tcards.push_back(card)"
+            "\t\t\t\tcards.push_back(card)"
         })))
             return originalSource;
 
@@ -145,8 +160,8 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             return originalSource;
 
         // ResolveEventProfileSourceMod inserts its own span between the native
-        // queue_free loop and cards.clear().  Replace only the loop so this
-        // stays composable; its later cards.clear() is harmless after release.
+        // queue_free loop and cards.clear(). Replace only the loop so this stays
+        // composable; its later cards.clear() is harmless after release.
         var resolveStart = source.IndexOf("func resolve_event(", StringComparison.Ordinal);
         if (resolveStart < 0)
             return originalSource;
@@ -165,13 +180,6 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "func _bl_choice_card_key(is_item, card_type):",
             "\treturn (\"item:\" if is_item else \"symbol:\") + str(card_type)",
             "",
-            "func _bl_get_choice_card_cache_host():",
-            "\tif _bl_choice_card_cache_host == null:",
-            "\t\t_bl_choice_card_cache_host = Node.new()",
-            "\t\t_bl_choice_card_cache_host.name = \"BL Choice Card Cache\"",
-            "\t\tadd_child(_bl_choice_card_cache_host)",
-            "\treturn _bl_choice_card_cache_host",
-            "",
             "func _bl_park_choice_card(card):",
             "\tcard.active = false",
             "\tcard.hovering = false",
@@ -182,19 +190,20 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\tcard.r_x_mod = 0",
             "\tcard.rect_position = Vector2(0, 0)",
             "\tcard.visible = false",
-            "\t# Invisible controls still receive Main's Update-group dispatch and _input.",
-            "\t# Parked cards must be completely detached from both paths.",
             "\tcard.set_process_input(false)",
-            "\tcard.remove_from_group(\"Selectable\")",
-            "\tcard.remove_from_group(\"Update\")",
             "\tif $\"/root/Main\".selected_node == card:",
             "\t\t$\"/root/Main\".selected_node = null",
             "",
+            "func _bl_disconnect_choice_card_orphan_cleanup(node):",
+            "\t# Card.tscn and several nested UI scenes subscribe to Utils.freeing_orphans.",
+            "\t# A cached choice card is intentionally detached, so unregister the entire",
+            "\t# subtree before detaching it; explicit cache eviction still queue_frees it.",
+            "\tif node.has_method(\"_free_if_orphaned\") and Utils.is_connected(\"freeing_orphans\", node, \"_free_if_orphaned\"):",
+            "\t\tUtils.disconnect(\"freeing_orphans\", node, \"_free_if_orphaned\")",
+            "\tfor child in node.get_children():",
+            "\t\t_bl_disconnect_choice_card_orphan_cleanup(child)",
+            "",
             "func _bl_activate_choice_card(card):",
-            "\tif not card.is_in_group(\"Selectable\"):",
-            "\t\tcard.add_to_group(\"Selectable\")",
-            "\tif not card.is_in_group(\"Update\"):",
-            "\t\tcard.add_to_group(\"Update\")",
             "\tcard.set_process_input(true)",
             "\tcard.visible = true",
             "\treturn card",
@@ -205,10 +214,19 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\tcard.data = card_data",
             "\tcard.set_meta(\"__bl_choice_card_poolable\", true)",
             "\tcard.set_meta(\"__bl_choice_card_cache_key\", _bl_choice_card_key(is_item, card_data.type))",
-            "\t# _ready() executes once while data/item are already bound, then the card is parked.",
-            "\t_bl_get_choice_card_cache_host().add_child(card)",
+            "\t# Nested Card scenes infer setup from this exact native parent path.",
+            "\t# Run _ready() in the real choice container once, then detach the finished subtree.",
+            "\tcontainer.add_child(card)",
+            "\t_bl_disconnect_choice_card_orphan_cleanup(card)",
+            "\tcontainer.remove_child(card)",
             "\t_bl_park_choice_card(card)",
             "\treturn card",
+            "",
+            "func _bl_store_choice_card(card):",
+            "\tvar cache_key = str(card.get_meta(\"__bl_choice_card_cache_key\"))",
+            "\tif not _bl_choice_card_cache.has(cache_key):",
+            "\t\t_bl_choice_card_cache[cache_key] = []",
+            "\t_bl_choice_card_cache[cache_key].push_back(card)",
             "",
             "func _bl_clear_choice_card_cache():",
             "\tfor cache_key in _bl_choice_card_cache.keys():",
@@ -218,9 +236,14 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\t_bl_choice_card_cache.clear()",
             "",
             "func _bl_preload_choice_cards():",
-            "\t# title() calls this after load_data(), so this includes enabled mod cards as",
-            "\t# well as all base symbols, regular items, and every Essence in item_database.",
+            "\t# A completed cache survives title() transitions.  Only active offer cards need",
+            "\t# returning to it here; rebuilding 395 fully initialized Cards would block the",
+            "\t# Return to Main Menu click for seconds.",
             "\t_bl_release_choice_cards()",
+            "\tif _bl_choice_card_cache_ready:",
+            "\t\treturn",
+            "\t# Cards must be initialized under Container: nested Icon scenes inspect that path.",
+            "\t# They are removed again before the title screen becomes interactive.",
             "\t_bl_clear_choice_card_cache()",
             "\tfor card_type in $\"/root/Main\".tile_database.keys():",
             "\t\tvar card_data = $\"/root/Main\".tile_database[card_type]",
@@ -232,6 +255,8 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\t\tif typeof(card_data) == TYPE_DICTIONARY and card_data.has(\"type\"):",
             "\t\t\tvar cache_key = _bl_choice_card_key(true, card_data.type)",
             "\t\t\t_bl_choice_card_cache[cache_key] = [_bl_create_warmed_choice_card(true, card_data)]",
+            "\t_bl_choice_card_cache_ready = true",
+
             "",
             "func _bl_take_or_mark_choice_card(card):",
             "\tif card == null or not card.data.has(\"type\"):",
@@ -241,8 +266,8 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\t\tvar cached_card = _bl_choice_card_cache[cache_key].pop_back()",
             "\t\tcard.queue_free()",
             "\t\treturn _bl_activate_choice_card(cached_card)",
-            "\t# A duplicate offer type can consume the one prewarmed instance. The native",
-            "\t# fallback is initialized once, then retained as a spare for future offers.",
+            "\t# A duplicate offer type can consume the one warmed instance. The native fallback",
+            "\t# will initialize normally, then becomes a detached spare after its offer closes.",
             "\tcard.set_meta(\"__bl_choice_card_poolable\", true)",
             "\tcard.set_meta(\"__bl_choice_card_cache_key\", cache_key)",
             "\treturn card",
@@ -250,15 +275,12 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "func _bl_release_choice_cards():",
             "\tfor card in cards:",
             "\t\tif card.has_meta(\"__bl_choice_card_poolable\") and bool(card.get_meta(\"__bl_choice_card_poolable\")):",
-            "\t\t\t_bl_park_choice_card(card)",
+            "\t\t\t_bl_disconnect_choice_card_orphan_cleanup(card)",
             "\t\t\tvar parent = card.get_parent()",
             "\t\t\tif parent != null:",
             "\t\t\t\tparent.remove_child(card)",
-            "\t\t\t_bl_get_choice_card_cache_host().add_child(card)",
-            "\t\t\tvar cache_key = str(card.get_meta(\"__bl_choice_card_cache_key\"))",
-            "\t\t\tif not _bl_choice_card_cache.has(cache_key):",
-            "\t\t\t\t_bl_choice_card_cache[cache_key] = []",
-            "\t\t\t_bl_choice_card_cache[cache_key].push_back(card)",
+            "\t\t\t_bl_park_choice_card(card)",
+            "\t\t\t_bl_store_choice_card(card)",
             "\t\telse:",
             "\t\t\tcard.queue_free()",
             "\tcards.clear()"
