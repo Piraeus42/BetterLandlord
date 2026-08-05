@@ -22,8 +22,8 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
         // Fine-grained add_cards() timing spans; startup-validated against the patched Pop-up source.
         _modInterface.RegisterSourceMod(new AddCardsProfileSourceMod());
-        // Choice-card reuse remains disabled pending a separate lifecycle validation.
-        // _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
+        // Title-time, per-type choice-card cache: prevents Card._ready/layout on reroll.
+        _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
         _modInterface.RegisterSourceMod(new DestroyedTypeCountCacheSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node
