@@ -52,7 +52,24 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
         })))
             return originalSource;
 
-        return source[..titleStart] + title + source[titleEnd..];
+        source = source[..titleStart] + title + source[titleEnd..];
+
+        // The cache is intentionally detached from the SceneTree, so it is not
+        // covered by normal child teardown. Keep a Main-side fallback in case
+        // the process exits without first delivering WM_QUIT_REQUEST.
+        if (!source.Contains("func _exit_tree():", StringComparison.Ordinal))
+        {
+            source += eol + string.Join(eol, new[]
+            {
+                "",
+                "func _exit_tree():",
+                "\tvar __bl_choice_popup = get_node_or_null(\"Pop-up Sprite/Pop-up\")",
+                "\tif __bl_choice_popup != null and __bl_choice_popup.has_method(\"_bl_choice_card_cache_shutdown\"):",
+                "\t\t__bl_choice_popup._bl_choice_card_cache_shutdown()"
+            }) + eol;
+        }
+
+        return source;
     }
 
     private static string ModifyPopup(string source)
@@ -71,7 +88,9 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "var _bl_choice_card_cache = {}",
             "# A title() call happens after every run.  The card database is static for the",
             "# process lifetime, so retain a complete detached cache instead of rebuilding it.",
-            "var _bl_choice_card_cache_ready = false"
+            "var _bl_choice_card_cache_ready = false",
+            "# Set once at shutdown; all cleanup entry points are intentionally idempotent.",
+            "var _bl_choice_card_cache_shutdown_done = false"
         })))
             return originalSource;
 
@@ -228,14 +247,37 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\t\t_bl_choice_card_cache[cache_key] = []",
             "\t_bl_choice_card_cache[cache_key].push_back(card)",
             "",
+            "func _bl_destroy_cached_choice_card(card):",
+            "\tif not is_instance_valid(card):",
+            "\t\treturn",
+            "\t# Cached cards intentionally bypass freeing_orphans; disconnect that",
+            "\t# callback before destroying the complete detached subtree.",
+            "\t_bl_disconnect_choice_card_orphan_cleanup(card)",
+            "\tvar parent = card.get_parent()",
+            "\tif parent != null:",
+            "\t\tparent.remove_child(card)",
+            "\t# This is used only for cache eviction/shutdown. Synchronous free is",
+            "\t# required because a detached node may never reach a SceneTree frame.",
+            "\tcard.free()",
+            "",
             "func _bl_clear_choice_card_cache():",
             "\tfor cache_key in _bl_choice_card_cache.keys():",
             "\t\tfor card in _bl_choice_card_cache[cache_key]:",
-            "\t\t\tif is_instance_valid(card):",
-            "\t\t\t\tcard.queue_free()",
+            "\t\t\t_bl_destroy_cached_choice_card(card)",
             "\t_bl_choice_card_cache.clear()",
             "",
+            "func _bl_choice_card_cache_shutdown():",
+            "\tif _bl_choice_card_cache_shutdown_done:",
+            "\t\treturn",
+            "\t_bl_choice_card_cache_shutdown_done = true",
+            "\t# Move any currently displayed poolable cards into the same explicit",
+            "\t# destruction path; non-poolable cards retain native queue_free behavior.",
+            "\t_bl_release_choice_cards()",
+            "\t_bl_clear_choice_card_cache()",
+            "",
             "func _bl_preload_choice_cards():",
+            "\tif _bl_choice_card_cache_shutdown_done:",
+            "\t\treturn",
             "\t# A completed cache survives title() transitions.  Only active offer cards need",
             "\t# returning to it here; rebuilding 395 fully initialized Cards would block the",
             "\t# Return to Main Menu click for seconds.",

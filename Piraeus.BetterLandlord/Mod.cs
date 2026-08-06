@@ -22,10 +22,9 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
         // Fine-grained add_cards() timing spans; startup-validated against the patched Pop-up source.
         _modInterface.RegisterSourceMod(new AddCardsProfileSourceMod());
-        // Disabled: ChoiceCardReuseSourceMod retains hundreds of detached Card UI trees for
-        // the process lifetime. Godot then reports leaked Pico/Icon/Control instances and
-        // blocks window close while it tears those trees down. Native Card lifetime is safer.
-        // _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
+        // Preload and reuse fully initialized choice cards. The source mod includes
+        // explicit WM_QUIT_REQUEST/_exit_tree eviction so detached cards do not leak.
+        _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
         _modInterface.RegisterSourceMod(new DestroyedTypeCountCacheSourceMod());
         // ISourceMod: keeps native Sandbox symbol/item state between spins for multi-turn testing.
         _modInterface.RegisterSourceMod(new SandboxStatePersistenceSourceMod());
