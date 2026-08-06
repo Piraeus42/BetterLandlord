@@ -49,6 +49,8 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new ItemRngSourceMod());
         _modInterface.RegisterSourceMod(new ReelExtraRngSourceMod());
         _modInterface.RegisterSourceMod(new LandlordRngRefSourceMod());
+        // ISourceMod: corrects the base-game Simplified Chinese Fine Print 37 text.
+        _modInterface.RegisterSourceMod(new FinePrintChineseLocalizationSourceMod());
         _modInterface.RegisterSourceMod(new CosmeticRngSourceMod());
 
         // ISourceMod: clipboard preservation (TTButton clears clipboard for TTS)
