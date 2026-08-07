@@ -30,5 +30,7 @@ class DoveProtectionStatePatch
             for __bl_dove_reset_reel in reels:
                 for __bl_dove_reset_icon in __bl_dove_reset_reel.icons:
                     __bl_dove_reset_icon.dove_destroyed = false
+                    if __bl_dove_reset_icon.has_meta("_bl_dove_protection_sources"):
+                        __bl_dove_reset_icon.remove_meta("_bl_dove_protection_sources")
         """);
 }
