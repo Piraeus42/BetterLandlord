@@ -400,8 +400,8 @@ func _bh_apply_seed():
 # _bh_end_run is re-entrant and debounced — safe to call unconditionally.
 func _notification(what: int):
     if what == 1006:
-        # Detached choice-card caches are outside Main's child tree. Evict them
-        # before run-end serialization and before Godot begins window teardown.
+        # In-tree suspended choice-card caches still need explicit eviction before
+        # run-end serialization and before Godot begins window teardown.
         if has_node(""Pop-up Sprite/Pop-up""):
             var _bl_choice_popup = $""Pop-up Sprite/Pop-up""
             if _bl_choice_popup.has_method(""_bl_choice_card_cache_shutdown""):
