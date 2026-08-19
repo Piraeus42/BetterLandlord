@@ -18,6 +18,8 @@ public class Mod : IMod
         // ISourceMod: event capture helpers on Main node (Main.tscn::1)
         _modInterface.RegisterSourceMod(new MainScriptSourceMod());
         _modInterface.RegisterSourceMod(new PerformanceProfileSourceMod());
+        // Reuse one counted_symbols key array per resolver invocation.
+        _modInterface.RegisterSourceMod(new CountedSymbolsKeySnapshotSourceMod());
         _modInterface.RegisterSourceMod(new ResolveEventProfileSourceMod());
         _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
         // Fine-grained add_cards() timing spans; startup-validated against the patched Pop-up source.
