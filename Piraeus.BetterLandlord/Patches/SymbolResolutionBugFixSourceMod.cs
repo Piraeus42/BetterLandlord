@@ -26,6 +26,7 @@ public sealed class SymbolResolutionBugFixSourceMod : ISourceMod
             !RemoveDoveProtectionTrace(ref source) ||
             !RemoveOldDoveLifecycleHelpers(ref source) ||
             !DisableNativeDoveComparisonGrowth(ref source, eol) ||
+            !DisableNativeDoveTargetComparisonGrowth(ref source, eol) ||
             !InjectDoveProtectionSourceRecord(ref source, eol) ||
             !InjectDoveProtectionCommitGrowth(ref source, eol))
             return originalSource;
@@ -170,6 +171,22 @@ public sealed class SymbolResolutionBugFixSourceMod : ISourceMod
         const string replacement = "\t\t\t\t\t\t\tif destroyer != null:\n" +
                                    "\t\t\t\t\t\t\t\t# BetterLandlord: Dove growth is committed in do_diff, never during comparison.\n" +
                                    "\t\t\t\t\t\t\t\tpass";
+
+        return ReplaceOnceAfter(ref source, "func do_comp(comparison, c, target, c_effects, c_tbe):", original, replacement, eol);
+    }
+
+    private static bool DisableNativeDoveTargetComparisonGrowth(ref string source, string eol)
+    {
+        const string marker = "# BetterLandlord: target-side Dove growth is committed in do_diff, never during comparison.";
+        if (source.Contains(marker, StringComparison.Ordinal))
+            return true;
+
+        const string original = "\t\tvar tmp_adj_icons = get_adjacent_icons()\n" +
+                                "\t\tfor x in range(reels.reel_width):\n" +
+                                "\t\t\tfor y in range(reels.reel_height):\n" +
+                                "\t\t\t\tif reels.displayed_icons[y][x].type == \"dove\" and tmp_adj_icons.has(reels.displayed_icons[y][x]):\n" +
+                                "\t\t\t\t\tadd_effect_to_symbol(grid_position.y, grid_position.x, {\"comparisons\": [{\"a\": \"dove_destroyed\", \"b\": true}], \"anim\": \"circle\", \"anim_targets\": [self, reels.displayed_icons[y][x]], \"sfx_override\": \"coo\", \"target\": reels.displayed_icons[y][x], \"value_to_change\": \"permanent_bonus\", \"diff\": reels.displayed_icons[y][x].values[0]})";
+        const string replacement = "\t\t# BetterLandlord: target-side Dove growth is committed in do_diff, never during comparison.";
 
         return ReplaceOnceAfter(ref source, "func do_comp(comparison, c, target, c_effects, c_tbe):", original, replacement, eol);
     }
