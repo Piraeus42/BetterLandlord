@@ -17,21 +17,12 @@ public class Mod : IMod
 
         // ISourceMod: event capture helpers on Main node (Main.tscn::1)
         _modInterface.RegisterSourceMod(new MainScriptSourceMod());
-        _modInterface.RegisterSourceMod(new PerformanceProfileSourceMod());
         // Reuse one counted_symbols key array per resolver invocation.
         _modInterface.RegisterSourceMod(new CountedSymbolsKeySnapshotSourceMod());
-        _modInterface.RegisterSourceMod(new ResolveEventProfileSourceMod());
-        _modInterface.RegisterSourceMod(new PopupDisplayProfileSourceMod());
-        // Fine-grained add_cards() timing spans; startup-validated against the patched Pop-up source.
-        _modInterface.RegisterSourceMod(new AddCardsProfileSourceMod());
         // Preload and reuse fully initialized choice cards. The source mod includes
         // explicit WM_QUIT_REQUEST/_exit_tree eviction so detached cards do not leak.
         _modInterface.RegisterSourceMod(new ChoiceCardReuseSourceMod());
         _modInterface.RegisterSourceMod(new DestroyedTypeCountCacheSourceMod());
-        // ISourceMod: keeps native Sandbox symbol/item state between spins for multi-turn testing.
-        _modInterface.RegisterSourceMod(new SandboxStatePersistenceSourceMod());
-        // ISourceMod: sandbox_consistent preserves only the first configured spin.
-        _modInterface.RegisterSourceMod(new SandboxFirstSpinLayoutSourceMod());
 
         // ISourceMod: RNG infrastructure (PCGRng class, init_rng) on Main node
         _modInterface.RegisterSourceMod(new RngInfrastructureSourceMod());

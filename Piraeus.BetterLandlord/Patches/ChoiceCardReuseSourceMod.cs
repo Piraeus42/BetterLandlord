@@ -44,12 +44,7 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\tload_data(true, false, true)",
             "\t# Database loading is complete here. Warm the complete current mod/base card set",
             "\t# before the title frame becomes interactive, never during a choice or reroll.",
-            "\tvar __bl_choice_preload_start_us = -1",
-            "\tif has_method(\"_bh_profile_record\"): ",
-            "\t\t__bl_choice_preload_start_us = OS.get_ticks_usec()",
             "\t$\"Pop-up Sprite/Pop-up\"._bl_preload_choice_cards()",
-            "\tif __bl_choice_preload_start_us >= 0:",
-            "\t\t_bh_profile_record(\"popup.choice_card_cache.preload\", __bl_choice_preload_start_us, {\"symbols\": tile_database.size(), \"items_including_essences\": item_database.size(), \"storage\": \"detached\"})"
         })))
             return originalSource;
 
@@ -110,9 +105,6 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
         })))
             return originalSource;
 
-        // AddCardsProfileSourceMod runs before this source mod.  It retains the
-        // native lightweight instance timing while this patch swaps the completed
-        // candidate for a title-warmed Card before update_card_positions().
         var addCardsStart = source.IndexOf("func add_cards(f_rarities):", StringComparison.Ordinal);
         var addCardsEnd = addCardsStart < 0
             ? -1
@@ -194,9 +186,8 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
         }), "\t_bl_release_choice_cards()"))
             return originalSource;
 
-        // ResolveEventProfileSourceMod inserts its own span between the native
-        // queue_free loop and cards.clear(). Replace only the loop so this stays
-        // composable; its later cards.clear() is harmless after release.
+        // Replace only the native loop so the cache release stays composable with
+        // the surrounding popup lifecycle.
         var resolveStart = source.IndexOf("func resolve_event(", StringComparison.Ordinal);
         if (resolveStart < 0)
             return originalSource;

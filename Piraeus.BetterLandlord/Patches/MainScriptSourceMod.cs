@@ -1,4 +1,4 @@
-﻿using SlotWeave.Modding;
+using SlotWeave.Modding;
 
 namespace Piraeus.BetterLandlord.Patches;
 
@@ -97,12 +97,7 @@ func _bh_add_event(type_str, payload):
         'type': type_str,
         'payload': payload
     })
-    var _bh_events_mark_dirty_start_us = OS.get_ticks_usec()
     _bh_events_dirty = true
-    if has_method('_bh_profile_record'):
-        _bh_profile_record('mod.events_mark_dirty', _bh_events_mark_dirty_start_us, {
-            'event_count': _bh_events.size()
-        })
 
 func _bh_debug_log(msg: String):
     if not OS.is_debug_build():
@@ -655,23 +650,13 @@ func _bh_persist_events_incremental(force_snapshot = false):
         _d.make_dir('user://betterHistory')
 
     var _first_index = 0 if _must_snapshot else _bh_events_persisted_count
-    var _serialize_start_us = OS.get_ticks_usec()
     var _lines = ''
     for _i in range(_first_index, _bh_events.size()):
         _lines += JSON.print(_bh_events[_i]) + '\n'
-    var _serialize_us = max(0, OS.get_ticks_usec() - _serialize_start_us)
     var _serialized = _bh_events.size() - _first_index
-    if has_method('_bh_profile_record'):
-        _bh_profile_record('mod.events_incremental_serialize', _serialize_start_us, {
-            'event_count': _bh_events.size(),
-            'serialized_events': _serialized,
-            'snapshot': _must_snapshot,
-            'bytes': _lines.length()
-        })
 
     var _path = 'user://betterHistory/events_' + _bh_run_id + '.jsonl'
     var _file = File.new()
-    var _write_start_us = OS.get_ticks_usec()
     var _mode = File.WRITE if _must_snapshot or not _file.file_exists(_path) else File.READ_WRITE
     var _open_error = _file.open(_path, _mode)
     if _open_error != OK:
@@ -680,21 +665,6 @@ func _bh_persist_events_incremental(force_snapshot = false):
         _file.seek_end()
     _file.store_string(_lines)
     _file.close()
-    var _write_us = max(0, OS.get_ticks_usec() - _write_start_us)
-    if has_method('_bh_profile_record'):
-        _bh_profile_record('mod.events_incremental_write', _write_start_us, {
-            'event_count': _bh_events.size(),
-            'serialized_events': _serialized,
-            'snapshot': _must_snapshot,
-            'bytes': _lines.length()
-        })
-        if _must_snapshot:
-            _bh_profile_record('mod.events_force_flush', _serialize_start_us, {
-                'event_count': _bh_events.size(),
-                'serialized_events': _serialized,
-                'serialize_us': _serialize_us,
-                'write_us': _write_us
-            })
 
     _bh_events_persisted_count = _bh_events.size()
     _bh_events_dirty = false
