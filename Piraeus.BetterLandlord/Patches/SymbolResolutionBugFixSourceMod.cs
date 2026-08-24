@@ -195,19 +195,46 @@ public sealed class SymbolResolutionBugFixSourceMod : ISourceMod
     private static bool DisableNativeDoveConditionalGrowth(ref string source, string eol)
     {
         const string marker = "# BetterLandlord: check_dove_conditionals growth is committed in do_diff, never during comparison.";
-        if (source.Contains(marker, StringComparison.Ordinal))
+        const string validMarker = "pass " + marker;
+
+        // Older cached scripts may contain only the marker comment. A comment
+        // is not a valid GDScript function body, so repair it before checking
+        // whether this patch has already been applied.
+        RepairMalformedDoveConditionalMarkers(ref source, marker);
+        if (source.Contains(validMarker, StringComparison.Ordinal))
             return true;
 
         const string firstOriginal = "\t\t\t\t\t\tadd_effect_to_symbol(grid_position.y, grid_position.x, {\"comparisons\": [{\"a\": \"dove_destroyed\", \"b\": true}], \"anim\": \"circle\", \"anim_targets\": [self, a], \"sfx_override\": \"coo\", \"target\": a, \"value_to_change\": \"permanent_bonus\", \"diff\": a.values[0]})";
-        const string firstReplacement = "\t\t\t\t\t\t# BetterLandlord: check_dove_conditionals growth is committed in do_diff, never during comparison.";
+        const string firstReplacement = "\t\t\t\t\t\tpass # BetterLandlord: check_dove_conditionals growth is committed in do_diff, never during comparison.";
         const string giverOriginal = "\t\t\t\t\tc.giver.add_effect_to_symbol(c.giver.grid_position.y, c.giver.grid_position.x, {\"comparisons\": [{\"a\": \"dove_destroyed\", \"b\": true}], \"anim\": \"circle\", \"anim_targets\": [c.giver, a], \"sfx_override\": \"coo\", \"target\": a, \"value_to_change\": \"permanent_bonus\", \"diff\": a.values[0], \"one_time\": true})";
-        const string giverReplacement = "\t\t\t\t\t# BetterLandlord: check_dove_conditionals growth is committed in do_diff, never during comparison.";
+        const string giverReplacement = "\t\t\t\t\tpass # BetterLandlord: check_dove_conditionals growth is committed in do_diff, never during comparison.";
         const string destroyedGiverOriginal = "\t\t\t\t\t\tc.giver.add_effect_to_symbol(c.giver.grid_position.y, c.giver.grid_position.x, {\"comparisons\": [{\"a\": \"dove_destroyed\", \"b\": true}], \"anim\": \"circle\", \"anim_targets\": [self, a], \"sfx_override\": \"coo\", \"target\": a, \"value_to_change\": \"permanent_bonus\", \"diff\": a.values[0], \"one_time\": true})";
-        const string destroyedGiverReplacement = "\t\t\t\t\t\t# BetterLandlord: check_dove_conditionals growth is committed in do_diff, never during comparison.";
+        const string destroyedGiverReplacement = "\t\t\t\t\t\tpass # BetterLandlord: check_dove_conditionals growth is committed in do_diff, never during comparison.";
 
         return ReplaceOnceAfter(ref source, "func check_dove_conditionals(c):", firstOriginal, firstReplacement, eol) &&
                ReplaceOnceAfter(ref source, "func check_dove_conditionals(c):", giverOriginal, giverReplacement, eol) &&
                ReplaceOnceAfter(ref source, "func check_dove_conditionals(c):", destroyedGiverOriginal, destroyedGiverReplacement, eol);
+    }
+
+    private static void RepairMalformedDoveConditionalMarkers(ref string source, string marker)
+    {
+        var lines = source.Split('\n');
+        var changed = false;
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i].TrimEnd('\r');
+            var trimmed = line.TrimStart();
+            if (!string.Equals(trimmed, marker, StringComparison.Ordinal))
+                continue;
+
+            var indentationLength = line.Length - trimmed.Length;
+            var lineEnding = lines[i].EndsWith('\r') ? "\r" : string.Empty;
+            lines[i] = line[..indentationLength] + "pass " + marker + lineEnding;
+            changed = true;
+        }
+
+        if (changed)
+            source = string.Join("\n", lines);
     }
 
     private static bool RemoveLegacyDoveComparisonInjection(ref string source)
