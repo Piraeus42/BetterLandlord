@@ -32,5 +32,7 @@ class DoveProtectionStatePatch
                     __bl_dove_reset_icon.dove_destroyed = false
                     if __bl_dove_reset_icon.has_meta("_bl_dove_protection_sources"):
                         __bl_dove_reset_icon.remove_meta("_bl_dove_protection_sources")
+                    if __bl_dove_reset_icon.has_meta("_bl_dove_protection_committed"):
+                        __bl_dove_reset_icon.remove_meta("_bl_dove_protection_committed")
         """);
 }
