@@ -55,6 +55,7 @@ public class HistoryViewModel : INotifyPropertyChanged
                 _currentRecord?.MigrateDptIfNeeded();
                 _cachedTimeline = null;
                 _cachedDetailedTimeline = null;
+                _partialTimeline = null;
                 RefreshMeta();
                 OnPropertyChanged(nameof(TimelineRounds));
                 OnPropertyChanged(nameof(DetailedTimelineRounds));
@@ -264,7 +265,8 @@ public class HistoryViewModel : INotifyPropertyChanged
 
     private List<DetailedTimelineRoundViewModel>? _cachedDetailedTimeline;
     private int _detailedPreloadVersion;
-
+    private List<DetailedTimelineRoundViewModel>? _partialTimeline;
+    private int _partialTimelineCount;
     public List<DetailedTimelineRoundViewModel> DetailedTimelineRounds
         => _cachedDetailedTimeline ?? new();
 
@@ -273,37 +275,52 @@ public class HistoryViewModel : INotifyPropertyChanged
     private void PreloadDetailedTimeline(RunRecord record)
     {
         var version = Interlocked.Increment(ref _detailedPreloadVersion);
+        _partialTimeline = null;
+        _partialTimelineCount = 0;
 
+        var cycles = record.RentCycles ?? new List<RentCycle>();
         _ = Task.Run(() =>
         {
-            try
-            {
-                var timeline = (record.RentCycles ?? new List<RentCycle>())
-                    .Select(rc => new DetailedTimelineRoundViewModel(rc))
-                    .ToList();
+            // Build all row VMs on the background thread.
+            var allRows = cycles
+                .Select(rc => new DetailedTimelineRoundViewModel(rc))
+                .ToList();
 
+            // Dispatch rows one by one so each becomes visible immediately.
+            for (var i = 0; i < allRows.Count; i++)
+            {
+                // A newer run may have been selected while we are building.
+                if (version != Volatile.Read(ref _detailedPreloadVersion)
+                    || !ReferenceEquals(_currentRecord, record))
+                    return;
+
+                var row = allRows[i];
                 _dispatcher.BeginInvoke(() =>
                 {
-                    // A newer run may have been selected while this work was in
-                    // progress. Never let an old background result overwrite it.
                     if (version != Volatile.Read(ref _detailedPreloadVersion)
                         || !ReferenceEquals(_currentRecord, record))
                         return;
 
-                    _cachedDetailedTimeline = timeline;
+                    // Append one row and expose it incrementally.
+                    if (_partialTimeline == null) _partialTimeline = new List<DetailedTimelineRoundViewModel>();
+                    _partialTimeline.Add(row);
+                    _partialTimelineCount = _partialTimeline.Count;
                     OnPropertyChanged(nameof(DetailedTimelineRounds));
                     OnPropertyChanged(nameof(HasDetailedTimelineData));
                 });
             }
-            catch (Exception ex)
+
+            // Final commit: attach the full list so the cached reference is stable.
+            _dispatcher.BeginInvoke(() =>
             {
-                _dispatcher.BeginInvoke(() =>
+                if (version == Volatile.Read(ref _detailedPreloadVersion)
+                    && ReferenceEquals(_currentRecord, record))
                 {
-                    if (version == Volatile.Read(ref _detailedPreloadVersion)
-                        && ReferenceEquals(_currentRecord, record))
-                        StatusText = $"Detailed timeline preload failed: {ex.Message}";
-                });
-            }
+                    _cachedDetailedTimeline = allRows;
+                    OnPropertyChanged(nameof(DetailedTimelineRounds));
+                    OnPropertyChanged(nameof(HasDetailedTimelineData));
+                }
+            });
         });
     }
 
