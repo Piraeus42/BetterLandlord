@@ -1,4 +1,4 @@
-﻿using SlotWeave.Scripting;
+using SlotWeave.Scripting;
 
 namespace Piraeus.BetterLandlord.Patches;
 
@@ -14,6 +14,13 @@ class WriteLogPatch
                 if _comma != -1:
                     _name = _name.substr(0, _comma)
                 $"/root/Main"._bh_add_event("item_destroyed", {"item": _name})
+                # A destruction line is the reliable signal that a one-shot
+                # item/essence was actually consumed. Passive effects are not
+                # recorded as usage events.
+                if _name.ends_with("_essence"):
+                    $"/root/Main"._bh_add_event("essence_triggered", {"item": _name, "source": "consumed"})
+                else:
+                    $"/root/Main"._bh_add_event("item_used", {"item": _name, "source": "consumed"})
             elif string.begins_with("Added item: "):
                 var _name2 = string.trim_prefix("Added item: ")
                 # Skip if _bh_record_choice already emitted this item

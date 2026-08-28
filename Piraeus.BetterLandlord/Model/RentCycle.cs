@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Piraeus.BetterLandlord.Model;
 
@@ -59,6 +59,11 @@ public class SpinEntry
     [JsonPropertyName("skipped_options")]
     public List<string> SkippedOptions { get; set; } = new();
 
+    // Structured selection data for the detailed history view.  Existing history
+    // records simply deserialize to an empty list.
+    [JsonPropertyName("choice_groups")]
+    public List<ChoiceGroupEntry> ChoiceGroups { get; set; } = new();
+
     [JsonPropertyName("extra_actions")]
     [JsonConverter(typeof(SingleOrArrayConverter<ActionEntry>))]
     public List<ActionEntry> ExtraActions { get; set; } = new();
@@ -66,6 +71,30 @@ public class SpinEntry
     [JsonPropertyName("boss_info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BossInfo? BossInfo { get; set; }
+}
+
+public class ChoiceGroupEntry
+{
+    [JsonPropertyName("kind")]
+    public string Kind { get; set; } = "symbol";
+
+    [JsonPropertyName("options")]
+    public List<string> Options { get; set; } = new();
+
+    [JsonPropertyName("selected")]
+    public List<string> Selected { get; set; } = new();
+
+    [JsonPropertyName("choice_idx")]
+    public int ChoiceIdx { get; set; }
+
+    // "selected", "skipped", or null while the game is still resolving.
+    [JsonPropertyName("result")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Result { get; set; }
+
+    [JsonPropertyName("rerolled")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool Rerolled { get; set; }
 }
 
 public class ActionEntry
@@ -86,6 +115,12 @@ public class ActionEntry
     [JsonPropertyName("choice_idx")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int ChoiceIdx { get; set; }
+
+    // Links a post-choice action (for example consuming a one-shot item) to
+    // the choice group that immediately preceded it.
+    [JsonPropertyName("after_choice_idx")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? AfterChoiceIdx { get; set; }
 
     [JsonPropertyName("remaining")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

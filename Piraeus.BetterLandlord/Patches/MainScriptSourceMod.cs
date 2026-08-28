@@ -206,8 +206,31 @@ func _bh_flush():
                 'coin_change': 0,
                 'main_symbol': null,
                 'skipped_options': [],
+                'choice_groups': [],
                 'extra_actions': []
             }
+
+        elif et == 'symbol_choice_presented' or et == 'item_choice_presented':
+            # The raw presented event already existed in v2 history.  Preserve
+            # it as a structured group solely for the detailed UI; rarity is
+            # deliberately not copied or displayed.
+            if cur_spin != null:
+                var _presented = pl.get('presented', [])
+                if typeof(_presented) == TYPE_ARRAY:
+                    var _options = []
+                    for _entry in _presented:
+                        if typeof(_entry) == TYPE_DICTIONARY:
+                            var _option = str(_entry.get('type', ''))
+                            if _option != '' and _option != 'null':
+                                _options.append(_option)
+                    if _options.size() > 0:
+                        cur_spin.choice_groups.append({
+                            'kind': 'item' if et == 'item_choice_presented' else 'symbol',
+                            'choice_idx': int(pl.get('choice_idx', 0)),
+                            'options': _options,
+                            'selected': [],
+                            'rerolled': false
+                        })
 
         elif et == 'spin_end':
             if cur_spin != null:
@@ -234,8 +257,9 @@ func _bh_flush():
         elif et == 'symbol_added':
             var s = str(pl.get('symbol', ''))
             var src = str(pl.get('source', 'choice'))
+            var _choice_idx = int(pl.get('choice_idx', -1))
             if s != '' and s != 'null':
-                pending_additions.append({'action': 'added', 'type': 'symbol', 'id': s, 'source': src})
+                pending_additions.append({'action': 'added', 'type': 'symbol', 'id': s, 'source': src, 'choice_idx': _choice_idx})
                 var c = symbol_accum.get(s, 0)
                 symbol_accum[s] = c + 1
             # Also collect skipped options from the same event
@@ -244,6 +268,12 @@ func _bh_flush():
                 for _sk_name in _sk:
                     if str(_sk_name) != '' and str(_sk_name) != 'null':
                         pending_skip_symbols.append(str(_sk_name))
+            if cur_spin != null and src == 'choice' and _choice_idx >= 0:
+                for _group in cur_spin.choice_groups:
+                    if int(_group.get('choice_idx', -2)) == _choice_idx:
+                        _group['selected'] = [s]
+                        _group['result'] = 'selected'
+                        break
 
         elif et == 'symbol_chosen':
             var skipped = pl.get('skipped', [])
@@ -251,11 +281,17 @@ func _bh_flush():
                 for sk in skipped:
                     if str(sk) != '' and str(sk) != 'null':
                         pending_skip_symbols.append(str(sk))
+            if cur_spin != null:
+                var _skip_choice_idx = int(pl.get('choice_idx', -1))
+                for _skip_group in cur_spin.choice_groups:
+                    if int(_skip_group.get('choice_idx', -2)) == _skip_choice_idx:
+                        _skip_group['result'] = 'skipped'
+                        break
 
         elif et == 'item_added':
             var it = str(pl.get('item', ''))
             var src = str(pl.get('source', 'choice'))
-            var _ci = int(pl.get('choice_idx', 0))
+            var _ci = int(pl.get('choice_idx', -1))
             if it != '' and it != 'null':
                 pending_additions.append({'action': 'added', 'type': 'item', 'id': it, 'source': src, 'choice_idx': _ci})
                 var c = item_accum.get(it, 0)
@@ -265,6 +301,12 @@ func _bh_flush():
                 for _isk_name in _isk:
                     if str(_isk_name) != '' and str(_isk_name) != 'null':
                         pending_additions.append({'action': 'skipped', 'type': 'item', 'id': str(_isk_name), 'choice_idx': _ci})
+            if cur_spin != null and src == 'choice' and _ci >= 0:
+                for _item_group in cur_spin.choice_groups:
+                    if int(_item_group.get('choice_idx', -2)) == _ci:
+                        _item_group['selected'] = [it]
+                        _item_group['result'] = 'selected'
+                        break
 
         elif et == 'item_chosen':
             var skipped = pl.get('skipped', [])
@@ -272,6 +314,30 @@ func _bh_flush():
                 for sk in skipped:
                     if str(sk) != '' and str(sk) != 'null':
                         pending_skip_items.append(str(sk))
+            if cur_spin != null:
+                var _item_skip_choice_idx = int(pl.get('choice_idx', -1))
+                for _item_skip_group in cur_spin.choice_groups:
+                    if int(_item_skip_group.get('choice_idx', -2)) == _item_skip_choice_idx:
+                        _item_skip_group['result'] = 'skipped'
+                        break
+
+        elif et == 'choice_rerolled':
+            if cur_spin != null:
+                var _reroll_idx = int(pl.get('choice_idx', -1))
+                for _reroll_group in cur_spin.choice_groups:
+                    if int(_reroll_group.get('choice_idx', -2)) == _reroll_idx:
+                        _reroll_group['rerolled'] = true
+                        break
+
+        elif et == 'item_used' or et == 'essence_triggered':
+            if cur_spin != null:
+                var _used_item = str(pl.get('item', ''))
+                if _used_item != '' and _used_item != 'null':
+                    var _used_action = 'triggered' if et == 'essence_triggered' else 'used'
+                    var _used = {'action': _used_action, 'type': 'essence' if et == 'essence_triggered' else 'item', 'id': _used_item}
+                    if cur_spin.choice_groups.size() > 0:
+                        _used['after_choice_idx'] = int(cur_spin.choice_groups[cur_spin.choice_groups.size() - 1].get('choice_idx', -1))
+                    cur_spin.extra_actions.append(_used)
 
         elif et == 'item_destroyed':
             var it = str(pl.get('item', ''))
@@ -826,7 +892,13 @@ func _bh_record_cards(presented, email_type):
     var evt = 'symbol_choice_presented'
     if not email_type.begins_with('add_tile'):
         evt = 'item_choice_presented'
-    _bh_add_event(evt, {'presented': presented})
+    _bh_add_event(evt, {'presented': presented, 'choice_idx': _bh_choice_idx})
+
+func _bh_record_reroll():
+    _bh_add_event('choice_rerolled', {'choice_idx': _bh_choice_idx})
+    # A reroll replaces this offer with a distinct choice group.
+    _bh_choice_idx += 1
+    _bh_pending_choice = {}
 
 func _bh_record_choice(choice_name):
     if _bh_pending_choice.size() == 0:
@@ -865,7 +937,9 @@ func _bh_record_skip():
     var evt = 'symbol_chosen'
     if not _bh_pending_choice.get('event_type', '').begins_with('add_tile'):
         evt = 'item_chosen'
-    _bh_add_event(evt, {'chosen': null, 'skipped': ac})
+    var _ci = _bh_choice_idx
+    _bh_choice_idx += 1
+    _bh_add_event(evt, {'chosen': null, 'skipped': ac, 'choice_idx': _ci})
     _bh_pending_choice = {}
 
 func _bh_end_run(result):
