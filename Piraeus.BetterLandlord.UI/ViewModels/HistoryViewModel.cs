@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -55,6 +55,8 @@ public class HistoryViewModel : INotifyPropertyChanged
                 _currentRecord?.MigrateDptIfNeeded();
                 RefreshMeta();
                 OnPropertyChanged(nameof(TimelineRounds));
+                OnPropertyChanged(nameof(DetailedTimelineRounds));
+                OnPropertyChanged(nameof(HasDetailedTimelineData));
                 OnPropertyChanged(nameof(Summary));
                 OnPropertyChanged(nameof(HasData));
                 OnPropertyChanged(nameof(RunInfo));
@@ -209,6 +211,23 @@ public class HistoryViewModel : INotifyPropertyChanged
         set => SetProperty(ref _showSummary, value);
     }
 
+    private bool _showDetailedTimeline;
+    public bool ShowDetailedTimeline
+    {
+        get => _showDetailedTimeline;
+        set
+        {
+            if (SetProperty(ref _showDetailedTimeline, value))
+            {
+                OnPropertyChanged(nameof(IsOverviewTimeline));
+                OnPropertyChanged(nameof(IsDetailedTimeline));
+            }
+        }
+    }
+
+    public bool IsOverviewTimeline => !ShowDetailedTimeline;
+    public bool IsDetailedTimeline => ShowDetailedTimeline;
+
     // ---- Computed properties ----
 
     public bool HasData => CurrentRecord != null;
@@ -232,6 +251,22 @@ public class HistoryViewModel : INotifyPropertyChanged
             return _cachedTimeline;
         }
     }
+
+    private List<DetailedTimelineRoundViewModel>? _cachedDetailedTimeline;
+    public List<DetailedTimelineRoundViewModel> DetailedTimelineRounds
+    {
+        get
+        {
+            if (_currentRecord?.RentCycles == null)
+                return _cachedDetailedTimeline ?? new();
+            _cachedDetailedTimeline = _currentRecord.RentCycles
+                .Select(rc => new DetailedTimelineRoundViewModel(rc))
+                .ToList();
+            return _cachedDetailedTimeline;
+        }
+    }
+
+    public bool HasDetailedTimelineData => DetailedTimelineRounds.Any(r => r.HasDetailedData);
 
     // ---- Pipe message handlers (called from background thread) ----
 
@@ -439,6 +474,130 @@ public class RunListItemViewModel
             ? $"Run #{item.RunNumber} \U0001F512"
             : $"Run #{item.RunNumber}";
         TopSymbols = item.TopSymbols ?? new();
+    }
+}
+
+public class DetailedTimelineRoundViewModel
+{
+    public int RoundIndex { get; }
+    public int RentRequired { get; }
+    public double CoinsAtRent { get; }
+    public List<DetailedSpinViewModel> Spins { get; } = new();
+    public bool HasDetailedData => Spins.Any(s => s.HasDetailedData);
+
+    public DetailedTimelineRoundViewModel(RentCycle cycle)
+    {
+        RoundIndex = cycle.CycleIndex;
+        RentRequired = cycle.RentRequired;
+        CoinsAtRent = cycle.Spins.Count > 0 ? cycle.Spins.Last().CoinsAfter : 0;
+        foreach (var spin in cycle.Spins)
+            Spins.Add(new DetailedSpinViewModel(spin));
+    }
+}
+
+public class DetailedSpinViewModel
+{
+    public int SpinNum { get; }
+    public string CoinsText { get; }
+    public string CoinChangeText { get; }
+    public List<ChoiceGroupViewModel> ChoiceGroups { get; } = new();
+    public List<ActionEventViewModel> Actions { get; } = new();
+    public bool HasChoiceGroups => ChoiceGroups.Count > 0;
+    public bool HasActions => Actions.Count > 0;
+    public bool HasDetailedData => HasChoiceGroups || HasActions;
+    public string EmptyText => "此 Spin 没有详细选择记录";
+
+    public DetailedSpinViewModel(SpinEntry spin)
+    {
+        SpinNum = spin.SpinNum;
+        CoinsText = $"{spin.CoinsBefore} → {spin.CoinsAfter}";
+        CoinChangeText = spin.CoinChange >= 0 ? $"+{spin.CoinChange}" : $"{spin.CoinChange}";
+
+        foreach (var group in spin.ChoiceGroups ?? new List<ChoiceGroupEntry>())
+            ChoiceGroups.Add(new ChoiceGroupViewModel(group));
+
+        foreach (var action in spin.ExtraActions ?? new List<ActionEntry>())
+            Actions.Add(new ActionEventViewModel(action));
+    }
+}
+
+public class ChoiceGroupViewModel
+{
+    public int ChoiceIdx { get; }
+    public string KindText { get; }
+    public string ResultText { get; }
+    public bool IsRerolled { get; }
+    public string RerollText => IsRerolled ? "已重抽" : "";
+    public List<ChoiceOptionViewModel> Options { get; } = new();
+
+    public ChoiceGroupViewModel(ChoiceGroupEntry group)
+    {
+        ChoiceIdx = group.ChoiceIdx;
+        KindText = group.Kind == "item" ? "物品三选一" : "符号三选一";
+        IsRerolled = group.Rerolled;
+        ResultText = group.Result switch
+        {
+            "selected" => "已选择",
+            "skipped" => "已跳过",
+            _ => "未完成"
+        };
+
+        var selected = new HashSet<string>(group.Selected ?? new(), StringComparer.Ordinal);
+        foreach (var option in group.Options ?? new())
+        {
+            var isSelected = selected.Contains(option);
+            Options.Add(new ChoiceOptionViewModel
+            {
+                IconId = option,
+                IsSelected = isSelected,
+                IsSkipped = group.Result == "skipped" || (group.Result == "selected" && !isSelected),
+                StateText = isSelected ? "已选择" : group.Result == "skipped" ? "跳过" : "未选择"
+            });
+        }
+    }
+}
+
+public class ChoiceOptionViewModel
+{
+    public string IconId { get; init; } = "";
+    public bool IsSelected { get; init; }
+    public bool IsSkipped { get; init; }
+    public string StateText { get; init; } = "";
+}
+
+public class ActionEventViewModel
+{
+    public string IconId { get; }
+    public string ActionText { get; }
+    public string DetailText { get; }
+    public int? AfterChoiceIdx { get; }
+
+    public ActionEventViewModel(ActionEntry action)
+    {
+        IconId = action.Id ?? "";
+        AfterChoiceIdx = action.AfterChoiceIdx;
+        ActionText = action.Action switch
+        {
+            "added" => "加入牌组",
+            "used" => "物品使用",
+            "triggered" => "精华触发",
+            "destroyed" => "物品销毁",
+            "removed" => "移除",
+            "counter" => "计数变化",
+            "skipped" => "未选择",
+            _ => action.Action
+        };
+
+        var details = new List<string>();
+        if (!string.IsNullOrEmpty(action.Source))
+            details.Add($"来源：{action.Source}");
+        if (action.Remaining.HasValue)
+            details.Add($"剩余 {action.Remaining.Value}");
+        if (action.NewCount.HasValue)
+            details.Add($"次数 {action.NewCount.Value}");
+        if (action.AfterChoiceIdx.HasValue)
+            details.Add($"选择 #{action.AfterChoiceIdx.Value + 1} 后");
+        DetailText = string.Join(" · ", details);
     }
 }
 
