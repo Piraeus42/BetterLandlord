@@ -43,6 +43,9 @@ var _bh_choice_idx = 0
 var _bh_events_persisted_count = 0
 var _bh_events_dirty = false
 var _bh_events_snapshot_required = false
+# Item IDs already emitted from item_to_destroy's successful resolution branch.
+# Their later Item.destroy() log line must not create duplicate history actions.
+var _bh_effect_item_consumed_pending = []
 
 # Clipboard monitor — samples every 0.5s to pinpoint when clipboard is cleared
 var _bh_saved_clip = ''
@@ -71,6 +74,7 @@ func _bh_init():
     _bh_events_persisted_count = 0
     _bh_events_dirty = false
     _bh_events_snapshot_required = false
+    _bh_effect_item_consumed_pending.clear()
 
 func _bh_start_run():
     # Clean up temp events file from the previous run before resetting run_id.
@@ -88,6 +92,7 @@ func _bh_start_run():
     _bh_events_persisted_count = 0
     _bh_events_dirty = false
     _bh_events_snapshot_required = false
+    _bh_effect_item_consumed_pending.clear()
     _bh_flushed_at_spin = -1
     _bh_victory_achieved = false
     _bh_native_victory_marked = false
@@ -110,6 +115,31 @@ func _bh_add_event(type_str, payload):
         'payload': payload
     })
     _bh_events_dirty = true
+
+# Called only after check_item_triggers has found and marked the requested item.
+# This is the authoritative item_to_destroy success signal; effect-log text alone
+# is deliberately not used because it also exists for unresolved effects.
+func _bh_record_effect_item_consumed(item_id):
+    if typeof(item_id) != TYPE_STRING or item_id == '':
+        return
+    _bh_effect_item_consumed_pending.push_back(item_id)
+    _bh_add_event('item_destroyed', {'item': item_id, 'source': 'effect'})
+    var is_essence = item_id.ends_with('_essence')
+    if item_database.has(item_id) and item_database[item_id].has('groups'):
+        is_essence = item_database[item_id].groups.has('essence')
+    if is_essence:
+        _bh_add_event('essence_triggered', {'item': item_id, 'source': 'effect'})
+    else:
+        _bh_add_event('item_used', {'item': item_id, 'source': 'effect'})
+
+# Consume the matching later native destruction log once, preventing duplicate
+# events for the same successful item_to_destroy resolution.
+func _bh_take_effect_item_consumed(item_id):
+    var idx = _bh_effect_item_consumed_pending.find(item_id)
+    if idx == -1:
+        return false
+    _bh_effect_item_consumed_pending.remove(idx)
+    return true
 
 func _bh_debug_log(msg: String):
     if not OS.is_debug_build():

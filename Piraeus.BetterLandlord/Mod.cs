@@ -30,11 +30,13 @@ public class Mod : IMod
         // ISourceMod: Choice RNG replacements in Pop-up
         _modInterface.RegisterSourceMod(new ChoiceRngSourceMod());
 
-        // ReelRNG: inject wrappers only (no full-file Regex â€?regex on this
+        // ReelRNG: inject wrappers only (no full-file Regex ï¿½?regex on this
         // heavily-instantiated script triggers GDScript reload crash)
         _modInterface.RegisterSourceMod(new ReelRngRefSourceMod());
 
         _modInterface.RegisterSourceMod(new SlotIconRngSourceMod());
+        // Capture successful item_to_destroy consumption at resolver branch.
+        _modInterface.RegisterSourceMod(new ItemEffectConsumptionSourceMod());
         // ISourceMod: fixes Dove prevention growth and Midas Bomb x Wildcard scoring.
         _modInterface.RegisterSourceMod(new SymbolResolutionBugFixSourceMod());
         _modInterface.RegisterSourceMod(new BadgeFixSourceMod());  // clears stale displayed_multiplier_value
@@ -50,7 +52,7 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new ClipboardPreserveMod());
 
         // ISourceMod: guillotine end-run trigger at Coins/Items trigger point
-        // (replaces GuillotineEndPatch â€?fires before animation, board intact)
+        // (replaces GuillotineEndPatch ï¿½?fires before animation, board intact)
         _modInterface.RegisterSourceMod(new GuillotineTriggerSourceMod());
 
         // ISourceMod: seed UI on Title node (Main.tscn::6)
@@ -75,12 +77,12 @@ public class Mod : IMod
                      ?? Path.Combine(_modInterface.GameDir, "SlotWeave", "mods", "Piraeus.BetterLandlord");
         var store = new HistoryStore(userDataDir);
 
-        // Rebuild lightweight manifest (fast â€?uses JsonDocument, not full deserialization)
+        // Rebuild lightweight manifest (fast ï¿½?uses JsonDocument, not full deserialization)
         store.RebuildManifest();
 
         _pipeServer = new GamePipeServer(store, userDataDir, modDir, _modInterface.Logger);
 
-        // Register GameStateBus reader for seed request signal (GDScript â†?C#, ~16ms latency)
+        // Register GameStateBus reader for seed request signal (GDScript ï¿½?C#, ~16ms latency)
         _modInterface.RegisterGameStateReader(_pipeServer.SeedReader);
 
         _pipeServer.Start();
@@ -96,7 +98,7 @@ public class Mod : IMod
 
             _modInterface.Logger.Information(
                 "[BetterLandlord] Migration done: {Migrated} complete + {Truncated} truncated + {Partial} partial " +
-                "({Skipped} skipped, {Empty} empty, {Corrupted} corrupted, {Failed} failed) â€?history db at {Dir}",
+                "({Skipped} skipped, {Empty} empty, {Corrupted} corrupted, {Failed} failed) ï¿½?history db at {Dir}",
                 result.Migrated, result.MigratedTruncated, result.MigratedPartial,
                 result.Skipped, result.EmptyFiles, result.Corrupted, result.Failed,
                 runner.HistoryDir);
