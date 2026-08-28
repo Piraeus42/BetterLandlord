@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -268,7 +268,7 @@ public class HistoryViewModel : INotifyPropertyChanged
     private List<DetailedTimelineRoundViewModel>? _partialTimeline;
     private int _partialTimelineCount;
     public List<DetailedTimelineRoundViewModel> DetailedTimelineRounds
-        => _cachedDetailedTimeline ?? new();
+        => _partialTimeline ?? _cachedDetailedTimeline ?? new();
 
     public bool HasDetailedTimelineData => _cachedDetailedTimeline?.Any(r => r.HasDetailedData) == true;
 
