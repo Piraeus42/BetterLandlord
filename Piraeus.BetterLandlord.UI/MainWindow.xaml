@@ -1,10 +1,11 @@
-<Window x:Class="Piraeus.BetterLandlord.UI.MainWindow"
+﻿<Window x:Class="Piraeus.BetterLandlord.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Piraeus.BetterLandlord.UI"
         xmlns:conv="clr-namespace:Piraeus.BetterLandlord.UI.Converters"
+        xmlns:vm="clr-namespace:Piraeus.BetterLandlord.UI.ViewModels"
         mc:Ignorable="d"
         Title="Better Landlord"
         Height="720" Width="1100"
@@ -25,6 +26,99 @@
         <SolidColorBrush x:Key="AccentColor" Color="#89B4FA" />
         <SolidColorBrush x:Key="GreenColor" Color="#A6E3A1" />
         <SolidColorBrush x:Key="RedColor" Color="#F38BA8" />
+
+        <!-- Compact timeline templates ported from the collaborator's Avalonia UI. -->
+        <DataTemplate DataType="{x:Type vm:ChoiceGroupViewModel}">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,2,0">
+                <ItemsControl ItemsSource="{Binding Options}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="22" Height="22" Padding="2" Margin="0,0,1,0"
+                                    ToolTip="{Binding StateText}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#2D2D44" />
+                                        <Setter Property="BorderBrush" Value="#585B70" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="CornerRadius" Value="2" />
+                                        <Setter Property="Opacity" Value="0.82" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Background" Value="#24523D" />
+                                                <Setter Property="BorderBrush" Value="#A6E3A1" />
+                                                <Setter Property="BorderThickness" Value="1.5" />
+                                                <Setter Property="Opacity" Value="1" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsSkipped}" Value="True">
+                                                <Setter Property="Opacity" Value="0.48" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Image Source="{Binding IconId, Converter={StaticResource IconImage}}"
+                                       Width="16" Height="16" Stretch="Uniform"
+                                       RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding ResultText}" FontSize="8" Foreground="#6C7086"
+                           VerticalAlignment="Center" Margin="3,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ActionEventViewModel}">
+            <Border Padding="3,1" Margin="1,0" ToolTip="{Binding ActionText}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="#3C3025" />
+                        <Setter Property="BorderBrush" Value="#FAB387" />
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="CornerRadius" Value="2" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ActionKind}" Value="triggered">
+                                <Setter Property="Background" Value="#332B40" />
+                                <Setter Property="BorderBrush" Value="#CBA6F7" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ActionKind}" Value="destroyed">
+                                <Setter Property="Background" Value="#402934" />
+                                <Setter Property="BorderBrush" Value="#F38BA8" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ActionKind}" Value="removed">
+                                <Setter Property="Background" Value="#402934" />
+                                <Setter Property="BorderBrush" Value="#F38BA8" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding BadgeText}" FontSize="8" Foreground="#FAB387"
+                               VerticalAlignment="Center" Margin="0,0,2,0" />
+                    <Image Source="{Binding IconId, Converter={StaticResource IconImage}}"
+                           Width="16" Height="16" Stretch="Uniform"
+                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:DetailedTimelineEventViewModel}">
+            <Grid VerticalAlignment="Center">
+                <ContentControl Content="{Binding ChoiceGroup}"
+                                Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}" />
+                <ContentControl Content="{Binding Action}"
+                                Visibility="{Binding IsAction, Converter={StaticResource BoolToVis}}" />
+                <Border Background="#332B40" BorderBrush="#89B4FA" BorderThickness="1"
+                        CornerRadius="2" Padding="3,1"
+                        Visibility="{Binding IsReroll, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="重掷" FontSize="8" Foreground="#89B4FA" />
+                </Border>
+            </Grid>
+        </DataTemplate>
 
         <Style x:Key="RunListItemStyle" TargetType="ListBoxItem">
             <Setter Property="Background" Value="Transparent" />
@@ -674,172 +768,65 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <!-- Detailed timeline: three offers, skip/reroll results, and item events. -->
+                        <!-- Detailed timeline: compact choice/action capsules, matching the Avalonia layout. -->
                         <ItemsControl ItemsSource="{Binding DetailedTimelineRounds}"
                                       Visibility="{Binding IsDetailedTimeline, Converter={StaticResource BoolToVis}}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#252538" CornerRadius="6" Padding="14,10" Margin="0,0,0,12">
+                                    <Border Background="#252538" CornerRadius="4" Padding="7,4" Margin="0,0,0,6">
                                         <StackPanel>
-                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                                <TextBlock FontSize="13" FontWeight="Bold" Foreground="#89B4FA"
-                                                           Text="{Binding RoundIndex, StringFormat='Round {}{0}'}" />
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                                <TextBlock FontSize="12" FontWeight="Bold" Foreground="#89B4FA"
+                                                           Text="{Binding RoundIndex, StringFormat='R{0}'}"
+                                                           VerticalAlignment="Center" />
                                                 <Image Source="{Binding Converter={StaticResource IconImage}, ConverterParameter=coin}"
-                                                       Width="16" Height="16" Margin="10,0,2,0" />
-                                                <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="#A6E3A1"
-                                                           Text="{Binding CoinsAtRent}" />
-                                                <TextBlock FontSize="12" Foreground="#6C7086" Text=" / " />
-                                                <TextBlock FontSize="12" Foreground="#CDD6F4" Text="{Binding RentRequired}" />
+                                                       Width="15" Height="15" Margin="5,0,2,0" />
+                                                <TextBlock FontSize="10" FontWeight="SemiBold" Foreground="#A6E3A1"
+                                                           Text="{Binding CoinsAtRent}" VerticalAlignment="Center" />
+                                                <TextBlock FontSize="9" Foreground="#6C7086" Text=" / "
+                                                           VerticalAlignment="Center" />
+                                                <TextBlock FontSize="10" Foreground="#CDD6F4"
+                                                           Text="{Binding RentRequired}" VerticalAlignment="Center" />
                                             </StackPanel>
 
                                             <ItemsControl ItemsSource="{Binding Spins}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Border Background="#1E2030" BorderBrush="#363650" BorderThickness="1"
-                                                                CornerRadius="4" Padding="10" Margin="0,0,0,8">
-                                                            <StackPanel>
-                                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,7">
-                                                                    <TextBlock FontWeight="SemiBold" Foreground="#CDD6F4"
-                                                                               Text="{Binding SpinNum, StringFormat='Spin #{}{0}'}" />
-                                                                    <TextBlock Margin="10,0,0,0" Foreground="#6C7086"
-                                                                               Text="{Binding CoinsText}" />
-                                                                    <TextBlock Margin="8,0,0,0" Foreground="#A6E3A1"
-                                                                               Text="{Binding CoinChangeText}" />
-                                                                </StackPanel>
-
-                                                                <ItemsControl ItemsSource="{Binding ChoiceGroups}"
-                                                                              Visibility="{Binding HasChoiceGroups, Converter={StaticResource BoolToVis}}">
-                                                                    <ItemsControl.ItemTemplate>
-                                                                        <DataTemplate>
-                                                                            <Border Background="#29293E" CornerRadius="4" Padding="8" Margin="0,0,0,6">
-                                                                                <StackPanel>
-                                                                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                                                                        <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#89B4FA"
-                                                                                                   Text="{Binding KindText}" />
-                                                                                        <TextBlock FontSize="11" Foreground="#CDD6F4" Margin="8,0,0,0"
-                                                                                                   Text="{Binding ResultText}" />
-                                                                                        <TextBlock FontSize="11" Foreground="#F9E2AF" Margin="8,0,0,0"
-                                                                                                   Text="{Binding RerollText}" />
-                                                                                    </StackPanel>
-                                                                                    <ItemsControl ItemsSource="{Binding Options}">
-                                                                                        <ItemsControl.ItemsPanel>
-                                                                                            <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
-                                                                                        </ItemsControl.ItemsPanel>
-                                                                                        <ItemsControl.ItemTemplate>
-                                                                                            <DataTemplate>
-                                                                                                <Border Background="#313255" BorderBrush="#45475A" BorderThickness="1"
-                                                                                                        CornerRadius="4" Padding="6,4" Margin="0,0,6,0" MinWidth="64">
-                                                                                                    <Border.Style>
-                                                                                                        <Style TargetType="Border">
-                                                                                                            <Setter Property="Background" Value="#313255" />
-                                                                                                            <Setter Property="BorderBrush" Value="#45475A" />
-                                                                                                            <Style.Triggers>
-                                                                                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                                                                                    <Setter Property="Background" Value="#24523D" />
-                                                                                                                    <Setter Property="BorderBrush" Value="#A6E3A1" />
-                                                                                                                </DataTrigger>
-                                                                                                                <DataTrigger Binding="{Binding IsSkipped}" Value="True">
-                                                                                                                    <Setter Property="Opacity" Value="0.58" />
-                                                                                                                </DataTrigger>
-                                                                                                            </Style.Triggers>
-                                                                                                        </Style>
-                                                                                                    </Border.Style>
-                                                                                                    <StackPanel HorizontalAlignment="Center">
-                                                                                                        <Image Source="{Binding IconId, Converter={StaticResource IconImage}}"
-                                                                                                               Width="25" Height="25" Stretch="Uniform"
-                                                                                                               RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                                                                                                        <TextBlock FontSize="10" Foreground="#CDD6F4" Margin="0,3,0,0"
-                                                                                                                   HorizontalAlignment="Center" Text="{Binding StateText}" />
-                                                                                                    </StackPanel>
-                                                                                                </Border>
-                                                                                            </DataTemplate>
-                                                                                        </ItemsControl.ItemTemplate>
-                                                                                    </ItemsControl>
-                                                                                </StackPanel>
-                                                                            </Border>
-                                                                        </DataTemplate>
-                                                                    </ItemsControl.ItemTemplate>
-                                                                </ItemsControl>
-
-                                                                <ItemsControl ItemsSource="{Binding Actions}"
-                                                                              Visibility="{Binding HasActions, Converter={StaticResource BoolToVis}}">
-                                                                    <ItemsControl.ItemTemplate>
-                                                                        <DataTemplate>
-                                                                            <StackPanel Orientation="Horizontal" Margin="0,2">
-                                                                                <Image Source="{Binding IconId, Converter={StaticResource IconImage}}"
-                                                                                       Width="18" Height="18" Margin="0,0,5,0" Stretch="Uniform" />
-                                                                                <TextBlock FontSize="11" Foreground="#F9E2AF" Text="{Binding ActionText}" />
-                                                                                <TextBlock FontSize="11" Foreground="#CDD6F4" Margin="6,0,0,0"
-                                                                                           Text="{Binding IconId}" />
-                                                                                <TextBlock FontSize="10" Foreground="#6C7086" Margin="6,0,0,0"
-                                                                                           Text="{Binding DetailText}" />
-                                                                            </StackPanel>
-                                                                        </DataTemplate>
-                                                                    </ItemsControl.ItemTemplate>
-                                                                </ItemsControl>
-
-                                                                <TextBlock Text="{Binding EmptyText}" FontSize="11" Foreground="#6C7086"
-                                                                           Visibility="{Binding HasDetailedData, Converter={StaticResource InvertBoolToVis}}" />
-                                                            </StackPanel>
-                                                        </Border>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,1" VerticalAlignment="Center">
+                                                            <TextBlock FontSize="9" Foreground="#6C7086"
+                                                                       Text="{Binding SpinNum, StringFormat='#{0}'}"
+                                                                       Width="24" VerticalAlignment="Center" />
+                                                            <TextBlock FontSize="9" Foreground="#6C7086"
+                                                                       Text="{Binding CoinsText}" Margin="0,0,4,0"
+                                                                       VerticalAlignment="Center" />
+                                                            <TextBlock FontSize="9" Foreground="#A6E3A1"
+                                                                       Text="{Binding CoinChangeText}" Margin="0,0,4,0"
+                                                                       VerticalAlignment="Center" />
+                                                            <ItemsControl ItemsSource="{Binding Events}">
+                                                                <ItemsControl.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <StackPanel Orientation="Horizontal" />
+                                                                    </ItemsPanelTemplate>
+                                                                </ItemsControl.ItemsPanel>
+                                                            </ItemsControl>
+                                                            <TextBlock Text="{Binding EmptyText}" FontSize="8" Foreground="#6C7086"
+                                                                       Visibility="{Binding HasDetailedData, Converter={StaticResource InvertBoolToVis}}"
+                                                                       VerticalAlignment="Center" />
+                                                        </StackPanel>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
 
-                                            <!-- Pre-existing end_actions records also contain item offers. -->
+                                            <!-- Legacy end_actions can reconstruct the item choices; keep them in the same compact row. -->
                                             <ItemsControl ItemsSource="{Binding EndChoiceGroups}"
                                                           Visibility="{Binding HasEndChoiceGroups, Converter={StaticResource BoolToVis}}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Border Background="#1E2030" BorderBrush="#363650" BorderThickness="1"
-                                                                CornerRadius="4" Padding="10" Margin="0,0,0,8">
-                                                            <StackPanel>
-                                                                <TextBlock Text="交租后物品选择" FontSize="11" FontWeight="SemiBold"
-                                                                           Foreground="#CDD6F4" Margin="0,0,0,7" />
-                                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                                                    <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#89B4FA"
-                                                                               Text="{Binding KindText}" />
-                                                                    <TextBlock FontSize="11" Foreground="#CDD6F4" Margin="8,0,0,0"
-                                                                               Text="{Binding ResultText}" />
-                                                                    <TextBlock FontSize="11" Foreground="#F9E2AF" Margin="8,0,0,0"
-                                                                               Text="{Binding RerollText}" />
-                                                                </StackPanel>
-                                                                <ItemsControl ItemsSource="{Binding Options}">
-                                                                    <ItemsControl.ItemsPanel>
-                                                                        <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
-                                                                    </ItemsControl.ItemsPanel>
-                                                                    <ItemsControl.ItemTemplate>
-                                                                        <DataTemplate>
-                                                                            <Border Background="#313255" BorderBrush="#45475A" BorderThickness="1"
-                                                                                    CornerRadius="4" Padding="6,4" Margin="0,0,6,0" MinWidth="64">
-                                                                                <Border.Style>
-                                                                                    <Style TargetType="Border">
-                                                                                        <Setter Property="Background" Value="#313255" />
-                                                                                        <Setter Property="BorderBrush" Value="#45475A" />
-                                                                                        <Style.Triggers>
-                                                                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                                                                <Setter Property="Background" Value="#24523D" />
-                                                                                                <Setter Property="BorderBrush" Value="#A6E3A1" />
-                                                                                            </DataTrigger>
-                                                                                            <DataTrigger Binding="{Binding IsSkipped}" Value="True">
-                                                                                                <Setter Property="Opacity" Value="0.58" />
-                                                                                            </DataTrigger>
-                                                                                        </Style.Triggers>
-                                                                                    </Style>
-                                                                                </Border.Style>
-                                                                                <StackPanel HorizontalAlignment="Center">
-                                                                                    <Image Source="{Binding IconId, Converter={StaticResource IconImage}}"
-                                                                                           Width="25" Height="25" Stretch="Uniform"
-                                                                                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                                                                                    <TextBlock FontSize="10" Foreground="#CDD6F4" Margin="0,3,0,0"
-                                                                                               HorizontalAlignment="Center" Text="{Binding StateText}" />
-                                                                                </StackPanel>
-                                                                            </Border>
-                                                                        </DataTemplate>
-                                                                    </ItemsControl.ItemTemplate>
-                                                                </ItemsControl>
-                                                            </StackPanel>
-                                                        </Border>
+                                                        <StackPanel Orientation="Horizontal" Margin="24,1,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="交租后" FontSize="8" Foreground="#6C7086"
+                                                                       Margin="0,0,3,0" VerticalAlignment="Center" />
+                                                            <ContentControl Content="{Binding}" />
+                                                        </StackPanel>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>

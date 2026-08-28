@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -521,6 +521,7 @@ public class DetailedSpinViewModel
     public string CoinChangeText { get; }
     public List<ChoiceGroupViewModel> ChoiceGroups { get; } = new();
     public List<ActionEventViewModel> Actions { get; } = new();
+    public List<DetailedTimelineEventViewModel> Events { get; } = new();
     public bool HasChoiceGroups => ChoiceGroups.Count > 0;
     public bool HasActions => Actions.Count > 0;
     public bool HasDetailedData => HasChoiceGroups || HasActions;
@@ -561,7 +562,49 @@ public class DetailedSpinViewModel
 
         foreach (var action in spin.ExtraActions ?? new List<ActionEntry>())
             Actions.Add(new ActionEventViewModel(action));
+
+        // Match the compact Avalonia timeline ordering: unanchored actions,
+        // choice group, reroll marker, then actions caused by that choice.
+        var groups = ChoiceGroups.OrderBy(group => group.ChoiceIdx).ToList();
+        var visibleActions = Actions.Where(action => action.IsTimelineBadge).ToList();
+        foreach (var action in visibleActions.Where(action => action.AfterChoiceIdx is null))
+            Events.Add(DetailedTimelineEventViewModel.FromAction(action));
+
+        foreach (var group in groups)
+        {
+            Events.Add(DetailedTimelineEventViewModel.FromChoice(group));
+            if (group.IsRerolled)
+                Events.Add(DetailedTimelineEventViewModel.FromReroll());
+            foreach (var action in visibleActions.Where(action => action.AfterChoiceIdx == group.ChoiceIdx))
+                Events.Add(DetailedTimelineEventViewModel.FromAction(action));
+        }
+
+        foreach (var action in visibleActions.Where(action => action.AfterChoiceIdx is not null
+                     && !groups.Any(group => group.ChoiceIdx == action.AfterChoiceIdx)))
+            Events.Add(DetailedTimelineEventViewModel.FromAction(action));
     }
+}
+
+public class DetailedTimelineEventViewModel
+{
+    public ChoiceGroupViewModel? ChoiceGroup { get; }
+    public ActionEventViewModel? Action { get; }
+    public bool IsChoice => ChoiceGroup is not null;
+    public bool IsAction => Action is not null;
+    public bool IsReroll { get; }
+    public string RerollText => IsReroll ? "重掷" : "";
+
+    private DetailedTimelineEventViewModel(ChoiceGroupViewModel? choiceGroup = null,
+        ActionEventViewModel? action = null, bool isReroll = false)
+    {
+        ChoiceGroup = choiceGroup;
+        Action = action;
+        IsReroll = isReroll;
+    }
+
+    public static DetailedTimelineEventViewModel FromChoice(ChoiceGroupViewModel group) => new(choiceGroup: group);
+    public static DetailedTimelineEventViewModel FromAction(ActionEventViewModel action) => new(action: action);
+    public static DetailedTimelineEventViewModel FromReroll() => new(isReroll: true);
 }
 
 public class ChoiceGroupViewModel
@@ -638,16 +681,20 @@ public class ChoiceOptionViewModel
 
 public class ActionEventViewModel
 {
-    public string IconId { get; }
-    public string ActionText { get; }
-    public string DetailText { get; }
+    public string IconId { get; } = "";
+    public string ActionKind { get; } = "";
+    public string ActionText { get; } = "";
+    public string BadgeText { get; } = "";
+    public string DetailText { get; } = "";
     public int? AfterChoiceIdx { get; }
+    public bool IsTimelineBadge => ActionKind is "used" or "triggered" or "destroyed" or "removed";
 
     public ActionEventViewModel(ActionEntry action)
     {
         IconId = action.Id ?? "";
+        ActionKind = action.Action ?? "";
         AfterChoiceIdx = action.AfterChoiceIdx;
-        ActionText = action.Action switch
+        ActionText = ActionKind switch
         {
             "added" => "加入牌组",
             "used" => "物品使用",
@@ -656,7 +703,15 @@ public class ActionEventViewModel
             "removed" => "移除",
             "counter" => "计数变化",
             "skipped" => "未选择",
-            _ => action.Action
+            _ => ActionKind
+        };
+        BadgeText = ActionKind switch
+        {
+            "used" => "使用",
+            "triggered" => "触发",
+            "destroyed" => "销毁",
+            "removed" => "移除",
+            _ => ActionText
         };
 
         var details = new List<string>();
