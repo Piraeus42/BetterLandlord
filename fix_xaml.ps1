@@ -1,0 +1,41 @@
+$lines = [System.IO.File]::ReadAllLines("Piraeus.BetterLandlord.UI/MainWindow.xaml", [System.Text.Encoding]::UTF8)
+$newBlock = @(
+    '                                        <StackPanel Margin="0,0,4,2">',
+    '                                            <!-- Rent line: text on the left, deck snapshot immediately to the right. -->',
+    '                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">',
+    '                                                <TextBlock FontSize="12" FontWeight="Bold" Foreground="#89B4FA"',
+    '                                                           Text="{Binding RoundIndex, StringFormat=''R{0}''}"',
+    '                                                           VerticalAlignment="Center" />',
+    '                                                <Image Source="{Binding Converter={StaticResource IconImage}, ConverterParameter=coin}"',
+    '                                                       Width="15" Height="15" Margin="5,0,2,0" />',
+    '                                                <TextBlock FontSize="10" FontWeight="SemiBold" Foreground="#A6E3A1"',
+    '                                                           Text="{Binding CoinsAtRent}" VerticalAlignment="Center" />',
+    '                                                <TextBlock FontSize="9" Foreground="#6C7086" Text=" / "',
+    '                                                           VerticalAlignment="Center" />',
+    '                                                <TextBlock FontSize="10" Foreground="#CDD6F4"',
+    '                                                           Text="{Binding RentRequired}" VerticalAlignment="Center" />',
+    '                                                <ItemsControl ItemsSource="{Binding DeckSymbols}"',
+    '                                                              Visibility="{Binding HasDeckSnapshot, Converter={StaticResource BoolToVis}}"',
+    '                                                              Margin="6,0,0,0" VerticalAlignment="Center">',
+    '                                                    <ItemsControl.ItemsPanel>',
+    '                                                        <ItemsPanelTemplate>',
+    '                                                            <WrapPanel />',
+    '                                                        </ItemsPanelTemplate>',
+    '                                                    </ItemsControl.ItemsPanel>',
+    '                                                </ItemsControl>',
+    '                                            </StackPanel>',
+    '                                            <!-- Choice/action badges wrap within the full width. -->',
+    '                                            <ItemsControl ItemsSource="{Binding TimelineEvents}"',
+    '                                                          Margin="0,2,0,0"',
+    '                                                          HorizontalContentAlignment="Stretch">',
+    '                                                <ItemsControl.ItemsPanel>',
+    '                                                    <ItemsPanelTemplate>',
+    '                                                        <WrapPanel HorizontalAlignment="Left" />',
+    '                                                    </ItemsPanelTemplate>',
+    '                                                </ItemsControl.ItemsPanel>',
+    '                                            </ItemsControl>',
+    '                                        </StackPanel>'
+)
+$newLines = $lines[0..794] + $newBlock + $lines[849..($lines.Count-1)]
+[System.IO.File]::WriteAllLines("Piraeus.BetterLandlord.UI/MainWindow.xaml", $newLines, [System.Text.Encoding]::UTF8)
+Write-Host "Done"
