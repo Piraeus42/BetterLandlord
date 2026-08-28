@@ -585,11 +585,12 @@
 
                     <!-- Timeline display mode: established overview remains the default. -->
                     <ToggleButton IsChecked="{Binding ShowDetailedTimeline, Mode=TwoWay}"
-                                  HorizontalAlignment="Left" Width="108" Height="24" Margin="0,0,0,10"
+                                  Visibility="{Binding HasData, Converter={StaticResource BoolToVis}}"
+                                  HorizontalAlignment="Left" Width="82" Height="22" Margin="0,0,0,10"
                                   Cursor="Hand" ToolTip="切换概览/详细时间线">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
-                                <Setter Property="Background" Value="#313255" />
+                                <Setter Property="Background" Value="Transparent" />
                                 <Setter Property="BorderBrush" Value="#45475A" />
                                 <Setter Property="Foreground" Value="#CDD6F4" />
                                 <Setter Property="Template">
@@ -599,19 +600,19 @@
                                                     BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
                                                     CornerRadius="4" Padding="2">
                                                 <Grid>
-                                                    <Border x:Name="Thumb" Width="50" HorizontalAlignment="Left"
+                                                    <Border x:Name="Thumb" Width="36" HorizontalAlignment="Left"
                                                             Background="#45475A" CornerRadius="3" />
                                                     <Grid>
-                                                        <TextBlock Text="概览" HorizontalAlignment="Left" Margin="11,0,0,0"
+                                                        <TextBlock Text="概览" HorizontalAlignment="Left" Margin="7,0,0,0"
                                                                    VerticalAlignment="Center" FontSize="10" />
-                                                        <TextBlock Text="详细" HorizontalAlignment="Right" Margin="0,0,11,0"
+                                                        <TextBlock Text="详细" HorizontalAlignment="Right" Margin="0,0,7,0"
                                                                    VerticalAlignment="Center" FontSize="10" />
                                                     </Grid>
                                                 </Grid>
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsChecked" Value="True">
-                                                    <Setter TargetName="Track" Property="Background" Value="#2D3B5B" />
+                                                    <Setter TargetName="Track" Property="BorderBrush" Value="#89B4FA" />
                                                     <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
                                                     <Setter Property="Foreground" Value="#89B4FA" />
                                                 </Trigger>
@@ -766,7 +767,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <!-- Detailed timeline: compact choice/action capsules, matching the Avalonia layout. -->
+                        <!-- Detailed timeline: one continuous horizontal row, matching Avalonia. -->
                         <ItemsControl ItemsSource="{Binding DetailedTimelineRounds}"
                                       Visibility="{Binding IsDetailedTimeline, Converter={StaticResource BoolToVis}}">
                             <ItemsControl.ItemTemplate>
@@ -787,32 +788,12 @@
                                                            Text="{Binding RentRequired}" VerticalAlignment="Center" />
                                             </StackPanel>
 
-                                            <ItemsControl ItemsSource="{Binding Spins}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,1" VerticalAlignment="Center">
-                                                            <ItemsControl ItemsSource="{Binding Events}">
-                                                                <ItemsControl.ItemsPanel>
-                                                                    <ItemsPanelTemplate>
-                                                                        <StackPanel Orientation="Horizontal" />
-                                                                    </ItemsPanelTemplate>
-                                                                </ItemsControl.ItemsPanel>
-                                                            </ItemsControl>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-
-                                            <!-- Legacy end_actions can reconstruct the item choices; keep them in the same compact row. -->
-                                            <ItemsControl ItemsSource="{Binding EndChoiceGroups}"
-                                                          Visibility="{Binding HasEndChoiceGroups, Converter={StaticResource BoolToVis}}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,1,0,0" VerticalAlignment="Center">
-                                                            <ContentControl Content="{Binding}" />
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
+                                            <ItemsControl ItemsSource="{Binding TimelineEvents}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
                                             </ItemsControl>
                                         </StackPanel>
                                     </Border>

@@ -53,6 +53,8 @@ public class HistoryViewModel : INotifyPropertyChanged
             if (SetProperty(ref _currentRecord, value))
             {
                 _currentRecord?.MigrateDptIfNeeded();
+                _cachedTimeline = null;
+                _cachedDetailedTimeline = null;
                 RefreshMeta();
                 OnPropertyChanged(nameof(TimelineRounds));
                 OnPropertyChanged(nameof(DetailedTimelineRounds));
@@ -60,6 +62,12 @@ public class HistoryViewModel : INotifyPropertyChanged
                 OnPropertyChanged(nameof(Summary));
                 OnPropertyChanged(nameof(HasData));
                 OnPropertyChanged(nameof(RunInfo));
+
+                // Build the detailed timeline off the UI thread while the overview
+                // is already visible. Switching modes can then reuse the prepared
+                // view models instead of paying the construction cost on click.
+                if (_currentRecord is not null)
+                    PreloadDetailedTimeline(_currentRecord);
             }
         }
     }
@@ -253,20 +261,49 @@ public class HistoryViewModel : INotifyPropertyChanged
     }
 
     private List<DetailedTimelineRoundViewModel>? _cachedDetailedTimeline;
-    public List<DetailedTimelineRoundViewModel> DetailedTimelineRounds
-    {
-        get
-        {
-            if (_currentRecord?.RentCycles == null)
-                return _cachedDetailedTimeline ?? new();
-            _cachedDetailedTimeline = _currentRecord.RentCycles
-                .Select(rc => new DetailedTimelineRoundViewModel(rc))
-                .ToList();
-            return _cachedDetailedTimeline;
-        }
-    }
+    private int _detailedPreloadVersion;
 
-    public bool HasDetailedTimelineData => DetailedTimelineRounds.Any(r => r.HasDetailedData);
+    public List<DetailedTimelineRoundViewModel> DetailedTimelineRounds
+        => _cachedDetailedTimeline ?? new();
+
+    public bool HasDetailedTimelineData => _cachedDetailedTimeline?.Any(r => r.HasDetailedData) == true;
+
+    private void PreloadDetailedTimeline(RunRecord record)
+    {
+        var version = Interlocked.Increment(ref _detailedPreloadVersion);
+
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                var timeline = (record.RentCycles ?? new List<RentCycle>())
+                    .Select(rc => new DetailedTimelineRoundViewModel(rc))
+                    .ToList();
+
+                _dispatcher.BeginInvoke(() =>
+                {
+                    // A newer run may have been selected while this work was in
+                    // progress. Never let an old background result overwrite it.
+                    if (version != Volatile.Read(ref _detailedPreloadVersion)
+                        || !ReferenceEquals(_currentRecord, record))
+                        return;
+
+                    _cachedDetailedTimeline = timeline;
+                    OnPropertyChanged(nameof(DetailedTimelineRounds));
+                    OnPropertyChanged(nameof(HasDetailedTimelineData));
+                });
+            }
+            catch (Exception ex)
+            {
+                _dispatcher.BeginInvoke(() =>
+                {
+                    if (version == Volatile.Read(ref _detailedPreloadVersion)
+                        && ReferenceEquals(_currentRecord, record))
+                        StatusText = $"Detailed timeline preload failed: {ex.Message}";
+                });
+            }
+        });
+    }
 
     // ---- Pipe message handlers (called from background thread) ----
 
@@ -484,6 +521,7 @@ public class DetailedTimelineRoundViewModel
     public double CoinsAtRent { get; }
     public List<DetailedSpinViewModel> Spins { get; } = new();
     public List<ChoiceGroupViewModel> EndChoiceGroups { get; } = new();
+    public List<DetailedTimelineEventViewModel> TimelineEvents { get; } = new();
     public bool HasEndChoiceGroups => EndChoiceGroups.Count > 0;
     public bool HasDetailedData => Spins.Any(s => s.HasDetailedData) || HasEndChoiceGroups;
 
@@ -511,6 +549,14 @@ public class DetailedTimelineRoundViewModel
             if (knownItemChoices.Contains(actions.Key)) continue;
             EndChoiceGroups.Add(ChoiceGroupViewModel.FromActions(actions.Key, "item", actions));
         }
+
+        // Avalonia renders the choice/action capsules as one continuous
+        // horizontal row. Flatten spin-local events here so WPF does not add a
+        // line break between every spin or between the legacy end choices.
+        foreach (var spin in Spins)
+            TimelineEvents.AddRange(spin.Events);
+        foreach (var group in EndChoiceGroups)
+            TimelineEvents.Add(DetailedTimelineEventViewModel.FromChoice(group));
     }
 }
 
