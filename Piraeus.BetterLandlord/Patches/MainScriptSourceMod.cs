@@ -207,9 +207,25 @@ func _bh_flush():
                 'main_symbol': null,
                 'skipped_options': [],
                 'choice_groups': [],
-                'extra_actions': []
+                'extra_actions': [],
+                'deck_symbols': [],
             }
 
+        elif et == 'deck_snapshot':
+            if cur_spin != null:
+                var _deck_vals = pl.get('symbols', [])
+                if typeof(_deck_vals) == TYPE_ARRAY:
+                    cur_spin.deck_symbols.clear()
+                    for _deck_symbol in _deck_vals:
+                        if typeof(_deck_symbol) == TYPE_DICTIONARY:
+                            var _deck_id = str(_deck_symbol.get('id', ''))
+                            if _deck_id != '' and _deck_id != 'null':
+                                var _deck_entry = {'id': _deck_id}
+                                if _deck_symbol.has('turns_until_change'):
+                                    _deck_entry['turns_until_change'] = int(_deck_symbol.get('turns_until_change', 0))
+                                if _deck_symbol.has('stack_value'):
+                                    _deck_entry['stack_value'] = str(_deck_symbol.get('stack_value', ''))
+                                cur_spin.deck_symbols.append(_deck_entry)
         elif et == 'symbol_choice_presented' or et == 'item_choice_presented':
             # The raw presented event already existed in v2 history.  Preserve
             # it as a structured group solely for the detailed UI; rarity is

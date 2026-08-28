@@ -27,7 +27,25 @@
         <SolidColorBrush x:Key="GreenColor" Color="#A6E3A1" />
         <SolidColorBrush x:Key="RedColor" Color="#F38BA8" />
 
-        <!-- Compact timeline templates ported from the collaborator's Avalonia UI. -->
+        <!-- Compact timeline templates ported from the collaborator Avalonia UI. -->
+        <DataTemplate DataType="{x:Type vm:DeckSymbolViewModel}">
+            <Grid Width="{Binding CellWidth}" Height="20" Margin="0,0,1,1"
+                  ToolTip="{Binding Tooltip}">
+                <Image Source="{Binding IconId, Converter={StaticResource IconImage}}"
+                       Width="17" Height="17" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                <TextBlock Text="{Binding CountText}" Visibility="{Binding HasCount, Converter={StaticResource BoolToVis}}"
+                           FontSize="7" FontWeight="Bold" Foreground="White" Background="#1E1E2E"
+                           HorizontalAlignment="Left" VerticalAlignment="Top" Padding="1,0" LineHeight="8" />
+                <TextBlock Text="{Binding TurnsText}" Visibility="{Binding HasTurnsUntilChange, Converter={StaticResource BoolToVis}}"
+                           FontSize="7" FontWeight="Bold" Foreground="#F9E2AF" Background="#1E1E2E"
+                           HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="1,0" LineHeight="8" />
+                <TextBlock Text="{Binding StackValue}" Visibility="{Binding HasStackValue, Converter={StaticResource BoolToVis}}"
+                           FontSize="7" FontWeight="Bold" Foreground="#A6E3A1" Background="#1E1E2E"
+                           HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="1,0" LineHeight="8" />
+            </Grid>
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type vm:ChoiceGroupViewModel}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,2,0">
                 <ItemsControl ItemsSource="{Binding Options}">
@@ -774,6 +792,18 @@
                                 <DataTemplate>
                                     <Border Background="#252538" CornerRadius="4" Padding="7,4" Margin="0,0,0,6">
                                         <StackPanel>
+                                            <!-- The snapshot is icon-only and sits above the rent header.
+                                                 Legacy logs leave this row hidden. -->
+                                            <ItemsControl ItemsSource="{Binding DeckSymbols}"
+                                                          Visibility="{Binding HasDeckSnapshot, Converter={StaticResource BoolToVis}}"
+                                                          Margin="0,0,0,2">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                            </ItemsControl>
+
                                             <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                                 <TextBlock FontSize="12" FontWeight="Bold" Foreground="#89B4FA"
                                                            Text="{Binding RoundIndex, StringFormat='R{0}'}"

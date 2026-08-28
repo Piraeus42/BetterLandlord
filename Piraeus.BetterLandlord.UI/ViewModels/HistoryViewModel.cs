@@ -520,16 +520,46 @@ public class DetailedTimelineRoundViewModel
     public int RentRequired { get; }
     public double CoinsAtRent { get; }
     public List<DetailedSpinViewModel> Spins { get; } = new();
+    public List<DeckSymbolViewModel> DeckSymbols { get; } = new();
     public List<ChoiceGroupViewModel> EndChoiceGroups { get; } = new();
     public List<DetailedTimelineEventViewModel> TimelineEvents { get; } = new();
     public bool HasEndChoiceGroups => EndChoiceGroups.Count > 0;
-    public bool HasDetailedData => TimelineEvents.Count > 0;
+    public bool HasDeckSnapshot => DeckSymbols.Count > 0;
+    public bool HasDetailedData => TimelineEvents.Count > 0 || HasDeckSnapshot;
 
     public DetailedTimelineRoundViewModel(RentCycle cycle)
     {
         RoundIndex = cycle.CycleIndex;
         RentRequired = cycle.RentRequired;
         CoinsAtRent = cycle.Spins.Count > 0 ? cycle.Spins.Last().CoinsAfter : 0;
+
+        // Use the first available pre-spin snapshot for this rent cycle.
+        // Older runs simply leave this row empty.
+        var deckSnapshot = cycle.Spins
+            .Select(spin => spin.DeckSymbols)
+            .FirstOrDefault(symbols => symbols is { Count: > 0 });
+        if (deckSnapshot is not null)
+        {
+            foreach (var group in deckSnapshot
+                         .Where(symbol => !string.IsNullOrWhiteSpace(symbol.Id))
+                         .GroupBy(symbol => new
+                         {
+                             symbol.Id,
+                             symbol.TurnsUntilChange,
+                             StackValue = symbol.Id is "rabbit" or "wine" ? null : symbol.StackValue
+                         })
+                         .OrderBy(group => group.Key.Id, StringComparer.Ordinal)
+                         .ThenBy(group => group.Key.TurnsUntilChange ?? int.MaxValue)
+                         .ThenBy(group => group.Key.StackValue, StringComparer.Ordinal))
+            {
+                DeckSymbols.Add(new DeckSymbolViewModel(
+                    group.Key.Id,
+                    group.Count(),
+                    group.Key.TurnsUntilChange,
+                    group.Key.StackValue));
+            }
+        }
+
         foreach (var spin in cycle.Spins)
             Spins.Add(new DetailedSpinViewModel(spin));
 
@@ -580,6 +610,40 @@ public class DetailedTimelineRoundViewModel
     private static string ActionKey(ActionEventViewModel action)
         => string.Join("|", action.ActionKind, action.IconId,
             action.AfterChoiceIdx?.ToString() ?? "");
+}
+
+public sealed class DeckSymbolViewModel
+{
+    public string IconId { get; }
+    public int Count { get; }
+    public string CountText => Count > 1 ? Count.ToString() : "";
+    public bool HasCount => Count > 1;
+    public int? TurnsUntilChange { get; }
+    public bool HasTurnsUntilChange => TurnsUntilChange.HasValue;
+    public string TurnsText => TurnsUntilChange?.ToString() ?? "";
+    public string? StackValue { get; }
+    public bool HasStackValue => !string.IsNullOrWhiteSpace(StackValue);
+    public double CellWidth => HasTurnsUntilChange && HasStackValue ? 31 :
+        HasTurnsUntilChange || HasStackValue ? 21 : 17;
+    public string Tooltip
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (Count > 1) parts.Add($"数量 {Count}");
+            if (TurnsUntilChange is int turns) parts.Add($"剩余 {turns} Spin");
+            if (HasStackValue) parts.Add($"数值 {StackValue}");
+            return parts.Count == 0 ? IconId : string.Join("，", parts);
+        }
+    }
+
+    public DeckSymbolViewModel(string iconId, int count, int? turnsUntilChange, string? stackValue)
+    {
+        IconId = iconId;
+        Count = count;
+        TurnsUntilChange = turnsUntilChange;
+        StackValue = stackValue;
+    }
 }
 
 public class DetailedSpinViewModel

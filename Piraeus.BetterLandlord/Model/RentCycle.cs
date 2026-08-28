@@ -68,6 +68,11 @@ public class SpinEntry
     [JsonConverter(typeof(SingleOrArrayConverter<ActionEntry>))]
     public List<ActionEntry> ExtraActions { get; set; } = new();
 
+    // Snapshot of the symbol deck immediately before this spin. Newer runs
+    // populate it from the native deck; older runs deserialize to an empty list.
+    [JsonPropertyName("deck_symbols")]
+    public List<BoardSymbolEntry> DeckSymbols { get; set; } = new();
+
     [JsonPropertyName("boss_info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BossInfo? BossInfo { get; set; }
@@ -95,6 +100,24 @@ public class ChoiceGroupEntry
     [JsonPropertyName("rerolled")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool Rerolled { get; set; }
+}
+
+public class BoardSymbolEntry
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = "";
+
+    [JsonPropertyName("turns_until_change")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? TurnsUntilChange { get; set; }
+
+    [JsonPropertyName("stack_value")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? StackValue { get; set; }
+
+    // Reserved for compatibility with collaborator records.
+    [JsonPropertyName("value")]
+    public double Value { get; set; }
 }
 
 public class ActionEntry

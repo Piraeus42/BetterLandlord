@@ -50,6 +50,34 @@ internal static class HistoryEventProjection
                         continue;
                     }
 
+                    if (type == "deck_snapshot" && TryGetInt(payload, "spin_num", out var deckSpinNum) &&
+                        spins.TryGetValue(deckSpinNum, out var deckSpin) &&
+                        payload.TryGetProperty("symbols", out var deckSymbols) &&
+                        deckSymbols.ValueKind == JsonValueKind.Array)
+                    {
+                        deckSpin.DeckSymbols ??= new();
+                        deckSpin.DeckSymbols.Clear();
+                        foreach (var symbolElement in deckSymbols.EnumerateArray())
+                        {
+                            if (symbolElement.ValueKind != JsonValueKind.Object ||
+                                !TryGetString(symbolElement, "id", out var symbolId) ||
+                                string.IsNullOrWhiteSpace(symbolId))
+                                continue;
+
+                            int? turnsUntilChange = null;
+                            if (TryGetInt(symbolElement, "turns_until_change", out var turns))
+                                turnsUntilChange = turns;
+                            string? stackValue = TryGetString(symbolElement, "stack_value", out var stack)
+                                ? stack : null;
+                            deckSpin.DeckSymbols.Add(new BoardSymbolEntry
+                            {
+                                Id = symbolId,
+                                TurnsUntilChange = turnsUntilChange,
+                                StackValue = stackValue
+                            });
+                        }
+                        continue;
+                    }
                     if (type is not ("item_used" or "essence_triggered" or
                         "item_destroyed" or "symbol_destroyed" or "symbol_removed"))
                         continue;
