@@ -67,8 +67,6 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="{Binding ResultText}" FontSize="8" Foreground="#6C7086"
-                           VerticalAlignment="Center" Margin="3,0,0,0" />
             </StackPanel>
         </DataTemplate>
 
@@ -793,15 +791,6 @@
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal" Margin="0,1" VerticalAlignment="Center">
-                                                            <TextBlock FontSize="9" Foreground="#6C7086"
-                                                                       Text="{Binding SpinNum, StringFormat='#{0}'}"
-                                                                       Width="24" VerticalAlignment="Center" />
-                                                            <TextBlock FontSize="9" Foreground="#6C7086"
-                                                                       Text="{Binding CoinsText}" Margin="0,0,4,0"
-                                                                       VerticalAlignment="Center" />
-                                                            <TextBlock FontSize="9" Foreground="#A6E3A1"
-                                                                       Text="{Binding CoinChangeText}" Margin="0,0,4,0"
-                                                                       VerticalAlignment="Center" />
                                                             <ItemsControl ItemsSource="{Binding Events}">
                                                                 <ItemsControl.ItemsPanel>
                                                                     <ItemsPanelTemplate>
@@ -809,9 +798,6 @@
                                                                     </ItemsPanelTemplate>
                                                                 </ItemsControl.ItemsPanel>
                                                             </ItemsControl>
-                                                            <TextBlock Text="{Binding EmptyText}" FontSize="8" Foreground="#6C7086"
-                                                                       Visibility="{Binding HasDetailedData, Converter={StaticResource InvertBoolToVis}}"
-                                                                       VerticalAlignment="Center" />
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -822,9 +808,7 @@
                                                           Visibility="{Binding HasEndChoiceGroups, Converter={StaticResource BoolToVis}}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Margin="24,1,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Text="交租后" FontSize="8" Foreground="#6C7086"
-                                                                       Margin="0,0,3,0" VerticalAlignment="Center" />
+                                                        <StackPanel Orientation="Horizontal" Margin="0,1,0,0" VerticalAlignment="Center">
                                                             <ContentControl Content="{Binding}" />
                                                         </StackPanel>
                                                     </DataTemplate>
