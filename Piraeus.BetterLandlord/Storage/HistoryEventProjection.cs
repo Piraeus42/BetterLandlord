@@ -54,8 +54,15 @@ internal static class HistoryEventProjection
                         payload.TryGetProperty("symbols", out var deckSymbols) &&
                         deckSymbols.ValueKind == JsonValueKind.Array)
                     {
-                        deckSpin.DeckSymbols ??= new();
-                        deckSpin.DeckSymbols.Clear();
+                        // Only clear if JSONL has data - preserve JSON-decoded deck_symbols
+                        if (deckSpin.DeckSymbols.Count == 0)
+                        {
+                            deckSpin.DeckSymbols = new();
+                        }
+                        else
+                        {
+                            deckSpin.DeckSymbols.Clear();
+                        }
                         foreach (var symbolElement in deckSymbols.EnumerateArray())
                         {
                             if (symbolElement.ValueKind != JsonValueKind.Object ||
