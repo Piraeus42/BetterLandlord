@@ -61,6 +61,7 @@ public class HistoryViewModel : INotifyPropertyChanged
                 OnPropertyChanged(nameof(HasDetailedTimelineData));
                 OnPropertyChanged(nameof(Summary));
                 OnPropertyChanged(nameof(HasData));
+                OnPropertyChanged(nameof(HasTimelineData));
                 OnPropertyChanged(nameof(RunInfo));
 
                 // Build the detailed timeline off the UI thread while the overview
@@ -239,6 +240,7 @@ public class HistoryViewModel : INotifyPropertyChanged
     // ---- Computed properties ----
 
     public bool HasData => CurrentRecord != null;
+    public bool HasTimelineData => CurrentRecord?.RentCycles?.Any(cycle => cycle.Spins?.Count > 0) == true;
     public string RunInfo => CurrentRecord?.Meta != null
         ? $"Run #{CurrentRecord.Meta.RunNumber}{(CurrentRecord.Meta.SeedType == "custom" ? " \U0001F512" : "")} — {FormatEndedBy(CurrentRecord.Meta.EndedBy)} (Floor {CurrentRecord.Meta.Floor ?? 0})"
         : "";

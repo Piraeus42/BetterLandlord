@@ -603,7 +603,7 @@
 
                     <!-- Timeline display mode: established overview remains the default. -->
                     <ToggleButton IsChecked="{Binding ShowDetailedTimeline, Mode=TwoWay}"
-                                  Visibility="{Binding HasData, Converter={StaticResource BoolToVis}}"
+                                  Visibility="{Binding HasTimelineData, Converter={StaticResource BoolToVis}}"
                                   HorizontalAlignment="Left" Width="82" Height="22" Margin="0,0,0,10"
                                   Cursor="Hand" ToolTip="切换概览/详细时间线">
                         <ToggleButton.Style>
@@ -785,26 +785,28 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <!-- Detailed timeline: one continuous horizontal row, matching Avalonia. -->
+                        <!-- Detailed timeline: compact horizontal content with wrapping at the
+                             same right edge as the surrounding DPT/content area. -->
                         <ItemsControl ItemsSource="{Binding DetailedTimelineRounds}"
+                                      HorizontalContentAlignment="Stretch"
                                       Visibility="{Binding IsDetailedTimeline, Converter={StaticResource BoolToVis}}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="#252538" CornerRadius="4" Padding="7,4" Margin="0,0,0,6">
-                                        <StackPanel>
-                                            <!-- The snapshot is icon-only and sits above the rent header.
-                                                 Legacy logs leave this row hidden. -->
-                                            <ItemsControl ItemsSource="{Binding DeckSymbols}"
-                                                          Visibility="{Binding HasDeckSnapshot, Converter={StaticResource BoolToVis}}"
-                                                          Margin="0,0,0,2">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                            </ItemsControl>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="200" />
+                                            </Grid.ColumnDefinitions>
 
-                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                            <!-- Rent text stays on the left; the deck snapshot is
+                                                 shown on the right, matching the Avalonia layout. -->
+                                            <StackPanel Grid.Row="0" Grid.Column="0"
+                                                        Orientation="Horizontal" Margin="0,0,4,2">
                                                 <TextBlock FontSize="12" FontWeight="Bold" Foreground="#89B4FA"
                                                            Text="{Binding RoundIndex, StringFormat='R{0}'}"
                                                            VerticalAlignment="Center" />
@@ -818,14 +820,32 @@
                                                            Text="{Binding RentRequired}" VerticalAlignment="Center" />
                                             </StackPanel>
 
-                                            <ItemsControl ItemsSource="{Binding TimelineEvents}">
+                                            <ItemsControl Grid.Row="0" Grid.Column="1"
+                                                          ItemsSource="{Binding DeckSymbols}"
+                                                          MaxWidth="200"
+                                                          HorizontalAlignment="Right"
+                                                          HorizontalContentAlignment="Right"
+                                                          Visibility="{Binding HasDeckSnapshot, Converter={StaticResource BoolToVis}}"
+                                                          Margin="0,0,0,2">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal" />
+                                                        <WrapPanel HorizontalAlignment="Right" />
                                                     </ItemsPanelTemplate>
                                                 </ItemsControl.ItemsPanel>
                                             </ItemsControl>
-                                        </StackPanel>
+
+                                            <!-- Choice/action badges remain in a compact row, but wrap
+                                                 instead of overflowing the right pane. -->
+                                            <ItemsControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                          ItemsSource="{Binding TimelineEvents}"
+                                                          HorizontalContentAlignment="Stretch">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel HorizontalAlignment="Left" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                            </ItemsControl>
+                                        </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

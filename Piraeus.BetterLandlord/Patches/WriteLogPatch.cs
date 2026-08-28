@@ -22,22 +22,13 @@ class WriteLogPatch
                 else:
                     $"/root/Main"._bh_add_event("item_used", {"item": _name, "source": "consumed"})
             elif string.find("item_to_destroy:") != -1:
-                # Essence consumption caused by a symbol effect is logged as an
-                # Effect line rather than as "Destroyed item - ...". Extract
-                # the field so essence activations are not silently lost.
-                var _marker = "item_to_destroy:"
-                var _start = string.find(_marker) + _marker.length()
-                var _name3 = string.substr(_start).strip_edges()
-                var _comma3 = _name3.find(",")
-                var _brace3 = _name3.find("}")
-                if _brace3 != -1 and (_comma3 == -1 or _brace3 < _comma3):
-                    _comma3 = _brace3
-                if _comma3 != -1:
-                    _name3 = _name3.substr(0, _comma3)
-                _name3 = _name3.strip_edges()
-                if _name3 != "" and _name3 != "null":
-                    $"/root/Main"._bh_add_event("item_destroyed", {"item": _name3, "source": "effect"})
-                    $"/root/Main"._bh_add_event("essence_triggered", {"item": _name3, "source": "effect"})
+                # item_to_destroy is only effect metadata: it describes which
+                # essence would be consumed if the effect can actually resolve.
+                # It is present even when the player does not own that essence,
+                # so it must not be treated as a destruction/trigger event.
+                # Real consumption is captured by the authoritative
+                # "Destroyed item - ..." log line above.
+                pass
             elif string.begins_with("Added item: "):
                 var _name2 = string.trim_prefix("Added item: ")
                 # Skip if _bh_record_choice already emitted this item

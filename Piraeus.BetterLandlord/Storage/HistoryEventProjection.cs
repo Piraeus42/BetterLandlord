@@ -8,13 +8,13 @@ namespace Piraeus.BetterLandlord.Storage;
 /// <summary>
 /// Rehydrates detailed action badges for records produced before the projection
 /// lived in MainScriptSourceMod. The append-only event JSONL is the primary
-/// source; the native run log is a compatibility fallback for essence effects
-/// that the old writer never emitted as structured events.
+/// source; the native run log is used only to reconcile authoritative item
+/// destruction lines for records that predate structured action events.
 /// </summary>
 internal static class HistoryEventProjection
 {
-    private static readonly Regex EssenceEffectPattern = new(
-        @"^\[(?<timestamp>[^\]]+)\].*item_to_destroy:(?<id>[A-Za-z0-9_-]+)",
+    private static readonly Regex DestroyedItemPattern = new(
+        @"^\[(?<timestamp>[^\]]+)\]\s*Destroyed item - (?<id>[A-Za-z0-9_-]+)",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     public static void Rehydrate(RunRecord record, string eventsPath, string runLogPath)
@@ -26,7 +26,6 @@ internal static class HistoryEventProjection
 
         var spinStarts = new List<(DateTime Timestamp, SpinEntry Spin)>();
         var matchedActions = new HashSet<ActionEntry>();
-        var hasStructuredEssenceEvents = false;
         if (File.Exists(eventsPath))
         {
             foreach (var line in File.ReadLines(eventsPath))
@@ -86,7 +85,6 @@ internal static class HistoryEventProjection
                     if (!TryGetString(payload, idProperty, out var id) || string.IsNullOrWhiteSpace(id))
                         continue;
 
-                    if (type == "essence_triggered") hasStructuredEssenceEvents = true;
                     var target = spinStarts.Count > 0 ? spinStarts[^1].Spin : null;
                     if (target == null && spins.Count == 1) target = spins.Values.First();
                     if (target == null) continue;
@@ -117,22 +115,23 @@ internal static class HistoryEventProjection
             }
         }
 
-        // Older WriteLogPatch versions did not emit essence_triggered for
-        // Effect lines containing item_to_destroy. Only use this fallback when
-        // structured essence events are absent, avoiding duplicates after an
-        // updated game run has been recorded.
-        if (!hasStructuredEssenceEvents && spinStarts.Count > 0 && File.Exists(runLogPath))
-            RehydrateEssenceEffects(spinStarts, runLogPath, matchedActions);
+        // item_to_destroy in an Effect line is descriptive metadata, not proof
+        // that an essence existed or was consumed. Reconcile the structured
+        // actions against the authoritative native "Destroyed item - ..." lines
+        // so both current and legacy records avoid phantom essence triggers.
+        if (spinStarts.Count > 0 && File.Exists(runLogPath))
+            ReconcileDestroyedItems(record, spinStarts, runLogPath);
     }
 
-    private static void RehydrateEssenceEffects(
+    private static void ReconcileDestroyedItems(
+        RunRecord record,
         IReadOnlyList<(DateTime Timestamp, SpinEntry Spin)> spinStarts,
-        string runLogPath,
-        HashSet<ActionEntry> matchedActions)
+        string runLogPath)
     {
+        var destroyedBySpin = new Dictionary<SpinEntry, Dictionary<string, int>>();
         foreach (var line in File.ReadLines(runLogPath))
         {
-            var match = EssenceEffectPattern.Match(line);
+            var match = DestroyedItemPattern.Match(line);
             if (!match.Success || !DateTime.TryParse(
                     match.Groups["timestamp"].Value,
                     CultureInfo.InvariantCulture,
@@ -140,22 +139,72 @@ internal static class HistoryEventProjection
                     out var timestamp))
                 continue;
 
-            SpinEntry? target = null;
-            foreach (var start in spinStarts)
-            {
-                if (start.Timestamp > timestamp) break;
-                target = start.Spin;
-            }
+            var target = FindSpin(spinStarts, timestamp);
             if (target == null) continue;
 
-            AddAction(target, new ActionEntry
+            if (!destroyedBySpin.TryGetValue(target, out var items))
+                destroyedBySpin[target] = items = new(StringComparer.Ordinal);
+            var id = match.Groups["id"].Value;
+            items[id] = items.GetValueOrDefault(id) + 1;
+        }
+
+        foreach (var spin in record.RentCycles.SelectMany(cycle => cycle.Spins))
+        {
+            // These came from the old item_to_destroy parser. Since that field
+            // is only a possible effect target, discard it before rebuilding the
+            // verified actions below.
+            spin.ExtraActions.RemoveAll(action =>
+                string.Equals(action.Source, "effect", StringComparison.Ordinal) &&
+                ((action.Action == "destroyed" && action.Type == "item") ||
+                 (action.Action == "triggered" && action.Type == "essence")));
+
+            if (!destroyedBySpin.TryGetValue(spin, out var items))
+                continue;
+
+            foreach (var (id, count) in items)
             {
-                Action = "triggered",
-                Type = "essence",
-                Id = match.Groups["id"].Value,
-                Source = "effect",
-                AfterChoiceIdx = LastChoiceIdx(target)
-            }, matchedActions);
+                EnsureActionCount(spin, "destroyed", "item", id, "consumed", count);
+                if (id.EndsWith("_essence", StringComparison.Ordinal))
+                    EnsureActionCount(spin, "triggered", "essence", id, "consumed", count);
+                else
+                    EnsureActionCount(spin, "used", "item", id, "consumed", count);
+            }
+        }
+    }
+
+    private static SpinEntry? FindSpin(
+        IReadOnlyList<(DateTime Timestamp, SpinEntry Spin)> spinStarts,
+        DateTime timestamp)
+    {
+        SpinEntry? target = null;
+        foreach (var start in spinStarts.OrderBy(start => start.Timestamp))
+        {
+            if (start.Timestamp > timestamp) break;
+            target = start.Spin;
+        }
+        return target;
+    }
+
+    private static void EnsureActionCount(
+        SpinEntry spin,
+        string action,
+        string type,
+        string id,
+        string source,
+        int expectedCount)
+    {
+        var existingCount = spin.ExtraActions.Count(candidate =>
+            candidate.Action == action && candidate.Type == type && candidate.Id == id);
+        for (var i = existingCount; i < expectedCount; i++)
+        {
+            spin.ExtraActions.Add(new ActionEntry
+            {
+                Action = action,
+                Type = type,
+                Id = id,
+                Source = source,
+                AfterChoiceIdx = LastChoiceIdx(spin)
+            });
         }
     }
 
