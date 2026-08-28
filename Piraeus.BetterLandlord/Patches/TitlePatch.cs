@@ -3,7 +3,7 @@
 namespace Piraeus.BetterLandlord.Patches;
 
 /// <summary>
-/// Snapshot flush: when returning to title mid-run, call _bh_end_run("quit")
+/// Snapshot flush: when returning to title mid-run, call _bh_end_run("quit") or _bh_end_run("endless")
 /// to capture the final board state BEFORE title() clears it (Prefix),
 /// write the JSON (so WPF shows "Quit" not "Defeat"), and dump to sidecar
 /// for cold-boot Continue recovery.
@@ -19,7 +19,7 @@ class TitlePatch
     static string PrefixCode() => GdscriptUtil.TabifyIndent("""
         if has_method("_bh_end_run") and has_method("_bh_force_persist_raw_events"):
             if _bh_events.size() > 0:
-                _bh_end_run("quit")
+                _bh_end_run(_bh_quit_result())
                 _bh_force_persist_raw_events()
         """);
 }

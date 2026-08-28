@@ -1,4 +1,4 @@
-﻿using SlotWeave.Modding;
+using SlotWeave.Modding;
 
 namespace Piraeus.BetterLandlord.Patches;
 
@@ -257,7 +257,12 @@ func _bh_save_rng_state():
         ""fingerprint"": {
             ""total_runs"": $'Pop-up Sprite/Pop-up'.total_runs,
             ""spins"": $'Pop-up Sprite/Pop-up'.spins,
-            ""coins"": $'Coins'.coins
+            ""coins"": $'Coins'.coins,
+            ""run_timestamp"": $'Pop-up Sprite/Pop-up'.run_timestamp,
+            ""current_floor"": $'Pop-up Sprite/Pop-up'.current_floor,
+            ""times_rent_paid"": $'Pop-up Sprite/Pop-up'.times_rent_paid,
+            ""endless_mode"": $'Pop-up Sprite/Pop-up'.endless_mode,
+            ""modded_floor_string"": $'Pop-up Sprite/Pop-up'.modded_floor_string
         },
         ""streams"": {
             ""sym_rarity"":    [str(_bh_rng_sym_rarity.state), str(_bh_rng_sym_rarity.inc)],
@@ -292,6 +297,10 @@ func _bh_make_rng_from(pair) -> PCGRng:
 # Restores all 19 streams from sidecar. Returns false if sidecar missing,
 # version mismatch, or fingerprint doesn't match current save state.
 func _bh_restore_rng_state():
+    # Continue must fail closed.  If the sidecar cannot be verified, suppress
+    # native stats for this loaded run instead of allowing a custom-seeded run
+    # to update wins/losses or reset the native streak.
+    _bh_stats_guarded = true
     var f = File.new()
     var path = ""user://betterHistory/rng_state.json""
     if not f.file_exists(path):
@@ -307,68 +316,97 @@ func _bh_restore_rng_state():
     if int(data.get(""version"", 0)) != 1:
         return false
 
-    # Fingerprint validation — refuse restore if sidecar doesn't match this save
+    # Validate the complete native-save fingerprint before touching any
+    # in-memory run/RNG/event state. The old three-field fingerprint could
+    # accept a different run when total_runs/spins/coins happened to match.
+    var _popup = $'Pop-up Sprite/Pop-up'
+    var _coins = $'Coins'
+    if _popup == null or _coins == null:
+        return false
     var fp = data.get(""fingerprint"", {})
     if typeof(fp) != TYPE_DICTIONARY:
         return false
-    if int(fp.get(""total_runs"", 0)) != $'Pop-up Sprite/Pop-up'.total_runs:
+    if not fp.has(""total_runs"") or int(fp[""total_runs""]) != int(_popup.total_runs):
         return false
-    if int(fp.get(""spins"", 0)) != $'Pop-up Sprite/Pop-up'.spins:
+    if not fp.has(""spins"") or int(fp[""spins""]) != int(_popup.spins):
         return false
-    if int(fp.get(""coins"", 0)) != $'Coins'.coins:
+    if not fp.has(""coins"") or float(fp[""coins""]) != float(_coins.coins):
+        return false
+    if not fp.has(""run_timestamp"") or int(fp[""run_timestamp""]) != int(_popup.run_timestamp):
+        return false
+    if not fp.has(""current_floor"") or int(fp[""current_floor""]) != int(_popup.current_floor):
+        return false
+    if not fp.has(""times_rent_paid"") or int(fp[""times_rent_paid""]) != int(_popup.times_rent_paid):
+        return false
+    if not fp.has(""endless_mode"") or bool(fp[""endless_mode""]) != bool(_popup.endless_mode):
+        return false
+    if not fp.has(""modded_floor_string"") or str(fp[""modded_floor_string""]) != str(_popup.modded_floor_string):
         return false
 
-    _bh_rng_seed_type     = str(data.get(""seed_type"", """"))
-    _bh_rng_seed_input    = str(data.get(""seed_input"", """"))
-    _bh_rng_landlord_seed = int(data.get(""landlord_seed"", 0))
-
-    # Restore run_id so the events temp file can be found
+    # Validate seed metadata and every stream into locals first. int() silently
+    # converts malformed strings to zero, so require integer-shaped values.
+    var _saved_seed_type = str(data.get(""seed_type"", """"))
+    var _saved_seed_input = str(data.get(""seed_input"", """"))
+    var _saved_landlord_seed = int(data.get(""landlord_seed"", -1))
     var _saved_run_id = str(data.get(""run_id"", """"))
-    if _saved_run_id != """":
-        _bh_run_id = _saved_run_id
-
-    # Load pre-close events from temp dump, truncated to save point
-    if has_method(""_bh_load_events_for_continue""):
-        var _save_spins = int(fp.get(""spins"", 0))
-        _bh_load_events_for_continue(_save_spins)
-
-    # Force the next ending to flush — sidecar events may be from a run
-    # that was already flushed once.  Restore victory_achieved from the
-    # sidecar so cold-boot Continue preserves the semantic flag.
-    _bh_flushed_at_spin = -1
-    _bh_victory_achieved = bool(data.get(""victory_achieved"", false))
+    if (_saved_seed_type != ""random"" and _saved_seed_type != ""custom"") or _saved_seed_input == """" or _saved_run_id == """":
+        return false
+    if _bh_fnv1a(_saved_seed_input) != _saved_landlord_seed:
+        return false
 
     var st = data.get(""streams"", {})
     if typeof(st) != TYPE_DICTIONARY:
         return false
+    var _keys = [""sym_rarity"", ""sym_common"", ""sym_uncommon"", ""sym_rare"", ""sym_vrare"", ""fineprint"", ""cosmetic"", ""forced_rarity"", ""reel"", ""effect"", ""scratch"", ""reel_shuffle"", ""effect_shuffle"", ""oil_can""]
+    var _pairs = {}
+    for _key in _keys:
+        if not st.has(_key) or typeof(st[_key]) != TYPE_ARRAY or st[_key].size() != 2:
+            return false
+        var _pair = st[_key]
+        var _state_text = str(_pair[0])
+        var _inc_text = str(_pair[1])
+        if not _state_text.is_valid_integer() or not _inc_text.is_valid_integer():
+            return false
+        _pairs[_key] = [int(_state_text), int(_inc_text)]
 
-    _bh_rng_sym_rarity  = _bh_make_rng_from(st[""sym_rarity""])
-    _bh_rng_sym_common   = _bh_make_rng_from(st[""sym_common""])
-    _bh_rng_sym_uncommon = _bh_make_rng_from(st[""sym_uncommon""])
-    _bh_rng_sym_rare     = _bh_make_rng_from(st[""sym_rare""])
-    _bh_rng_sym_vrare    = _bh_make_rng_from(st[""sym_vrare""])
-    _bh_rng_fineprint    = _bh_make_rng_from(st[""fineprint""])
-    _bh_rng_cosmetic     = _bh_make_rng_from(st[""cosmetic""])
-    _bh_rng_forced_rarity = _bh_make_rng_from(st[""forced_rarity""])
-    _bh_rng_reel         = _bh_make_rng_from(st[""reel""])
-    _bh_rng_effect       = _bh_make_rng_from(st[""effect""])
-    _bh_rng_scratch      = _bh_make_rng_from(st[""scratch""])
-    _bh_rng_reel_shuffle   = _bh_make_rng_from(st[""reel_shuffle""])
-    _bh_rng_effect_shuffle = _bh_make_rng_from(st[""effect_shuffle""])
-    _bh_rng_oil_can        = _bh_make_rng_from(st[""oil_can""])
+    # Commit only after all validation above succeeded.
+    _bh_rng_seed_type = _saved_seed_type
+    _bh_rng_seed_input = _saved_seed_input
+    _bh_rng_landlord_seed = _saved_landlord_seed
+    _bh_run_id = _saved_run_id
+    _bh_victory_achieved = bool(data.get(""victory_achieved"", false))
 
-    # Restore item sequence cursors (JSON float → int, B3 fix)
-    if data.has(""item_pick_event""):
-        _bh_item_pick_event = int(data[""item_pick_event""])
-    if data.has(""essence_pick_event""):
-        _bh_essence_pick_event = int(data[""essence_pick_event""])
+    _bh_rng_sym_rarity  = _bh_make_rng_from(_pairs[""sym_rarity""])
+    _bh_rng_sym_common   = _bh_make_rng_from(_pairs[""sym_common""])
+    _bh_rng_sym_uncommon = _bh_make_rng_from(_pairs[""sym_uncommon""])
+    _bh_rng_sym_rare     = _bh_make_rng_from(_pairs[""sym_rare""])
+    _bh_rng_sym_vrare    = _bh_make_rng_from(_pairs[""sym_vrare""])
+    _bh_rng_fineprint    = _bh_make_rng_from(_pairs[""fineprint""])
+    _bh_rng_cosmetic     = _bh_make_rng_from(_pairs[""cosmetic""])
+    _bh_rng_forced_rarity = _bh_make_rng_from(_pairs[""forced_rarity""])
+    _bh_rng_reel         = _bh_make_rng_from(_pairs[""reel""])
+    _bh_rng_effect       = _bh_make_rng_from(_pairs[""effect""])
+    _bh_rng_scratch      = _bh_make_rng_from(_pairs[""scratch""])
+    _bh_rng_reel_shuffle   = _bh_make_rng_from(_pairs[""reel_shuffle""])
+    _bh_rng_effect_shuffle = _bh_make_rng_from(_pairs[""effect_shuffle""])
+    _bh_rng_oil_can        = _bh_make_rng_from(_pairs[""oil_can""])
+
+    # Restore item sequence cursors (JSON float → int, B3 fix).
+    _bh_item_pick_event = int(data.get(""item_pick_event"", 0))
+    _bh_essence_pick_event = int(data.get(""essence_pick_event"", 0))
     _bh_item_seq = {}
     _bh_item_cursor = {}
     _bh_essence_seq = []
     _bh_essence_cursor = 0
 
-    # Sync Godot global RNG
+    # Load pre-close events only after the sidecar has been accepted.
+    if has_method(""_bh_load_events_for_continue""):
+        _bh_load_events_for_continue(int(fp[""spins""]))
+    _bh_flushed_at_spin = -1
+
+    # Sync Godot global RNG. The sidecar is now authoritative again.
     seed(_bh_rng_landlord_seed)
+    _bh_stats_guarded = false
     return true
 
 # ============================================================
@@ -407,7 +445,7 @@ func _notification(what: int):
             if _bl_choice_popup.has_method(""_bl_choice_card_cache_shutdown""):
                 _bl_choice_popup._bl_choice_card_cache_shutdown()
         if _bh_events.size() > 0:
-            _bh_end_run(""quit"")
+            _bh_end_run(_bh_quit_result())
 
 # ============================================================
 # skip-owned item sequences — deterministic, prefix-stable

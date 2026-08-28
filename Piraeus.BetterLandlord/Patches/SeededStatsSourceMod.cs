@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using SlotWeave.Modding;
 
 namespace Piraeus.BetterLandlord.Patches;
@@ -13,8 +13,8 @@ namespace Piraeus.BetterLandlord.Patches;
 ///   - unlock_achievement()    — Steam achievement unlocks
 ///
 /// Guards are early returns inserted right after each function signature,
-/// before any existing logic.  Uses has_method() for safety (no-op if the
-/// mod is unloaded).
+/// before any existing logic.  The guard fails closed when the Main helper is
+/// unavailable, preventing a partially-applied patch from leaking stats.
 /// </summary>
 public class SeededStatsSourceMod : ISourceMod
 {
@@ -25,7 +25,7 @@ public class SeededStatsSourceMod : ISourceMod
         if (source.Contains("_bh_is_seeded")) return source;
 
         var guard = @"
-	if $""/root/Main"".has_method(""_bh_is_seeded"") and $""/root/Main""._bh_is_seeded():
+	if not $""/root/Main"".has_method(""_bh_is_seeded"") or $""/root/Main""._bh_is_seeded():
 		return";
 
         // All five guarded functions get the same early-return guard after

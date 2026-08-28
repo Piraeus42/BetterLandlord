@@ -337,13 +337,13 @@ public class HistoryViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(HasWinRateStats));
             return;
         }
-        int totalWins = all.Count(r => r.EndedBy == "victory");
+        int totalWins = all.Count(r => IsVictoryResult(r.EndedBy));
         WinRateOverall = $"{totalWins * 100.0 / total:F1}%";
 
         var recent = all.Take(200).ToList();
-        WinRate50  = recent.Count >= 50  ? $"{recent.Take(50).Count(r => r.EndedBy == "victory") * 100.0 / Math.Min(50, recent.Count):F1}%" : "";
-        WinRate100 = recent.Count >= 100 ? $"{recent.Take(100).Count(r => r.EndedBy == "victory") * 100.0 / Math.Min(100, recent.Count):F1}%" : "";
-        WinRate200 = recent.Count >= 200 ? $"{recent.Take(200).Count(r => r.EndedBy == "victory") * 100.0 / Math.Min(200, recent.Count):F1}%" : "";
+        WinRate50  = recent.Count >= 50  ? $"{recent.Take(50).Count(r => IsVictoryResult(r.EndedBy)) * 100.0 / Math.Min(50, recent.Count):F1}%" : "";
+        WinRate100 = recent.Count >= 100 ? $"{recent.Take(100).Count(r => IsVictoryResult(r.EndedBy)) * 100.0 / Math.Min(100, recent.Count):F1}%" : "";
+        WinRate200 = recent.Count >= 200 ? $"{recent.Take(200).Count(r => IsVictoryResult(r.EndedBy)) * 100.0 / Math.Min(200, recent.Count):F1}%" : "";
 
         OnPropertyChanged(nameof(HasWinRateStats));
     }
@@ -363,11 +363,15 @@ public class HistoryViewModel : INotifyPropertyChanged
         catch { return ""; }
     }
 
+    private static bool IsVictoryResult(string endedBy) => endedBy is "victory" or "endless" or "guillotine";
+
     private static string FormatEndedBy(string endedBy) => endedBy switch
     {
-        "victory" => "Victory",
-        "quit"    => "Quit",
-        _         => "Defeat"
+        "victory"    => "Victory",
+        "endless"    => "Endless",
+        "guillotine" => "Guillotine",
+        "quit"       => "Quit",
+        _            => "Defeat"
     };
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -424,9 +428,11 @@ public class RunListItemViewModel
         SeedType = item.SeedType;
         ResultText = item.EndedBy switch
         {
-            "victory" => "Victory",
-            "quit"    => "Quit",
-            _         => "Defeat"
+            "victory"    => "Victory",
+            "endless"    => "Endless",
+            "guillotine" => "Guillotine",
+            "quit"       => "Quit",
+            _            => "Defeat"
         };
         // total_runs is 0-based in-game; display as 1-based for users
         RunLabel = IsCustomSeed

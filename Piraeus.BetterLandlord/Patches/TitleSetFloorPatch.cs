@@ -22,7 +22,7 @@ class TitleSetFloorPatch
                 # Flush any dangling events from a previous run.
                 # _bh_end_run is debounced — safe to call even if already flushed.
                 if _bh_events.size() > 0:
-                    _bh_end_run("quit")
+                    _bh_end_run(_bh_quit_result())
                 # Fresh bookkeeping for the new run
                 _bh_start_run()
                 # Apply seed from UI / config

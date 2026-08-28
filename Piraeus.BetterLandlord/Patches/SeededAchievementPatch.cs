@@ -13,7 +13,7 @@ class SeededAchievementPatch
 {
     [Prefix]
     static string PrefixCode() => GdscriptUtil.TabifyIndent("""
-        if $"/root/Main".has_method("_bh_is_seeded") and $"/root/Main"._bh_is_seeded():
+        if not $"/root/Main".has_method("_bh_is_seeded") or $"/root/Main"._bh_is_seeded():
             return
         """);
 }

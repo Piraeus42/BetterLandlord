@@ -84,7 +84,8 @@ public class HistoryStore
                     FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetDouble() : 0,
                     TotalSpins = meta.TryGetProperty("total_spins", out var ts) ? ts.GetInt32() : 0,
                     StartTime = meta.TryGetProperty("start_time", out var st) && st.ValueKind != JsonValueKind.Null ? st.GetString() : null,
-                    TopSymbols = ExtractTopSymbols(doc)
+                    TopSymbols = ExtractTopSymbols(doc),
+                    SeedType = meta.TryGetProperty("seed_type", out var sdt) && sdt.ValueKind != JsonValueKind.Null ? sdt.GetString() : null
                 });
             }
             catch { /* skip corrupted files */ }

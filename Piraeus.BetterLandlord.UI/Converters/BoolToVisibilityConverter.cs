@@ -43,12 +43,16 @@ public class NullToVisibilityConverter : IValueConverter
     }
 }
 
-/// <summary>Converts "victory" to a green checkmark, "loss" to red X.</summary>
+/// <summary>Converts successful terminal results to a checkmark.</summary>
 public class ResultToIconConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return value?.ToString() == "victory" ? "✓" : "✗";
+        return value?.ToString() switch
+        {
+            "victory" or "endless" or "guillotine" => "✓",
+            _ => "✗"
+        };
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -64,9 +68,11 @@ public class ResultToColorConverter : IValueConverter
     {
         return value?.ToString() switch
         {
-            "victory" => System.Windows.Media.Brushes.LimeGreen,
-            "quit"    => System.Windows.Media.Brushes.DodgerBlue,
-            _         => System.Windows.Media.Brushes.IndianRed
+            "victory"   => System.Windows.Media.Brushes.LimeGreen,
+            "endless"   => System.Windows.Media.Brushes.MediumPurple,
+            "guillotine"=> System.Windows.Media.Brushes.DarkOrange,
+            "quit"      => System.Windows.Media.Brushes.DodgerBlue,
+            _           => System.Windows.Media.Brushes.IndianRed
         };
     }
 

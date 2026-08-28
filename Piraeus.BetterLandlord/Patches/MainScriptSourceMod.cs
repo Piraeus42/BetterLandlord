@@ -27,6 +27,14 @@ var _bh_events = []
 var _bh_run_id = ''
 var _bh_flushed_at_spin = -1
 var _bh_victory_achieved = false
+# Native stats use just_won to carry a completed win into the next game's
+# add_to_games_played call. Guillotine/endless must preserve that invariant.
+var _bh_native_victory_marked = false
+# When Continue cannot prove the RNG sidecar matches the native save, keep
+# native stats disabled for the remainder of that loaded run.  This is a
+# conservative fallback: an uncertain run must never contaminate win rate or
+# reset the player's streak.
+var _bh_stats_guarded = false
 var _bh_pending_choice = {}
 var _bh_just_recorded_item = ''
 var _bh_choice_idx = 0
@@ -56,6 +64,8 @@ func _bh_init():
     _bh_run_id = str(OS.get_unix_time())
     _bh_flushed_at_spin = -1
     _bh_victory_achieved = false
+    _bh_native_victory_marked = false
+    _bh_stats_guarded = false
     _bh_pending_choice.clear()
     _bh_choice_idx = 0
     _bh_events_persisted_count = 0
@@ -80,6 +90,8 @@ func _bh_start_run():
     _bh_events_snapshot_required = false
     _bh_flushed_at_spin = -1
     _bh_victory_achieved = false
+    _bh_native_victory_marked = false
+    _bh_stats_guarded = false
     # Always include run_number to prevent collisions across sessions.
     # Never reuse run_timestamp from a previous run.
     _bh_run_id = str(OS.get_unix_time())
@@ -133,7 +145,7 @@ func _bh_flush():
     var des_it = []
     var rem_sym = []
     # DPT accumulators: per-symbol value tracking (base symbol ID keyed)
-    var symbol_value_sum = {}          # {id: total_coins}
+    var symbol_value_sum = {}          # {id: total_coins}; use real values to avoid 64-bit overflow
     var symbol_present_count = {}      # {id: turns_present (board_value appearances)}
     var symbol_contributing_count = {} # {id: turns_contributing (value > 0 appearances)}
     var run_number = 0
@@ -213,9 +225,9 @@ func _bh_flush():
                     for _v in _vals:
                         if typeof(_v) == TYPE_DICTIONARY:
                             var _vid = str(_v.get('id', ''))
-                            var _vv = int(_v.get('value', 0))
+                            var _vv = float(_v.get('value', 0))
                             if _vid != '' and _vid != 'null':
-                                symbol_value_sum[_vid] = symbol_value_sum.get(_vid, 0) + _vv
+                                symbol_value_sum[_vid] = float(symbol_value_sum.get(_vid, 0.0)) + _vv
                                 symbol_present_count[_vid] = symbol_present_count.get(_vid, 0) + 1
                                 if _vv > 0:
                                     symbol_contributing_count[_vid] = symbol_contributing_count.get(_vid, 0) + 1
@@ -394,7 +406,7 @@ func _bh_flush():
             'spins': cycle_spins
         }
         var last_sp = cycle_spins[cycle_spins.size() - 1]
-        if ended_by == 'victory':
+        if _bh_is_victory_result(ended_by):
             cyc['rent_payment'] = {
                 'paid_successfully': true,
                 'coins_left_after_pay': max(0, float(last_sp.coins_after) - float(cyc.rent_required))
@@ -762,9 +774,42 @@ func _bh_lookup_actual_rent(actual_rents, idx, base_rents):
         return base_rents[idx]
     return 500 + (idx - 11) * 500
 
+# Whether a result represents a successful run.  Endless and guillotine are
+# distinct history markers, but both retain victory semantics.
+func _bh_is_victory_result(result):
+    return result == 'victory' or result == 'endless' or result == 'guillotine'
+
+# Result used when a run is abandoned from title/window-close.  Endless mode
+# is a dedicated terminal outcome rather than a generic quit.
+func _bh_quit_result():
+    if has_node('Pop-up Sprite/Pop-up') and $'Pop-up Sprite/Pop-up'.endless_mode:
+        return 'endless'
+    return 'quit'
+
 # Whether the current run uses a custom seed (excluded from native stats).
+# _bh_stats_guarded is set when a Continue restore cannot be verified; fail
+# closed so a broken sidecar cannot leak stats into the native profile.
 func _bh_is_seeded():
-    return _bh_rng_seed_type == 'custom'
+    return _bh_rng_seed_type == 'custom' or _bh_stats_guarded
+
+# Mark the terminal state as a native win without double-counting a
+# normal victory. The base game sets just_won when the final rent is paid;
+# guillotine bypasses that path, while endless normally inherits it.
+# Custom/fallback-uncertain runs remain excluded by the Stats source guard.
+func _bh_ensure_native_victory():
+    if _bh_native_victory_marked or _bh_is_seeded():
+        return
+    var _stats = $'Stats Sprite/Stats'
+    var _popup = $'Pop-up Sprite/Pop-up'
+    if _stats == null or _popup == null or not _stats.has_method('add_to_games_won'):
+        return
+    var _floor = int(_popup.current_floor)
+    var _already_won = false
+    if _stats.has('just_won') and _stats.just_won.size() > _floor:
+        _already_won = bool(_stats.just_won[_floor])
+    if not _already_won:
+        _stats.add_to_games_won(_floor)
+    _bh_native_victory_marked = true
 
 # Count completed spins from _bh_events (spin_start events).
 # Used as the debounce key — two flushes at the same spin count
@@ -836,14 +881,29 @@ func _bh_end_run(result):
     # --- Debounce: skip duplicate notifications for the same game state ---
     # Both write_log(""VICTORY"") and resolve_event(""win"") fire for the same
     # victory.  The second one arrives with no new spin data -- skip it.
+    # Exception: selecting Continue in Endless immediately after the normal
+    # victory upgrades the terminal marker without producing another spin.
     if spins == _bh_flushed_at_spin:
-        return
+        var _allow_endless_upgrade = false
+        if result == 'endless':
+            for _prev_ev in _bh_events:
+                if str(_prev_ev.get('type', '')) == 'run_end':
+                    var _prev_pl = _prev_ev.get('payload', {})
+                    if typeof(_prev_pl) == TYPE_DICTIONARY and str(_prev_pl.get('result', '')) == 'victory':
+                        _allow_endless_upgrade = true
+                        break
+        if not _allow_endless_upgrade:
+            return
 
     # --- Track victory achievement ---
     # Once a run has won, record it permanently so re-flushes after
     # guillotine / coin-loss / quit still carry victory_achieved=true.
-    if result == 'victory':
+    if _bh_is_victory_result(result):
         _bh_victory_achieved = true
+    # Guillotine exits before the base game's normal add_to_games_won path;
+    # endless exits after a victory but is kept idempotent for old saves.
+    if result == 'guillotine' or result == 'endless':
+        _bh_ensure_native_victory()
 
     # --- Strip any stale run_end events ---
     # A previous flush may have appended a run_end.  Remove all of them
@@ -853,7 +913,7 @@ func _bh_end_run(result):
     while _i >= 0:
         var _ev = _bh_events[_i]
         if str(_ev.get('type', '')) == 'run_end':
-            if str(_ev.get('payload', {}).get('result', '')) == 'victory':
+            if _bh_is_victory_result(str(_ev.get('payload', {}).get('result', ''))):
                 _bh_victory_achieved = true
             _bh_events.remove(_i)
         _i -= 1
@@ -872,9 +932,9 @@ func _bh_end_run(result):
         for _r in _reels.reels:
             for i in _r.icons:
                 if i.type != 'empty' and i.type != 'dud':
-                    var iv = 0
+                    var iv = 0.0
                     if typeof(i.value) == TYPE_REAL:
-                        iv = int(i.value)
+                        iv = float(i.value)
                     var sv = 0
                     if typeof(i.saved_value) == TYPE_INT or typeof(i.saved_value) == TYPE_REAL:
                         sv = int(i.saved_value)
@@ -898,9 +958,9 @@ func _bh_end_run(result):
                     fs.append(entry)
     if typeof($'Items') != TYPE_NIL:
         for it in $'Items'.items:
-            var itv = 0
+            var itv = 0.0
             if typeof(it.value) == TYPE_REAL:
-                itv = int(it.value)
+                itv = float(it.value)
             # Item has BOTH item_count and saved_value
             var ic = 0
             var has_ic = false
@@ -956,8 +1016,11 @@ func _bh_end_run(result):
         'final_symbols': fs, 'final_items': fi,
         'destroyed_symbols': _ds, 'destroyed_items': _di,
         'run_number': _actual_rn,
-        'seed_type': _bh_rng_seed_type,
-        'seed_input': _bh_rng_seed_input,
+        # A failed Continue restore is intentionally classified as custom for
+        # history statistics too.  The exact original seed is unknown, but the
+        # run must not enter the random-run win-rate denominator by accident.
+        'seed_type': 'custom' if _bh_stats_guarded else _bh_rng_seed_type,
+        'seed_input': '' if _bh_stats_guarded else _bh_rng_seed_input,
         'landlord_seed': _bh_rng_landlord_seed
     })
     _bh_flush()

@@ -428,8 +428,8 @@ public class LogParser
             {
                 lastCycle.RentPayment = new RentPaymentResult
                 {
-                    PaidSuccessfully = endedBy == "victory",
-                    CoinsLeftAfterPay = endedBy == "victory"
+                    PaidSuccessfully = IsVictoryResult(endedBy),
+                    CoinsLeftAfterPay = IsVictoryResult(endedBy)
                         ? (lastCycle.Spins.Last().CoinsAfter - lastCycle.RentRequired)
                         : 0
                 };
@@ -464,6 +464,8 @@ public class LogParser
 
         return cycle;
     }
+
+    private static bool IsVictoryResult(string endedBy) => endedBy is "victory" or "endless" or "guillotine";
 
     private static int RoundCut(int roundIdx)
     {

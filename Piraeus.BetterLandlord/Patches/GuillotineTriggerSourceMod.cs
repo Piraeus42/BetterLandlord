@@ -4,7 +4,7 @@ using SlotWeave.Modding;
 namespace Piraeus.BetterLandlord.Patches;
 
 /// <summary>
-/// Injects _bh_end_run("victory") at the actual guillotine trigger points
+/// Injects _bh_end_run("guillotine") at the actual guillotine trigger points
 /// (Coins.update / Items update), BEFORE the animation starts and before
 /// any board state is cleared.
 ///
@@ -27,14 +27,14 @@ public class GuillotineTriggerSourceMod : ISourceMod
 
         // Match the exact line that sets guillotine_essence_anim = 600,
         // capturing its leading whitespace so injected lines use the same
-        // indentation.  Append a guarded _bh_end_run("victory") call
+        // indentation.  Append a guarded _bh_end_run("guillotine") call
         // immediately after — at this point the board is 100% intact.
         // \r? handles CRLF line endings in the original game files.
         source = Regex.Replace(source,
             @"^(\t*)\$""/root/Main""\.guillotine_essence_anim = 600\r?$",
             @"$1$""/root/Main"".guillotine_essence_anim = 600
 $1if $""/root/Main"".has_method(""_bh_end_run""):
-$1	$""/root/Main""._bh_end_run(""victory"")",
+$1	$""/root/Main""._bh_end_run(""guillotine"")",
             RegexOptions.Multiline);
 
         return source;
