@@ -40,7 +40,17 @@ public class HistoryStore
 
         var json = File.ReadAllText(path);
         var record = JsonSerializer.Deserialize<RunRecord>(json, JsonOptions);
-        record?.MigrateDptIfNeeded();
+        if (record != null)
+        {
+            record.MigrateDptIfNeeded();
+            // v2 records written before detailed action projection may still have
+            // the raw append-only events beside the run JSON. Rehydrate those
+            // actions on load so existing runs benefit without rewriting history.
+            HistoryEventProjection.Rehydrate(
+                record,
+                Path.Combine(_historyDir, $"events_{runId}.jsonl"),
+                Path.Combine(Path.GetDirectoryName(_historyDir) ?? "", "run_logs", $"{runId}.log"));
+        }
         return record;
     }
 

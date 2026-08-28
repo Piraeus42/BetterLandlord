@@ -523,7 +523,7 @@ public class DetailedTimelineRoundViewModel
     public List<ChoiceGroupViewModel> EndChoiceGroups { get; } = new();
     public List<DetailedTimelineEventViewModel> TimelineEvents { get; } = new();
     public bool HasEndChoiceGroups => EndChoiceGroups.Count > 0;
-    public bool HasDetailedData => Spins.Any(s => s.HasDetailedData) || HasEndChoiceGroups;
+    public bool HasDetailedData => TimelineEvents.Count > 0;
 
     public DetailedTimelineRoundViewModel(RentCycle cycle)
     {
@@ -557,7 +557,29 @@ public class DetailedTimelineRoundViewModel
             TimelineEvents.AddRange(spin.Events);
         foreach (var group in EndChoiceGroups)
             TimelineEvents.Add(DetailedTimelineEventViewModel.FromChoice(group));
+
+        // Some legacy/native records keep non-choice actions in end_actions.
+        // They are not part of an item three-choice group, but they are still
+        // meaningful timeline events (used, triggered, destroyed, removed).
+        // Add them after the reconstructed choices and de-duplicate against
+        // spin-local actions for records that contain both projections.
+        var actionKeys = Spins
+            .SelectMany(spin => spin.Actions)
+            .Where(action => action.IsTimelineBadge)
+            .Select(ActionKey)
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (var action in cycle.EndActions ?? new List<ActionEntry>())
+        {
+            if (action.Action is "added" or "skipped") continue;
+            var actionVm = new ActionEventViewModel(action);
+            if (!actionVm.IsTimelineBadge || !actionKeys.Add(ActionKey(actionVm))) continue;
+            TimelineEvents.Add(DetailedTimelineEventViewModel.FromAction(actionVm));
+        }
     }
+
+    private static string ActionKey(ActionEventViewModel action)
+        => string.Join("|", action.ActionKind, action.IconId,
+            action.AfterChoiceIdx?.ToString() ?? "");
 }
 
 public class DetailedSpinViewModel

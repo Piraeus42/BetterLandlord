@@ -349,13 +349,26 @@ func _bh_flush():
                     item_accum[it] = ic - 1
                 # Attach destroyed items to the current spin if active
                 if cur_spin != null:
-                    cur_spin.extra_actions.append({'action': 'destroyed', 'type': 'item', 'id': it})
+                    var _item_destroyed = {'action': 'destroyed', 'type': 'item', 'id': it}
+                    if cur_spin.choice_groups.size() > 0:
+                        _item_destroyed['after_choice_idx'] = int(cur_spin.choice_groups[cur_spin.choice_groups.size() - 1].get('choice_idx', -1))
+                    cur_spin.extra_actions.append(_item_destroyed)
 
         elif et == 'symbol_destroyed':
             var sd = str(pl.get('symbol', ''))
             if sd != '':
                 var sc = destroyed_symbol_accum.get(sd, 0)
                 destroyed_symbol_accum[sd] = sc + 1
+                # Keep the event on the spin as well as in the run summary so
+                # the detailed timeline can show a symbol being destroyed.
+                if cur_spin != null:
+                    var _symbol_destroyed = {
+                        'action': 'destroyed', 'type': 'symbol', 'id': sd,
+                        'source': str(pl.get('source', ''))
+                    }
+                    if cur_spin.choice_groups.size() > 0:
+                        _symbol_destroyed['after_choice_idx'] = int(cur_spin.choice_groups[cur_spin.choice_groups.size() - 1].get('choice_idx', -1))
+                    cur_spin.extra_actions.append(_symbol_destroyed)
 
         elif et == 'symbol_removed':
             var sr = str(pl.get('symbol', ''))
@@ -363,6 +376,16 @@ func _bh_flush():
             if sr != '' and src == 'removal_token':
                 var rc = removed_symbol_accum.get(sr, 0)
                 removed_symbol_accum[sr] = rc + 1
+                # Removal-token actions are distinct from destruction and need
+                # their own badge in the detailed timeline.
+                if cur_spin != null:
+                    var _symbol_removed = {
+                        'action': 'removed', 'type': 'symbol', 'id': sr,
+                        'source': src
+                    }
+                    if cur_spin.choice_groups.size() > 0:
+                        _symbol_removed['after_choice_idx'] = int(cur_spin.choice_groups[cur_spin.choice_groups.size() - 1].get('choice_idx', -1))
+                    cur_spin.extra_actions.append(_symbol_removed)
 
         elif et == 'run_end':
             _end_time = str(ev.get('timestamp', ''))
