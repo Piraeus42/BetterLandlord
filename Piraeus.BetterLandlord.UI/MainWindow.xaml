@@ -491,53 +491,45 @@
                     </Grid>
                 </Border>
 
-                    <!-- Timeline display mode: keep the established overview as the default. -->
-                    <Border Background="#252538" CornerRadius="5" Padding="8" Margin="0,0,0,12"
-                            Visibility="{Binding HasData, Converter={StaticResource BoolToVis}}">
-                        <DockPanel>
-                            <TextBlock Text="交租时间线" FontSize="13" FontWeight="SemiBold"
-                                       Foreground="#CDD6F4" VerticalAlignment="Center" />
-                            <ToggleButton DockPanel.Dock="Right" IsChecked="{Binding ShowDetailedTimeline, Mode=TwoWay}"
-                                          Cursor="Hand" ToolTip="切换概览/详细时间线">
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton">
-                                        <Setter Property="Width" Value="150" />
-                                        <Setter Property="Height" Value="28" />
-                                        <Setter Property="Background" Value="#313255" />
-                                        <Setter Property="BorderBrush" Value="#45475A" />
-                                        <Setter Property="Foreground" Value="#CDD6F4" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ToggleButton">
-                                                    <Border x:Name="Track" Background="{TemplateBinding Background}"
-                                                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
-                                                            CornerRadius="14" Padding="2">
-                                                        <Grid>
-                                                            <Border x:Name="Thumb" Width="70" HorizontalAlignment="Left"
-                                                                    Background="#45475A" CornerRadius="11" />
-                                                            <Grid>
-                                                                <TextBlock Text="概览" HorizontalAlignment="Left" Margin="14,0,0,0"
-                                                                           VerticalAlignment="Center" FontSize="11" />
-                                                                <TextBlock Text="详细" HorizontalAlignment="Right" Margin="0,0,14,0"
-                                                                           VerticalAlignment="Center" FontSize="11" />
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsChecked" Value="True">
-                                                            <Setter TargetName="Track" Property="Background" Value="#2D3B5B" />
-                                                            <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
-                                                            <Setter Property="Foreground" Value="#89B4FA" />
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ToggleButton.Style>
-                            </ToggleButton>
-                        </DockPanel>
-                    </Border>
+                    <!-- Timeline display mode: established overview remains the default. -->
+                    <ToggleButton IsChecked="{Binding ShowDetailedTimeline, Mode=TwoWay}"
+                                  HorizontalAlignment="Left" Width="108" Height="24" Margin="0,0,0,10"
+                                  Cursor="Hand" ToolTip="切换概览/详细时间线">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Background" Value="#313255" />
+                                <Setter Property="BorderBrush" Value="#45475A" />
+                                <Setter Property="Foreground" Value="#CDD6F4" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border x:Name="Track" Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                                                    CornerRadius="4" Padding="2">
+                                                <Grid>
+                                                    <Border x:Name="Thumb" Width="50" HorizontalAlignment="Left"
+                                                            Background="#45475A" CornerRadius="3" />
+                                                    <Grid>
+                                                        <TextBlock Text="概览" HorizontalAlignment="Left" Margin="11,0,0,0"
+                                                                   VerticalAlignment="Center" FontSize="10" />
+                                                        <TextBlock Text="详细" HorizontalAlignment="Right" Margin="0,0,11,0"
+                                                                   VerticalAlignment="Center" FontSize="10" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="Track" Property="Background" Value="#2D3B5B" />
+                                                    <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
+                                                    <Setter Property="Foreground" Value="#89B4FA" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
 
                         <!-- Existing overview timeline -->
                         <ItemsControl ItemsSource="{Binding TimelineRounds}"
@@ -788,6 +780,64 @@
 
                                                                 <TextBlock Text="{Binding EmptyText}" FontSize="11" Foreground="#6C7086"
                                                                            Visibility="{Binding HasDetailedData, Converter={StaticResource InvertBoolToVis}}" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <!-- Pre-existing end_actions records also contain item offers. -->
+                                            <ItemsControl ItemsSource="{Binding EndChoiceGroups}"
+                                                          Visibility="{Binding HasEndChoiceGroups, Converter={StaticResource BoolToVis}}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="#1E2030" BorderBrush="#363650" BorderThickness="1"
+                                                                CornerRadius="4" Padding="10" Margin="0,0,0,8">
+                                                            <StackPanel>
+                                                                <TextBlock Text="交租后物品选择" FontSize="11" FontWeight="SemiBold"
+                                                                           Foreground="#CDD6F4" Margin="0,0,0,7" />
+                                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                                                    <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#89B4FA"
+                                                                               Text="{Binding KindText}" />
+                                                                    <TextBlock FontSize="11" Foreground="#CDD6F4" Margin="8,0,0,0"
+                                                                               Text="{Binding ResultText}" />
+                                                                    <TextBlock FontSize="11" Foreground="#F9E2AF" Margin="8,0,0,0"
+                                                                               Text="{Binding RerollText}" />
+                                                                </StackPanel>
+                                                                <ItemsControl ItemsSource="{Binding Options}">
+                                                                    <ItemsControl.ItemsPanel>
+                                                                        <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                                                    </ItemsControl.ItemsPanel>
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <Border Background="#313255" BorderBrush="#45475A" BorderThickness="1"
+                                                                                    CornerRadius="4" Padding="6,4" Margin="0,0,6,0" MinWidth="64">
+                                                                                <Border.Style>
+                                                                                    <Style TargetType="Border">
+                                                                                        <Setter Property="Background" Value="#313255" />
+                                                                                        <Setter Property="BorderBrush" Value="#45475A" />
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                                                <Setter Property="Background" Value="#24523D" />
+                                                                                                <Setter Property="BorderBrush" Value="#A6E3A1" />
+                                                                                            </DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding IsSkipped}" Value="True">
+                                                                                                <Setter Property="Opacity" Value="0.58" />
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Border.Style>
+                                                                                <StackPanel HorizontalAlignment="Center">
+                                                                                    <Image Source="{Binding IconId, Converter={StaticResource IconImage}}"
+                                                                                           Width="25" Height="25" Stretch="Uniform"
+                                                                                           RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                                                                    <TextBlock FontSize="10" Foreground="#CDD6F4" Margin="0,3,0,0"
+                                                                                               HorizontalAlignment="Center" Text="{Binding StateText}" />
+                                                                                </StackPanel>
+                                                                            </Border>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
                                                             </StackPanel>
                                                         </Border>
                                                     </DataTemplate>

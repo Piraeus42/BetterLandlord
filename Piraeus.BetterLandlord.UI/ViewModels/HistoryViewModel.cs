@@ -483,7 +483,9 @@ public class DetailedTimelineRoundViewModel
     public int RentRequired { get; }
     public double CoinsAtRent { get; }
     public List<DetailedSpinViewModel> Spins { get; } = new();
-    public bool HasDetailedData => Spins.Any(s => s.HasDetailedData);
+    public List<ChoiceGroupViewModel> EndChoiceGroups { get; } = new();
+    public bool HasEndChoiceGroups => EndChoiceGroups.Count > 0;
+    public bool HasDetailedData => Spins.Any(s => s.HasDetailedData) || HasEndChoiceGroups;
 
     public DetailedTimelineRoundViewModel(RentCycle cycle)
     {
@@ -492,6 +494,23 @@ public class DetailedTimelineRoundViewModel
         CoinsAtRent = cycle.Spins.Count > 0 ? cycle.Spins.Last().CoinsAfter : 0;
         foreach (var spin in cycle.Spins)
             Spins.Add(new DetailedSpinViewModel(spin));
+
+        // Older saved runs already contain the selected item and the skipped
+        // candidates in end_actions. Reconstruct their three-choice group rather
+        // than requiring the later choice_groups projection to be present.
+        var knownItemChoices = cycle.Spins
+            .SelectMany(s => s.ChoiceGroups ?? new List<ChoiceGroupEntry>())
+            .Where(g => g.Kind == "item")
+            .Select(g => g.ChoiceIdx)
+            .ToHashSet();
+        foreach (var actions in (cycle.EndActions ?? new List<ActionEntry>())
+                     .Where(a => a.Type == "item" && (a.Action == "added" || a.Action == "skipped"))
+                     .GroupBy(a => a.ChoiceIdx)
+                     .OrderBy(g => g.Key))
+        {
+            if (knownItemChoices.Contains(actions.Key)) continue;
+            EndChoiceGroups.Add(ChoiceGroupViewModel.FromActions(actions.Key, "item", actions));
+        }
     }
 }
 
@@ -513,8 +532,32 @@ public class DetailedSpinViewModel
         CoinsText = $"{spin.CoinsBefore} → {spin.CoinsAfter}";
         CoinChangeText = spin.CoinChange >= 0 ? $"+{spin.CoinChange}" : $"{spin.CoinChange}";
 
-        foreach (var group in spin.ChoiceGroups ?? new List<ChoiceGroupEntry>())
-            ChoiceGroups.Add(new ChoiceGroupViewModel(group));
+        if (spin.ChoiceGroups is { Count: > 0 })
+        {
+            foreach (var group in spin.ChoiceGroups)
+                ChoiceGroups.Add(new ChoiceGroupViewModel(group));
+        }
+        else
+        {
+            // Pre-detailed history has the ordinary choice result: main_symbol
+            // plus skipped_options. That is enough to render its three choices.
+            var legacyOptions = (spin.SkippedOptions ?? new List<string>())
+                .Where(option => !string.IsNullOrWhiteSpace(option) && !option.StartsWith("("))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+            if (!string.IsNullOrEmpty(spin.MainSymbol))
+            {
+                if (!legacyOptions.Contains(spin.MainSymbol, StringComparer.Ordinal))
+                    legacyOptions.Insert(0, spin.MainSymbol);
+                ChoiceGroups.Add(ChoiceGroupViewModel.FromLegacy(
+                    "symbol", legacyOptions, spin.MainSymbol, "selected"));
+            }
+            else if (legacyOptions.Count > 0)
+            {
+                ChoiceGroups.Add(ChoiceGroupViewModel.FromLegacy(
+                    "choice", legacyOptions, null, "skipped"));
+            }
+        }
 
         foreach (var action in spin.ExtraActions ?? new List<ActionEntry>())
             Actions.Add(new ActionEventViewModel(action));
@@ -531,29 +574,57 @@ public class ChoiceGroupViewModel
     public List<ChoiceOptionViewModel> Options { get; } = new();
 
     public ChoiceGroupViewModel(ChoiceGroupEntry group)
+        : this(group.ChoiceIdx, group.Kind, group.Options, group.Selected, group.Result, group.Rerolled)
     {
-        ChoiceIdx = group.ChoiceIdx;
-        KindText = group.Kind == "item" ? "物品三选一" : "符号三选一";
-        IsRerolled = group.Rerolled;
-        ResultText = group.Result switch
+    }
+
+    private ChoiceGroupViewModel(int choiceIdx, string kind, IEnumerable<string>? options,
+        IEnumerable<string>? selected, string? result, bool rerolled = false)
+    {
+        ChoiceIdx = choiceIdx;
+        KindText = kind switch
+        {
+            "item" => "物品三选一",
+            "symbol" => "符号三选一",
+            _ => "三选一"
+        };
+        IsRerolled = rerolled;
+        ResultText = result switch
         {
             "selected" => "已选择",
             "skipped" => "已跳过",
             _ => "未完成"
         };
 
-        var selected = new HashSet<string>(group.Selected ?? new(), StringComparer.Ordinal);
-        foreach (var option in group.Options ?? new())
+        var selectedSet = new HashSet<string>(selected ?? Enumerable.Empty<string>(), StringComparer.Ordinal);
+        foreach (var option in (options ?? Enumerable.Empty<string>())
+                     .Where(option => !string.IsNullOrWhiteSpace(option))
+                     .Distinct(StringComparer.Ordinal))
         {
-            var isSelected = selected.Contains(option);
+            var isSelected = selectedSet.Contains(option);
             Options.Add(new ChoiceOptionViewModel
             {
                 IconId = option,
                 IsSelected = isSelected,
-                IsSkipped = group.Result == "skipped" || (group.Result == "selected" && !isSelected),
-                StateText = isSelected ? "已选择" : group.Result == "skipped" ? "跳过" : "未选择"
+                IsSkipped = result == "skipped" || (result == "selected" && !isSelected),
+                StateText = isSelected ? "已选择" : result == "skipped" ? "跳过" : "未选择"
             });
         }
+    }
+
+    public static ChoiceGroupViewModel FromLegacy(string kind, IEnumerable<string> options,
+        string? selected, string result) => new(0, kind, options,
+        string.IsNullOrEmpty(selected) ? Enumerable.Empty<string>() : new[] { selected }, result);
+
+    public static ChoiceGroupViewModel FromActions(int choiceIdx, string kind,
+        IEnumerable<ActionEntry> actions)
+    {
+        var list = actions.ToList();
+        var selected = list.FirstOrDefault(action => action.Action == "added")?.Id;
+        var options = list.Select(action => action.Id);
+        return new ChoiceGroupViewModel(choiceIdx, kind, options,
+            string.IsNullOrEmpty(selected) ? Enumerable.Empty<string>() : new[] { selected },
+            string.IsNullOrEmpty(selected) ? "skipped" : "selected");
     }
 }
 
