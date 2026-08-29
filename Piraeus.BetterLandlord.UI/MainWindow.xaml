@@ -573,7 +573,7 @@
                                             <Image Grid.Column="1"
                                                    Source="{Binding IconId, Mode=OneWay, Converter={StaticResource IconImage}}"
                                                    Width="24" Height="24" Stretch="Uniform"
-                                                   RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                   RenderOptions.BitmapScalingMode="HighQuality"
                                                    VerticalAlignment="Center" />
                                             <!-- Bar -->
                                             <Grid Grid.Column="2" Margin="4,0,0,0"
