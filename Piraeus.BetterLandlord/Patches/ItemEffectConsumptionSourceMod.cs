@@ -25,8 +25,8 @@ public sealed class ItemEffectConsumptionSourceMod : ISourceMod
         {
             Anchor,
             "\t\t\t\t" + Marker,
-            "\t\t\t\tif \"/root/Main\".has_method(\"_bh_record_effect_item_consumed\"): ",
-            "\t\t\t\t\"/root/Main\"._bh_record_effect_item_consumed(i.type)"
+            "\t\t\t\tif \"/root/Main\".has_method(\"_bh_record_effect_item_consumed\"):",
+            "\t\t\t\t\t\"/root/Main\"._bh_record_effect_item_consumed(i.type)"
         });
         return source[..index] + injected + source[(index + Anchor.Length)..];
     }
