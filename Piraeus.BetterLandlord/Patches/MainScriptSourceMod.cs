@@ -123,13 +123,15 @@ func _bh_record_effect_item_consumed(item_id):
     if typeof(item_id) != TYPE_STRING or item_id == '':
         return
     _bh_effect_item_consumed_pending.push_back(item_id)
-    _bh_add_event('item_destroyed', {'item': item_id, 'source': 'effect'})
     var is_essence = item_id.ends_with('_essence')
     if item_database.has(item_id) and item_database[item_id].has('groups'):
         is_essence = item_database[item_id].groups.has('essence')
     if is_essence:
+        # An essence is consumed by triggering.  Do not also emit a destruction
+        # badge, or the detailed timeline shows the same action twice.
         _bh_add_event('essence_triggered', {'item': item_id, 'source': 'effect'})
     else:
+        _bh_add_event('item_destroyed', {'item': item_id, 'source': 'effect'})
         _bh_add_event('item_used', {'item': item_id, 'source': 'effect'})
 
 # Consume the matching later native destruction log once, preventing duplicate

@@ -616,16 +616,23 @@ public class DetailedTimelineRoundViewModel
         // meaningful timeline events (used, triggered, destroyed, removed).
         // Add them after the reconstructed choices and de-duplicate against
         // spin-local actions for records that contain both projections.
-        var actionKeys = Spins
+        var spinTimelineActions = Spins
             .SelectMany(spin => spin.Actions)
             .Where(action => action.IsTimelineBadge)
+            .ToList();
+        var actionKeys = spinTimelineActions
+            .Where(action => !ActionEventViewModel.IsRedundantEssenceDestruction(action, spinTimelineActions))
             .Select(ActionKey)
             .ToHashSet(StringComparer.Ordinal);
-        foreach (var action in cycle.EndActions ?? new List<ActionEntry>())
+        var endTimelineActions = (cycle.EndActions ?? new List<ActionEntry>())
+            .Where(action => action.Action is not ("added" or "skipped"))
+            .Select(action => new ActionEventViewModel(action))
+            .Where(action => action.IsTimelineBadge)
+            .ToList();
+        foreach (var actionVm in endTimelineActions)
         {
-            if (action.Action is "added" or "skipped") continue;
-            var actionVm = new ActionEventViewModel(action);
-            if (!actionVm.IsTimelineBadge || !actionKeys.Add(ActionKey(actionVm))) continue;
+            if (ActionEventViewModel.IsRedundantEssenceDestruction(actionVm, endTimelineActions)
+                || !actionKeys.Add(ActionKey(actionVm))) continue;
             TimelineEvents.Add(DetailedTimelineEventViewModel.FromAction(actionVm));
         }
     }
@@ -721,7 +728,12 @@ public class DetailedSpinViewModel
         // Match the compact Avalonia timeline ordering: unanchored actions,
         // choice group, reroll marker, then actions caused by that choice.
         var groups = ChoiceGroups.OrderBy(group => group.ChoiceIdx).ToList();
-        var visibleActions = Actions.Where(action => action.IsTimelineBadge).ToList();
+        var timelineActions = Actions.Where(action => action.IsTimelineBadge).ToList();
+        // Older history files captured an essence activation as both destroyed
+        // and triggered. Keep the trigger, which is the meaningful event.
+        var visibleActions = timelineActions
+            .Where(action => !ActionEventViewModel.IsRedundantEssenceDestruction(action, timelineActions))
+            .ToList();
         foreach (var action in visibleActions.Where(action => action.AfterChoiceIdx is null))
             Events.Add(DetailedTimelineEventViewModel.FromAction(action));
 
@@ -843,6 +855,14 @@ public class ActionEventViewModel
     public string DetailText { get; } = "";
     public int? AfterChoiceIdx { get; }
     public bool IsTimelineBadge => ActionKind is "used" or "triggered" or "destroyed" or "removed";
+
+    public static bool IsRedundantEssenceDestruction(ActionEventViewModel action,
+        IEnumerable<ActionEventViewModel> allActions) =>
+        action.ActionKind == "destroyed"
+        && action.IconId.EndsWith("_essence", StringComparison.Ordinal)
+        && allActions.Any(other => other.ActionKind == "triggered"
+            && other.IconId == action.IconId
+            && other.AfterChoiceIdx == action.AfterChoiceIdx);
 
     public ActionEventViewModel(ActionEntry action)
     {
