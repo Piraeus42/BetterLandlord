@@ -265,10 +265,16 @@ public class HistoryViewModel : INotifyPropertyChanged
 
     private List<DetailedTimelineRoundViewModel>? _cachedDetailedTimeline;
     private int _detailedPreloadVersion;
-    private List<DetailedTimelineRoundViewModel>? _partialTimeline;
-    private int _partialTimelineCount;
-    public List<DetailedTimelineRoundViewModel> DetailedTimelineRounds
-        => _partialTimeline ?? _cachedDetailedTimeline ?? new();
+    private ObservableCollection<DetailedTimelineRoundViewModel>? _partialTimeline;
+    public IReadOnlyList<DetailedTimelineRoundViewModel> DetailedTimelineRounds
+    {
+        get
+        {
+            if (_partialTimeline is not null) return _partialTimeline;
+            if (_cachedDetailedTimeline is not null) return _cachedDetailedTimeline;
+            return Array.Empty<DetailedTimelineRoundViewModel>();
+        }
+    }
 
     public bool HasDetailedTimelineData => _cachedDetailedTimeline?.Any(r => r.HasDetailedData) == true;
 
@@ -276,7 +282,6 @@ public class HistoryViewModel : INotifyPropertyChanged
     {
         var version = Interlocked.Increment(ref _detailedPreloadVersion);
         _partialTimeline = null;
-        _partialTimelineCount = 0;
 
         var cycles = record.RentCycles ?? new List<RentCycle>();
         _ = Task.Run(() =>
@@ -302,10 +307,8 @@ public class HistoryViewModel : INotifyPropertyChanged
                         return;
 
                     // Append one row and expose it incrementally.
-                    if (_partialTimeline == null) _partialTimeline = new List<DetailedTimelineRoundViewModel>();
+                    _partialTimeline ??= new ObservableCollection<DetailedTimelineRoundViewModel>();
                     _partialTimeline.Add(row);
-                    _partialTimelineCount = _partialTimeline.Count;
-                    OnPropertyChanged(nameof(DetailedTimelineRounds));
                     OnPropertyChanged(nameof(HasDetailedTimelineData));
                 });
             }
@@ -317,6 +320,7 @@ public class HistoryViewModel : INotifyPropertyChanged
                     && ReferenceEquals(_currentRecord, record))
                 {
                     _cachedDetailedTimeline = allRows;
+                    _partialTimeline = null;
                     OnPropertyChanged(nameof(DetailedTimelineRounds));
                     OnPropertyChanged(nameof(HasDetailedTimelineData));
                 }
