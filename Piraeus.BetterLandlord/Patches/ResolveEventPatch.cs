@@ -1,4 +1,4 @@
-﻿using SlotWeave.Scripting;
+using SlotWeave.Scripting;
 
 namespace Piraeus.BetterLandlord.Patches;
 
@@ -33,12 +33,13 @@ class ResolveEventPatch
                         _presented.append(_entry)
                 if _presented.size() > 0:
                     $"/root/Main"._bh_record_cards(_presented, _type)
-            if _type == "add_tile" or _type == "add_item":
+            if _type.begins_with("add_tile") or _type.begins_with("add_item"):
                 if choice != null and choice != "dont":
                     if choice == "skip":
                         $"/root/Main"._bh_record_skip()
                     elif choice == "reroll_pay":
-                        pass
+                        if $"/root/Main".has_method("_bh_record_reroll"):
+                            $"/root/Main"._bh_record_reroll()
                     else:
                         $"/root/Main"._bh_record_choice(choice)
         """);

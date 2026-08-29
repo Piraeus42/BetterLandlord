@@ -27,11 +27,22 @@ public class IconNameToImageConverter : IValueConverter
         var name = (parameter as string) ?? value?.ToString();
         if (string.IsNullOrEmpty(name)) return null;
 
+        // Custom Steam Workshop symbols are persisted with a suffix such as
+        // "_STEAM_ID_123". Avalonia's IconCache strips it before lookup; keep
+        // the WPF renderer compatible with the same history records.
+        name = NormalizeName(name);
         return Cache.GetOrAdd(name, LoadIcon);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
+
+    private static string NormalizeName(string name)
+    {
+        const string steamIdSuffix = "_STEAM_ID_";
+        var suffixIndex = name.IndexOf(steamIdSuffix, StringComparison.Ordinal);
+        return suffixIndex > 0 ? name[..suffixIndex] : name;
+    }
 
     private static BitmapImage? LoadIcon(string name)
     {
