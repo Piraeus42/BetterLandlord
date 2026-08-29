@@ -264,9 +264,9 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Image Source="{Binding Mode=OneWay, Converter={StaticResource IconImage}}"
-                                                       Width="22" Height="22" Margin="2,0"
+                                                       Width="24" Height="24" Margin="2,0"
                                                        Stretch="Uniform"
-                                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                                                       RenderOptions.BitmapScalingMode="NearestNeighbor" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
