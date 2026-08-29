@@ -1,4 +1,4 @@
-<Window x:Class="Piraeus.BetterLandlord.UI.MainWindow"
+﻿<Window x:Class="Piraeus.BetterLandlord.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -266,7 +266,7 @@
                                                 <Image Source="{Binding Mode=OneWay, Converter={StaticResource IconImage}}"
                                                        Width="24" Height="24" Margin="2,0"
                                                        Stretch="Uniform"
-                                                       RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                                       RenderOptions.BitmapScalingMode="Pixel" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
