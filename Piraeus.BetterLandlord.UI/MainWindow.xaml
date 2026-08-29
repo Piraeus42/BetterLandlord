@@ -575,6 +575,7 @@
                                                    Width="24" Height="24" Stretch="Uniform"
                                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
                                                    VerticalAlignment="Center" />
+                                            <!-- Bar -->
                                             <Grid Grid.Column="2" Margin="4,0,0,0"
                                                   ToolTip="{Binding DetailText, Mode=OneWay}">
                                                 <Border Background="#2D2D44" CornerRadius="2"
