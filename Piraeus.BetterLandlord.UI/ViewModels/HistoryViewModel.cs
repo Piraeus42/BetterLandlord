@@ -276,7 +276,7 @@ public class HistoryViewModel : INotifyPropertyChanged
         }
     }
 
-    public bool HasDetailedTimelineData => _cachedDetailedTimeline?.Any(r => r.HasDetailedData) == true;
+    public bool HasDetailedTimelineData => (_partialTimeline != null && _partialTimeline.Any(r => r.HasDetailedData)) || (_cachedDetailedTimeline?.Any(r => r.HasDetailedData) == true);
 
     private void PreloadDetailedTimeline(RunRecord record)
     {

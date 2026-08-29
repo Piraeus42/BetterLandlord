@@ -1,0 +1,12 @@
+const fs = require('fs');
+const path = 'Piraeus.BetterLandlord.UI/MainWindow.xaml';
+let xaml = fs.readFileSync(path, 'utf8');
+xaml = xaml.replace('IconNameToImageConverter x:Key="IconImage" />', 'IconNameToImageConverter x:Key="IconImage" />\n        <conv:SizeFromIconConverter x:Key="IconSize" />');
+xaml = xaml.replace(/Width="17" Height="17" HorizontalAlignment="Left" VerticalAlignment="Center"\s*\n\s*Stretch="Uniform"/g, 'Width="{Binding Converter={StaticResource IconSize}}" Height="{Binding Converter={StaticResource IconSize}}" HorizontalAlignment="Left" VerticalAlignment="Center"\n                       Stretch="None" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"');
+xaml = xaml.replace(/Width="16" Height="16" Stretch="Uniform"\s*\n\s*RenderOptions\.BitmapScalingMode="NearestNeighbor"/g, 'Width="{Binding Converter={StaticResource IconSize}}" Height="{Binding Converter={StaticResource IconSize}}" Stretch="None"\n                                       RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"');
+xaml = xaml.replace(/Width="16" Height="16" Stretch="Uniform"(?![^<]*BitmapScalingMode)/g, 'Width="{Binding Converter={StaticResource IconSize}}" Height="{Binding Converter={StaticResource IconSize}}" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"');
+xaml = xaml.replace(/Width="22" Height="22" Margin="2,0"\s*\n\s*Stretch="Uniform"/g, 'Width="{Binding Converter={StaticResource IconSize}}" Height="{Binding Converter={StaticResource IconSize}}" Margin="2,0"\n                                                       Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"');
+xaml = xaml.replace(/Width="18" Height="18" Stretch="Uniform"/g, 'Width="{Binding Converter={StaticResource IconSize}}" Height="{Binding Converter={StaticResource IconSize}}" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"');
+xaml = xaml.replace(/Width="14" Height="14" Stretch="Uniform"/g, 'Width="{Binding Converter={StaticResource IconSize}}" Height="{Binding Converter={StaticResource IconSize}}" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"');
+fs.writeFileSync(path, xaml, 'utf8');
+console.log('Done! Has IconSize:', xaml.includes('IconSize'), 'Has EdgeMode:', xaml.includes('EdgeMode'));
