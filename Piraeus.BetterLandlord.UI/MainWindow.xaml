@@ -85,11 +85,6 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Border Background="#332B40" BorderBrush="#89B4FA" BorderThickness="1"
-                        CornerRadius="2" Padding="3,1" Margin="3,0,0,0"
-                        Visibility="{Binding IsRerolled, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="已重抽" FontSize="8" Foreground="#89B4FA" />
-                </Border>
             </StackPanel>
         </DataTemplate>
 
@@ -133,10 +128,10 @@
                                 Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}" />
                 <ContentControl Content="{Binding Action}"
                                 Visibility="{Binding IsAction, Converter={StaticResource BoolToVis}}" />
-                <Border Background="#332B40" BorderBrush="#89B4FA" BorderThickness="1"
+                <Border Background="#332B40" BorderBrush="#A6E3A1" BorderThickness="1"
                         CornerRadius="2" Padding="3,1"
                         Visibility="{Binding IsReroll, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="重掷" FontSize="8" Foreground="#89B4FA" />
+                    <TextBlock Text="重掷" FontSize="8" Foreground="#A6E3A1" />
                 </Border>
             </Grid>
         </DataTemplate>
