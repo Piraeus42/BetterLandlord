@@ -54,6 +54,7 @@ public class HistoryViewModel : INotifyPropertyChanged
             {
                 _currentRecord?.MigrateDptIfNeeded();
                 _cachedTimeline = null;
+                _cachedTimelineSource = null;
                 _cachedDetailedTimeline = null;
                 _partialTimeline = null;
                 RefreshMeta();
@@ -248,23 +249,29 @@ public class HistoryViewModel : INotifyPropertyChanged
 
     public RunSummary? Summary => CurrentRecord?.Summary;
 
-    // Cache the timeline to avoid rebuilding on every binding refresh
+    // Cache the timeline for the lifetime of the currently selected record.
     private List<TimelineRoundViewModel>? _cachedTimeline;
+    private RunRecord? _cachedTimelineSource;
     public List<TimelineRoundViewModel> TimelineRounds
     {
         get
         {
             if (_currentRecord?.RentCycles == null)
-                return _cachedTimeline ?? new();
-            _cachedTimeline = _currentRecord.RentCycles
-                .Select(rc => new TimelineRoundViewModel(rc))
-                .ToList();
+                return new();
+            if (!ReferenceEquals(_cachedTimelineSource, _currentRecord) || _cachedTimeline is null)
+            {
+                _cachedTimeline = _currentRecord.RentCycles
+                    .Select(rc => new TimelineRoundViewModel(rc))
+                    .ToList();
+                _cachedTimelineSource = _currentRecord;
+            }
             return _cachedTimeline;
         }
     }
 
     private List<DetailedTimelineRoundViewModel>? _cachedDetailedTimeline;
     private int _detailedPreloadVersion;
+    private CancellationTokenSource? _detailedPreloadCts;
     private ObservableCollection<DetailedTimelineRoundViewModel>? _partialTimeline;
     public IReadOnlyList<DetailedTimelineRoundViewModel> DetailedTimelineRounds
     {
@@ -281,51 +288,55 @@ public class HistoryViewModel : INotifyPropertyChanged
     private void PreloadDetailedTimeline(RunRecord record)
     {
         var version = Interlocked.Increment(ref _detailedPreloadVersion);
-        _partialTimeline = null;
+        _detailedPreloadCts?.Cancel();
+        _detailedPreloadCts?.Dispose();
+        _detailedPreloadCts = new CancellationTokenSource();
+        var cancellationToken = _detailedPreloadCts.Token;
 
         var cycles = record.RentCycles ?? new List<RentCycle>();
-        _ = Task.Run(() =>
+        _partialTimeline = new ObservableCollection<DetailedTimelineRoundViewModel>();
+        OnPropertyChanged(nameof(DetailedTimelineRounds));
+
+        _ = Task.Run(async () =>
         {
-            // Build all row VMs on the background thread.
-            var allRows = cycles
-                .Select(rc => new DetailedTimelineRoundViewModel(rc))
-                .ToList();
-
-            // Dispatch rows one by one so each becomes visible immediately.
-            for (var i = 0; i < allRows.Count; i++)
+            try
             {
-                // A newer run may have been selected while we are building.
-                if (version != Volatile.Read(ref _detailedPreloadVersion)
-                    || !ReferenceEquals(_currentRecord, record))
-                    return;
-
-                var row = allRows[i];
-                _dispatcher.BeginInvoke(() =>
+                foreach (var cycle in cycles)
                 {
-                    if (version != Volatile.Read(ref _detailedPreloadVersion)
-                        || !ReferenceEquals(_currentRecord, record))
-                        return;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var row = new DetailedTimelineRoundViewModel(cycle);
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    // Append one row and expose it incrementally.
-                    _partialTimeline ??= new ObservableCollection<DetailedTimelineRoundViewModel>();
-                    _partialTimeline.Add(row);
-                    OnPropertyChanged(nameof(HasDetailedTimelineData));
+                    // Await each dispatch so rows cannot arrive out of order.
+                    await _dispatcher.InvokeAsync(() =>
+                    {
+                        if (version != Volatile.Read(ref _detailedPreloadVersion)
+                            || !ReferenceEquals(_currentRecord, record))
+                            return;
+
+                        _partialTimeline?.Add(row);
+                        OnPropertyChanged(nameof(HasDetailedTimelineData));
+                    });
+                }
+
+                await _dispatcher.InvokeAsync(() =>
+                {
+                    if (version == Volatile.Read(ref _detailedPreloadVersion)
+                        && ReferenceEquals(_currentRecord, record))
+                    {
+                        var allRows = _partialTimeline?.ToList() ?? new List<DetailedTimelineRoundViewModel>();
+                        _cachedDetailedTimeline = allRows;
+                        _partialTimeline = null;
+                        OnPropertyChanged(nameof(DetailedTimelineRounds));
+                        OnPropertyChanged(nameof(HasDetailedTimelineData));
+                    }
                 });
             }
-
-            // Final commit: attach the full list so the cached reference is stable.
-            _dispatcher.BeginInvoke(() =>
+            catch (OperationCanceledException)
             {
-                if (version == Volatile.Read(ref _detailedPreloadVersion)
-                    && ReferenceEquals(_currentRecord, record))
-                {
-                    _cachedDetailedTimeline = allRows;
-                    _partialTimeline = null;
-                    OnPropertyChanged(nameof(DetailedTimelineRounds));
-                    OnPropertyChanged(nameof(HasDetailedTimelineData));
-                }
-            });
-        });
+                // A newer selection owns the preload pipeline.
+            }
+        }, cancellationToken);
     }
 
     // ---- Pipe message handlers (called from background thread) ----
