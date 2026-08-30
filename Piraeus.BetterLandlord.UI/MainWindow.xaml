@@ -7,6 +7,7 @@
         xmlns:controls="clr-namespace:Piraeus.BetterLandlord.UI.Controls"
         xmlns:conv="clr-namespace:Piraeus.BetterLandlord.UI.Converters"
         xmlns:vm="clr-namespace:Piraeus.BetterLandlord.UI.ViewModels"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Better Landlord"
         Height="720" Width="1100"
@@ -764,8 +765,21 @@
                         <!-- Detailed timeline: compact horizontal content with wrapping at the
                              same right edge as the surrounding DPT/content area. -->
                         <ItemsControl ItemsSource="{Binding DetailedTimelineRounds}"
-                                      HorizontalContentAlignment="Stretch"
-                                      Visibility="{Binding IsDetailedTimeline, Converter={StaticResource BoolToVis}}">
+                                      HorizontalContentAlignment="Stretch">
+                            <!-- Hidden but zero-height containers are realized during preload;
+                                 Collapsed would defer the expensive first-pass layout to the click. -->
+                            <ItemsControl.Style>
+                                <Style TargetType="ItemsControl">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                    <Setter Property="MaxHeight" Value="0" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDetailedTimeline}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Setter Property="MaxHeight" Value="{x:Static sys:Double.PositiveInfinity}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ItemsControl.Style>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="#252538" CornerRadius="4" Padding="7,4" Margin="0,0,0,6">

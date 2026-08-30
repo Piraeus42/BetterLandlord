@@ -269,7 +269,7 @@ public class HistoryViewModel : INotifyPropertyChanged
         }
     }
 
-    private List<DetailedTimelineRoundViewModel>? _cachedDetailedTimeline;
+    private IReadOnlyList<DetailedTimelineRoundViewModel>? _cachedDetailedTimeline;
     private int _detailedPreloadVersion;
     private CancellationTokenSource? _detailedPreloadCts;
     private ObservableCollection<DetailedTimelineRoundViewModel>? _partialTimeline;
@@ -324,10 +324,10 @@ public class HistoryViewModel : INotifyPropertyChanged
                     if (version == Volatile.Read(ref _detailedPreloadVersion)
                         && ReferenceEquals(_currentRecord, record))
                     {
-                        var allRows = _partialTimeline?.ToList() ?? new List<DetailedTimelineRoundViewModel>();
-                        _cachedDetailedTimeline = allRows;
+                        // Preserve the collection reference: ItemsSource was already
+                        // incrementally materializing containers while overview was shown.
+                        _cachedDetailedTimeline = _partialTimeline;
                         _partialTimeline = null;
-                        OnPropertyChanged(nameof(DetailedTimelineRounds));
                         OnPropertyChanged(nameof(HasDetailedTimelineData));
                     }
                 });
