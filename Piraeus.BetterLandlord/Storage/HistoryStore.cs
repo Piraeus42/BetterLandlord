@@ -8,6 +8,8 @@ public class HistoryStore
 {
     private readonly string _historyDir;
     private readonly string _manifestPath;
+    private readonly object _runListCacheLock = new();
+    private readonly Dictionary<string, (DateTime LastWriteUtc, long Length, ManifestEntry Entry)> _runListCache = new();
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -82,21 +84,7 @@ public class HistoryStore
 
                 var json = File.ReadAllText(file);
                 using var doc = JsonDocument.Parse(json);
-                var root = doc.RootElement;
-
-                var meta = root.TryGetProperty("meta", out var m) ? m : default;
-                entries.Add(new ManifestEntry
-                {
-                    RunId = runId,
-                    RunNumber = meta.TryGetProperty("run_number", out var rn) ? rn.GetInt32() : 0,
-                    EndedBy = meta.TryGetProperty("ended_by", out var eb) ? eb.GetString() ?? "loss" : "loss",
-                    Floor = meta.TryGetProperty("floor", out var fl) && fl.ValueKind != JsonValueKind.Null ? fl.GetInt32() : null,
-                    FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetDouble() : 0,
-                    TotalSpins = meta.TryGetProperty("total_spins", out var ts) ? ts.GetInt32() : 0,
-                    StartTime = meta.TryGetProperty("start_time", out var st) && st.ValueKind != JsonValueKind.Null ? st.GetString() : null,
-                    TopSymbols = ExtractTopSymbols(doc),
-                    SeedType = meta.TryGetProperty("seed_type", out var sdt) && sdt.ValueKind != JsonValueKind.Null ? sdt.GetString() : null
-                });
+                entries.Add(CreateManifestEntry(runId, doc));
             }
             catch { /* skip corrupted files */ }
         }
@@ -211,6 +199,112 @@ public class HistoryStore
             .Select(f => Path.GetFileNameWithoutExtension(f) ?? "")
             .Where(n => n != "")
             .ToList();
+    }
+
+    /// <summary>
+    /// Reads run summaries once per file version. New runs are written by
+    /// GDScript directly under the runs directory, so metadata staleness is the
+    /// invalidation signal rather than an in-process save callback.
+    /// </summary>
+    public IReadOnlyList<ManifestEntry> GetRunListEntries()
+    {
+        var runsDir = Path.Combine(_historyDir, "runs");
+        if (!Directory.Exists(runsDir))
+        {
+            lock (_runListCacheLock)
+                _runListCache.Clear();
+            return Array.Empty<ManifestEntry>();
+        }
+
+        var entries = new List<ManifestEntry>();
+        var seenIds = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var path in Directory.EnumerateFiles(runsDir, "*.json"))
+        {
+            var runId = Path.GetFileNameWithoutExtension(path);
+            if (string.IsNullOrEmpty(runId) || !seenIds.Add(runId))
+                continue;
+
+            (DateTime, long, ManifestEntry)? cacheKey = null;
+            ManifestEntry? cachedEntry = null;
+            lock (_runListCacheLock)
+            {
+                if (_runListCache.TryGetValue(runId, out var cached))
+                {
+                    cachedEntry = cached.Entry;
+                    var info = new FileInfo(path);
+                    if (info.Exists
+                        && info.LastWriteTimeUtc == cached.LastWriteUtc
+                        && info.Length == cached.Length)
+                    {
+                        entries.Add(cached.Entry);
+                        continue;
+                    }
+                }
+            }
+
+            try
+            {
+                var json = File.ReadAllText(path);
+                using var doc = JsonDocument.Parse(json);
+                var entry = CreateManifestEntry(runId, doc);
+                entries.Add(entry);
+
+                // Refresh after reading so a write racing with this read is not
+                // mistaken for the version that was just parsed.
+                var version = new FileInfo(path);
+                if (version.Exists)
+                    cacheKey = (version.LastWriteTimeUtc, version.Length, entry);
+            }
+            catch (Exception)
+            {
+                // A file can be mid-write or corrupt. Keep any previously parsed
+                // summary visible, but let the metadata remain stale so a later
+                // valid version is retried.
+                if (cachedEntry != null)
+                    entries.Add(cachedEntry);
+            }
+
+            if (cacheKey.HasValue)
+            {
+                lock (_runListCacheLock)
+                    _runListCache[runId] = cacheKey.Value;
+            }
+        }
+
+        lock (_runListCacheLock)
+        {
+            var staleIds = _runListCache.Keys
+                .Where(runId => !seenIds.Contains(runId))
+                .ToList();
+            foreach (var runId in staleIds)
+                _runListCache.Remove(runId);
+        }
+
+        entries.Sort((a, b) => string.CompareOrdinal(b.RunId, a.RunId));
+        return entries;
+    }
+
+    private static ManifestEntry CreateManifestEntry(string runId, JsonDocument doc)
+    {
+        var root = doc.RootElement;
+        if (!root.TryGetProperty("meta", out var meta) || meta.ValueKind != JsonValueKind.Object)
+            throw new FormatException($"Run '{runId}' has no meta object.");
+
+        return new ManifestEntry
+        {
+            RunId = runId,
+            RunNumber = meta.TryGetProperty("run_number", out var rn) ? rn.GetInt32() : 0,
+            EndedBy = meta.TryGetProperty("ended_by", out var eb) && eb.ValueKind != JsonValueKind.Null
+                ? eb.GetString() ?? "loss"
+                : "loss",
+            Floor = meta.TryGetProperty("floor", out var fl) && fl.ValueKind != JsonValueKind.Null ? fl.GetInt32() : null,
+            FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetDouble() : 0,
+            TotalSpins = meta.TryGetProperty("total_spins", out var ts) ? ts.GetInt32() : 0,
+            StartTime = meta.TryGetProperty("start_time", out var st) && st.ValueKind != JsonValueKind.Null ? st.GetString() : null,
+            TopSymbols = ExtractTopSymbols(doc),
+            SeedType = meta.TryGetProperty("seed_type", out var seedType) && seedType.ValueKind != JsonValueKind.Null ? seedType.GetString() : null
+        };
     }
 
     private string GetRunPath(string runId) =>

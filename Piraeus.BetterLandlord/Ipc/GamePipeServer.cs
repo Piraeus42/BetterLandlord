@@ -361,93 +361,22 @@ public class GamePipeServer : IDisposable
 
     private string BuildRunListJson()
     {
-        var manifestEntries = _store.LoadManifestEntries();
-        var manifestSet = new HashSet<string>();
         var items = new List<RunListItem>();
-
-        if (manifestEntries != null && manifestEntries.Entries.Count > 0)
+        var entries = _store.GetRunListEntries();
+        foreach (var entry in entries)
         {
-            var runsDir = Path.Combine(_store.HistoryDir, "runs");
-            foreach (var e in manifestEntries.Entries)
+            items.Add(new RunListItem
             {
-                manifestSet.Add(e.RunId);
-                // Read mutable fields from actual JSON — a run can change after
-                // manifest was built (e.g. "quit" → "loss" after Continue).
-                var endedBy = e.EndedBy;
-                var floor = e.Floor;
-                var finalCoins = e.FinalCoins;
-                var totalSpins = e.TotalSpins;
-                var seedType = e.SeedType;
-                try
-                {
-                    var path = Path.Combine(runsDir, $"{e.RunId}.json");
-                    if (File.Exists(path))
-                    {
-                        var json = File.ReadAllText(path);
-                        using var doc = JsonDocument.Parse(json);
-                        var meta = doc.RootElement.TryGetProperty("meta", out var m) ? m : default;
-                        if (meta.ValueKind != default)
-                        {
-                            endedBy = meta.TryGetProperty("ended_by", out var eb) && eb.ValueKind != System.Text.Json.JsonValueKind.Null ? eb.GetString() ?? e.EndedBy : e.EndedBy;
-                            if (meta.TryGetProperty("floor", out var fl) && fl.ValueKind != System.Text.Json.JsonValueKind.Null)
-                                floor = fl.GetInt32();
-                            if (meta.TryGetProperty("final_coins", out var fc))
-                                finalCoins = fc.GetDouble();
-                            if (meta.TryGetProperty("total_spins", out var ts))
-                                totalSpins = ts.GetInt32();
-                            if (meta.TryGetProperty("seed_type", out var st) && st.ValueKind != System.Text.Json.JsonValueKind.Null)
-                                seedType = st.GetString();
-                        }
-                    }
-                }
-                catch { } // stale JSON → keep manifest values
-                items.Add(new RunListItem
-                {
-                    RunId = e.RunId,
-                    RunNumber = e.RunNumber,
-                    EndedBy = endedBy,
-                    Floor = floor,
-                    FinalCoins = finalCoins,
-                    TotalSpins = totalSpins,
-                    StartTime = e.StartTime,
-                    TopSymbols = e.TopSymbols,
-                    SeedType = seedType
-                });
-            }
-        }
-
-        var allRunIds = _store.GetExistingHistoryIds();
-        var newIds = allRunIds.Where(id => !manifestSet.Contains(id)).ToList();
-        if (newIds.Count > 0)
-        {
-            var runsDir = Path.Combine(_store.HistoryDir, "runs");
-            foreach (var runId in newIds)
-            {
-                try
-                {
-                    var path = Path.Combine(runsDir, $"{runId}.json");
-                    var json = File.ReadAllText(path);
-                    using var doc = JsonDocument.Parse(json);
-                    var root = doc.RootElement;
-                    var meta = root.TryGetProperty("meta", out var m) ? m : default;
-                    items.Add(new RunListItem
-                    {
-                        RunId = runId,
-                        RunNumber = meta.TryGetProperty("run_number", out var rn) ? rn.GetInt32() : 0,
-                        EndedBy = meta.TryGetProperty("ended_by", out var eb) ? eb.GetString() ?? "loss" : "loss",
-                        Floor = meta.TryGetProperty("floor", out var fl) && fl.ValueKind != System.Text.Json.JsonValueKind.Null ? fl.GetInt32() : null,
-                        FinalCoins = meta.TryGetProperty("final_coins", out var fc) ? fc.GetDouble() : 0,
-                        TotalSpins = meta.TryGetProperty("total_spins", out var ts) ? ts.GetInt32() : 0,
-                        StartTime = meta.TryGetProperty("start_time", out var st) && st.ValueKind != System.Text.Json.JsonValueKind.Null ? st.GetString() : null,
-                        TopSymbols = HistoryStore.ExtractTopSymbols(doc),
-                        SeedType = meta.TryGetProperty("seed_type", out var sdt) && sdt.ValueKind != System.Text.Json.JsonValueKind.Null ? sdt.GetString() : null
-                    });
-                }
-                catch { }
-            }
-#if DEBUG
-            _logger.Information("[PipeServer] Merged {Count} new runs not in manifest", newIds.Count);
-#endif
+                RunId = entry.RunId,
+                RunNumber = entry.RunNumber,
+                EndedBy = entry.EndedBy,
+                Floor = entry.Floor,
+                FinalCoins = entry.FinalCoins,
+                TotalSpins = entry.TotalSpins,
+                StartTime = entry.StartTime,
+                TopSymbols = entry.TopSymbols,
+                SeedType = entry.SeedType
+            });
         }
 
         items.Sort((a, b) => string.CompareOrdinal(b.RunId, a.RunId));
