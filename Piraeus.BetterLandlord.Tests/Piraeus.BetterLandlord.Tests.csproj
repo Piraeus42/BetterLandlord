@@ -15,6 +15,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Piraeus.BetterLandlord\Piraeus.BetterLandlord.csproj" />
+    <Reference Include="SlotWeave">
+      <HintPath>D:\steam\steamapps\common\Luck be a Landlord\SlotWeave\core\SlotWeave.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -44,11 +44,20 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\tload_data(true, false, true)",
             "\t# Database loading is complete here. Warm the complete current mod/base card set",
             "\t# before the title frame becomes interactive, never during a choice or reroll.",
-            "\t$\"Pop-up Sprite/Pop-up\"._bl_preload_choice_cards()",
+            "\t$\"Pop-up Sprite/Pop-up\"._bl_preload_choice_cards(loading_without_quitting)",
         })))
             return originalSource;
 
         source = source[..titleStart] + title + source[titleEnd..];
+
+        // A preserved offer can survive the title screen for Continue Game, but it
+        // must not leak into a fresh run selected from that same title screen.
+        if (!Replace(ref source, "\tpopup.undraw_deck()", string.Join(eol, new[]
+        {
+            "\tpopup._bl_release_choice_cards()",
+            "\tpopup.undraw_deck()"
+        })))
+            return originalSource;
 
         // The cache is intentionally detached from the SceneTree, so it is not
         // covered by normal child teardown. Keep a Main-side fallback in case
@@ -282,8 +291,10 @@ public sealed class ChoiceCardReuseSourceMod : ISourceMod
             "\t_bl_release_choice_cards()",
             "\t_bl_clear_choice_card_cache()",
             "",
-            "func _bl_preload_choice_cards():",
+            "func _bl_preload_choice_cards(preserve_active_cards = false):",
             "\tif _bl_choice_card_cache_shutdown_done:",
+            "\t\treturn",
+            "\tif preserve_active_cards:",
             "\t\treturn",
             "\t# A completed cache survives title() transitions.  Only active offer cards need",
             "\t# returning to it here; rebuilding 395 fully initialized Cards would block the",
