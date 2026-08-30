@@ -263,10 +263,11 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Image Source="{Binding Mode=OneWay, Converter={StaticResource IconImage}}"
-                                                       Width="22" Height="22" Margin="2,0"
-                                                       Stretch="Uniform"
-                                                       RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                                <Image Source="{Binding Mode=OneWay, Converter={StaticResource IconImage}, ConverterParameter=24}"
+                                                       Width="24" Height="24" Margin="2,0"
+                                                       Stretch="None"
+                                                       SnapsToDevicePixels="True"
+                                                       UseLayoutRounding="True" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
