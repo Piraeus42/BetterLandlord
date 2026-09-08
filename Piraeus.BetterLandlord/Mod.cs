@@ -42,6 +42,10 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new BadgeFixSourceMod());  // clears stale displayed_multiplier_value
         _modInterface.RegisterSourceMod(new HoverIconRemovalSourceMod());
         _modInterface.RegisterSourceMod(new ItemRngSourceMod());
+        // ISourceMod: skip zero-payout sum updates in piggy bank / swear jar
+        // destroy() — a stuck HP Sum.adding flag soft-locks boss fights on
+        // instant coin counting.
+        _modInterface.RegisterSourceMod(new JarZeroPayoutGuardSourceMod());
         _modInterface.RegisterSourceMod(new ReelExtraRngSourceMod());
         _modInterface.RegisterSourceMod(new LandlordRngRefSourceMod());
         // ISourceMod: corrects the base-game Simplified Chinese Fine Print 37 text.
