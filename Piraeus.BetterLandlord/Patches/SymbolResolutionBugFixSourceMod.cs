@@ -65,6 +65,12 @@ public sealed class SymbolResolutionBugFixSourceMod : ISourceMod
             return originalSource;
         }
 
+        if (!ApplyFloatSaturationValueResolution(ref source, eol))
+        {
+            // A future game update moved a value resolver: do not leave a partial script patch.
+            return originalSource;
+        }
+
         var helpers = new List<string>();
         if (!hasWildcardHelper)
         {
@@ -78,9 +84,205 @@ public sealed class SymbolResolutionBugFixSourceMod : ISourceMod
                 "\t\t\tflat_value_bonus = adjacent_value"
             }));
         }
+        const string floatResolutionHelperMarker = "func _bl_normalise_value(value):";
+        if (!source.Contains(floatResolutionHelperMarker, StringComparison.Ordinal))
+            helpers.Add(BuildFloatResolutionHelpers(eol));
         helpers.Add(BuildDoveProtectionHelpers(eol));
 
-        return source + eol + string.Join(eol + eol, helpers) + eol;
+        return source.TrimEnd('\r', '\n') + eol + eol + string.Join(eol + eol, helpers) + eol;
+    }
+
+    private static bool ApplyFloatSaturationValueResolution(ref string source, string eol)
+    {
+        // Replace the complete resolvers rather than individual int() casts.
+        // This also repairs cached scripts that contain only part of an older
+        // BetterLandlord wildcard patch.
+        var nonPrevReplacement = string.Join(eol, new[]
+        {
+            "func get_non_prev_value(currency):",
+            "\tif drained:",
+            "\t\treturn 0",
+            "",
+            "\tvar v_str = \"value\"",
+            "\tvar vb_arr_str = \"value_bonus_arr\"",
+            "\tvar vm_arr_str = \"value_multiplier_arr\"",
+            "\tvar pb_str = \"permanent_bonus\"",
+            "\tvar pm_str = \"permanent_multiplier\"",
+            "\tvar fvb_str = \"flat_value_bonus\"",
+            "",
+            "\tmatch currency:",
+            "\t\t\"reroll_token\":",
+            "\t\t\tv_str = \"reroll_token_value\"",
+            "\t\t\tvb_arr_str = \"reroll_token_value_bonus_arr\"",
+            "\t\t\tvm_arr_str = \"reroll_token_value_multiplier_arr\"",
+            "\t\t\tpb_str = \"reroll_token_permanent_bonus\"",
+            "\t\t\tpm_str = \"reroll_token_permanent_multiplier\"",
+            "\t\t\tfvb_str = \"reroll_token_flat_value_bonus\"",
+            "\t\t\"removal_token\":",
+            "\t\t\tv_str = \"removal_token_value\"",
+            "\t\t\tvb_arr_str = \"removal_token_value_bonus_arr\"",
+            "\t\t\tvm_arr_str = \"removal_token_value_multiplier_arr\"",
+            "\t\t\tpb_str = \"removal_token_permanent_bonus\"",
+            "\t\t\tpm_str = \"removal_token_permanent_multiplier\"",
+            "\t\t\tfvb_str = \"removal_token_flat_value_bonus\"",
+            "\t\t\"essence_token\":",
+            "\t\t\tv_str = \"essence_token_value\"",
+            "\t\t\tvb_arr_str = \"essence_token_value_bonus_arr\"",
+            "\t\t\tvm_arr_str = \"essence_token_value_multiplier_arr\"",
+            "\t\t\tpb_str = \"essence_token_permanent_bonus\"",
+            "\t\t\tpm_str = \"essence_token_permanent_multiplier\"",
+            "\t\t\tfvb_str = \"essence_token_flat_value_bonus\"",
+            "",
+            "\tvar base_value = float(self[v_str])",
+            "\tvar value_bonus = 0.0",
+            "\tvar value_multiplier = 1.0",
+            "",
+            "\tfor v in self[vb_arr_str]:",
+            "\t\tvalue_bonus += float(v.value)",
+            "\tfor v in self[vm_arr_str]:",
+            "\t\tvalue_multiplier *= float(v.value)",
+            "",
+            "\tvar permanent_bonus = float(self[pb_str])",
+            "\tvar permanent_multiplier = float(self[pm_str])",
+            "\tvar flat_value_bonus = float(self[fvb_str])",
+            "\tvar core_value = (base_value + value_bonus) * value_multiplier * permanent_multiplier",
+            "\tif core_value < 0.0:",
+            "\t\treturn _bl_normalise_value(round(base_value + value_bonus + permanent_bonus + flat_value_bonus))",
+            "\treturn _bl_normalise_value(round((base_value + value_bonus + permanent_bonus) * value_multiplier * permanent_multiplier + flat_value_bonus))"
+        });
+
+        var getValueReplacement = string.Join(eol, new[]
+        {
+            "func get_value(currency):",
+            "\tif drained:",
+            "\t\treturn 0",
+            "",
+            "\tvar v_str = \"value\"",
+            "\tvar vb_arr_str = \"value_bonus_arr\"",
+            "\tvar vm_arr_str = \"value_multiplier_arr\"",
+            "\tvar pb_str = \"permanent_bonus\"",
+            "\tvar pm_str = \"permanent_multiplier\"",
+            "",
+            "\tif wildcarded and reels.true_final_value:",
+            "\t\tv_str = \"flat_value_bonus\"",
+            "",
+            "\tmatch currency:",
+            "\t\t\"reroll_token\":",
+            "\t\t\tv_str = \"reroll_token_value\"",
+            "\t\t\tvb_arr_str = \"reroll_token_value_bonus_arr\"",
+            "\t\t\tvm_arr_str = \"reroll_token_value_multiplier_arr\"",
+            "\t\t\tpb_str = \"reroll_token_permanent_bonus\"",
+            "\t\t\tpm_str = \"reroll_token_permanent_multiplier\"",
+            "\t\t\"removal_token\":",
+            "\t\t\tv_str = \"removal_token_value\"",
+            "\t\t\tvb_arr_str = \"removal_token_value_bonus_arr\"",
+            "\t\t\tvm_arr_str = \"removal_token_value_multiplier_arr\"",
+            "\t\t\tpb_str = \"removal_token_permanent_bonus\"",
+            "\t\t\tpm_str = \"removal_token_permanent_multiplier\"",
+            "\t\t\"essence_token\":",
+            "\t\t\tv_str = \"essence_token_value\"",
+            "\t\t\tvb_arr_str = \"essence_token_value_bonus_arr\"",
+            "\t\t\tvm_arr_str = \"essence_token_value_multiplier_arr\"",
+            "\t\t\tpb_str = \"essence_token_permanent_bonus\"",
+            "\t\t\tpm_str = \"essence_token_permanent_multiplier\"",
+            "",
+            "\tvar value_bonus = 0.0",
+            "\tvar value_multiplier = 1.0",
+            "\tvar prev_final_value = 0.0",
+            "",
+            "\tfor v in self[vb_arr_str]:",
+            "\t\tvalue_bonus += float(v.value)",
+            "\tfor v in self[vm_arr_str]:",
+            "\t\tvalue_multiplier *= float(v.value)",
+            "",
+            "\tfor p in prev_data:",
+            "\t\tvar p_v_str = v_str",
+            "\t\t# Historical Wildcards use their frozen maximum, not the empty slot's value.",
+            "\t\tif currency == \"coin\" and p.wildcarded:",
+            "\t\t\tp_v_str = \"flat_value_bonus\"",
+            "",
+            "\t\tvar p_value_bonus = 0.0",
+            "\t\tvar p_value_multiplier = 1.0",
+            "\t\tfor v in p[vb_arr_str]:",
+            "\t\t\tp_value_bonus += float(v.value)",
+            "\t\tfor v in p[vm_arr_str]:",
+            "\t\t\tp_value_multiplier *= float(v.value)",
+            "",
+            "\t\tvar p_base_value = float(p[p_v_str])",
+            "\t\tvar p_permanent_bonus = float(p[pb_str])",
+            "\t\tvar p_permanent_multiplier = float(p[pm_str])",
+            "\t\tvar p_core_value = (p_base_value + p_value_bonus) * p_value_multiplier * p_permanent_multiplier",
+            "\t\tif p_core_value < 0.0:",
+            "\t\t\tprev_final_value += _bl_normalise_value(round(p_base_value + p_value_bonus + p_permanent_bonus))",
+            "\t\telse:",
+            "\t\t\tprev_final_value += _bl_normalise_value(round((p_base_value + p_value_bonus + p_permanent_bonus) * p_value_multiplier * p_permanent_multiplier))",
+            "\t\tcheck_symbol_value(p, prev_final_value)",
+            "",
+            "\tvar base_value = float(self[v_str])",
+            "\tvar permanent_bonus = float(self[pb_str])",
+            "\tvar permanent_multiplier = float(self[pm_str])",
+            "\tvar core_value = (base_value + value_bonus) * value_multiplier * permanent_multiplier",
+            "\tif core_value < 0.0:",
+            "\t\treturn _bl_normalise_value(round(base_value + value_bonus + permanent_bonus + prev_final_value))",
+            "",
+            "\tvar positive_core_value = (base_value + value_bonus + permanent_bonus) * value_multiplier * permanent_multiplier",
+            "",
+            "\tcheck_symbol_value(self, _bl_normalise_value(round(positive_core_value)))",
+            "\treturn _bl_normalise_value(round(positive_core_value + prev_final_value))"
+        });
+
+        return ReplaceFunction(ref source, "func get_non_prev_value(currency):", nonPrevReplacement, eol) &&
+               ReplaceFunction(ref source, "func get_value(currency):", getValueReplacement, eol);
+    }
+
+    private static bool ReplaceFunction(ref string source, string declaration, string replacement, string eol)
+    {
+        var start = source.IndexOf(declaration, StringComparison.Ordinal);
+        if (start < 0)
+            return false;
+
+        var searchStart = start + declaration.Length;
+        var nextFunction = source.IndexOf("\nfunc ", searchStart, StringComparison.Ordinal);
+        string suffix;
+        if (nextFunction < 0)
+        {
+            suffix = string.Empty;
+        }
+        else
+        {
+            // The next declaration starts after its line ending. Restore a
+            // canonical ending between the replacement and that declaration,
+            // including for CRLF sources where searching for "\nfunc" would
+            // otherwise discard the carriage return.
+            suffix = eol;
+        }
+
+        replacement = replacement
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Replace("\n", eol, StringComparison.Ordinal);
+        source = nextFunction < 0
+            ? source[..start] + replacement
+            : source[..start] + replacement + suffix + source[(nextFunction + 1)..];
+        return source.IndexOf(declaration, StringComparison.Ordinal) == start;
+    }
+
+    private static string BuildFloatResolutionHelpers(string eol)
+    {
+        return string.Join(eol, new[]
+        {
+            "# BetterLandlord: resolve Variant value pipelines in double precision.",
+            "# Keep large values floating so downstream multipliers do not wrap at int64.",
+            "# Values up to 1e15 stay exact ints for ordinary settlements.",
+            "func _bl_normalise_value(value):",
+            "\tvar number = float(value)",
+            "\tif is_nan(number):",
+            "\t\treturn 0",
+            "\tif is_inf(number):",
+            "\t\treturn 1e308 if number > 0.0 else -1e308",
+            "\tif abs(number) <= 1e15:",
+            "\t\treturn int(number)",
+            "\treturn number"
+        });
     }
 
     private static bool InjectDoveProtectionSourceRecord(ref string source, string eol)
