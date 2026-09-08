@@ -50,6 +50,9 @@ public class Mod : IMod
         _modInterface.RegisterSourceMod(new LandlordRngRefSourceMod());
         // ISourceMod: corrects the base-game Simplified Chinese Fine Print 37 text.
         _modInterface.RegisterSourceMod(new FinePrintChineseLocalizationSourceMod());
+        // ISourceMod: master "speed_all" row on the gameplay page drives all
+        // four animation speed settings from one dropdown.
+        _modInterface.RegisterSourceMod(new OptionsMasterSpeedSourceMod());
         _modInterface.RegisterSourceMod(new CosmeticRngSourceMod());
 
         // ISourceMod: clipboard preservation (TTButton clears clipboard for TTS)
