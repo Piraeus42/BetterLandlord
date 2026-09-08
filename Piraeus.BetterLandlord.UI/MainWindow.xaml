@@ -21,6 +21,7 @@
         <conv:ResultToColorConverter x:Key="ResultToColor" />
         <conv:ResultToIconConverter x:Key="ResultToIcon" />
         <conv:NullToVisibilityConverter x:Key="NullToVis" />
+        <conv:DptDisplayConverter x:Key="DptDisplayFmt" />
 
         <SolidColorBrush x:Key="TextColor" Color="#CDD6F4" />
         <SolidColorBrush x:Key="MutedColor" Color="#6C7086" />
@@ -241,7 +242,7 @@
                                                                      Margin="2,0,2,0" VerticalAlignment="Center" />
                                             <TextBlock FontSize="11"
                                                        Foreground="#A6E3A1" FontWeight="SemiBold"
-                                                       Text="{Binding FinalCoins, Mode=OneWay}"
+                                                       Text="{Binding FinalCoinsText, Mode=OneWay}"
                                                        VerticalAlignment="Center" />
                                         </StackPanel>
                                     </StackPanel>
@@ -355,7 +356,7 @@
                                                                  BorderThickness="1" Padding="6,4"
                                                                  HasDropShadow="True">
                                                             <TextBlock FontSize="11" Foreground="White"
-                                                                       Text="{Binding DptDisplay, Mode=OneWay}" />
+                                                                       Text="{Binding Converter={StaticResource DptDisplayFmt}}" />
                                                         </ToolTip>
                                                     </controls:PixelIconImage.ToolTip>
                                                 </controls:PixelIconImage>
@@ -646,7 +647,7 @@
                                                                          VerticalAlignment="Center" Margin="0,0,2,0" />
                                                 <TextBlock FontSize="12" VerticalAlignment="Center"
                                                            Foreground="#A6E3A1" FontWeight="SemiBold"
-                                                           Text="{Binding CoinsAtRent, Mode=OneWay}" />
+                                                           Text="{Binding CoinsAtRentText, Mode=OneWay}" />
                                                 <TextBlock FontSize="12" VerticalAlignment="Center"
                                                            Foreground="#6C7086" Text="/" Margin="1,0,1,0" />
                                                 <TextBlock FontSize="12" VerticalAlignment="Center"
@@ -791,7 +792,7 @@
                                                            VerticalAlignment="Center" />
                                                 <controls:PixelIconImage IconName="coin" DisplaySize="15" Margin="5,0,2,0" />
                                                 <TextBlock FontSize="10" FontWeight="SemiBold" Foreground="#A6E3A1"
-                                                           Text="{Binding CoinsAtRent}" VerticalAlignment="Center" />
+                                                           Text="{Binding CoinsAtRentText}" VerticalAlignment="Center" />
                                                 <TextBlock FontSize="9" Foreground="#6C7086" Text=" / "
                                                            VerticalAlignment="Center" />
                                                 <TextBlock FontSize="10" Foreground="#CDD6F4"

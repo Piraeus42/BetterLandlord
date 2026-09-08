@@ -104,7 +104,7 @@ public class HistoryViewModel : INotifyPropertyChanged
         }
         else
         {
-            MetaCoins = $"{m.FinalCoins} coins";
+            MetaCoins = $"{CoinFormat.Format(m.FinalCoins)} coins";
             MetaResult = FormatEndedBy(m.EndedBy);
             MetaDate = m.StartTime ?? "";
             if (MetaDate.Length >= 16) MetaDate = MetaDate[..16].Replace('T', ' ');
@@ -159,9 +159,9 @@ public class HistoryViewModel : INotifyPropertyChanged
                 BarWidthPx = val / MaxRankValue * barMaxPx,
                 DetailText = _rankMode switch
                 {
-                    DptMode.TotalValue => $"{d.TotalValue} coins · {d.TurnsContributing} spins on grid",
-                    DptMode.DptActual => $"{d.DptActual:F1}/spin · {d.TurnsPresent} turns present",
-                    DptMode.DptEffective => $"{d.DptEffective:F1}/spin · {d.TurnsContributing} spins on grid",
+                    DptMode.TotalValue => $"{CoinFormat.Format(d.TotalValue)} coins · {d.TurnsContributing} spins on grid",
+                    DptMode.DptActual => $"{CoinFormat.FormatF1(d.DptActual)}/spin · {d.TurnsPresent} turns present",
+                    DptMode.DptEffective => $"{CoinFormat.FormatF1(d.DptEffective)}/spin · {d.TurnsContributing} spins on grid",
                     _ => ""
                 }
             });
@@ -513,6 +513,7 @@ public class RunListItemViewModel
     public string EndedBy { get; private set; }
     public int? Floor { get; private set; }
     public double FinalCoins { get; private set; }
+    public string FinalCoinsText { get; private set; } = "";
     public int TotalSpins { get; private set; }
     public string ResultText { get; private set; } = "";
     public string FloorText { get; private set; } = "";
@@ -530,6 +531,7 @@ public class RunListItemViewModel
         EndedBy = item.EndedBy;
         Floor = item.Floor;
         FinalCoins = item.FinalCoins;
+        FinalCoinsText = CoinFormat.Format(item.FinalCoins);
         TotalSpins = item.TotalSpins;
         SeedType = item.SeedType;
         ResultText = item.EndedBy switch
@@ -553,6 +555,7 @@ public class DetailedTimelineRoundViewModel
     public int RoundIndex { get; }
     public int RentRequired { get; }
     public double CoinsAtRent { get; }
+    public string CoinsAtRentText => CoinFormat.Format(CoinsAtRent);
     public List<DetailedSpinViewModel> Spins { get; } = new();
     public List<DeckSymbolViewModel> DeckSymbols { get; } = new();
     public List<ChoiceGroupViewModel> EndChoiceGroups { get; } = new();
@@ -683,7 +686,7 @@ public sealed class DeckSymbolViewModel
         IconId = iconId;
         Count = count;
         TurnsUntilChange = turnsUntilChange;
-        StackValue = stackValue;
+        StackValue = CoinFormat.FromStoredText(stackValue);
     }
 }
 
@@ -703,8 +706,8 @@ public class DetailedSpinViewModel
     public DetailedSpinViewModel(SpinEntry spin)
     {
         SpinNum = spin.SpinNum;
-        CoinsText = $"{spin.CoinsBefore} → {spin.CoinsAfter}";
-        CoinChangeText = spin.CoinChange >= 0 ? $"+{spin.CoinChange}" : $"{spin.CoinChange}";
+        CoinsText = $"{CoinFormat.Format(spin.CoinsBefore)} → {CoinFormat.Format(spin.CoinsAfter)}";
+        CoinChangeText = CoinFormat.Signed(spin.CoinChange);
 
         if (spin.ChoiceGroups is { Count: > 0 })
         {
@@ -1008,7 +1011,7 @@ public class SpinCellViewModel
         CoinsBefore = spin.CoinsBefore;
         CoinsAfter = spin.CoinsAfter;
         CoinChange = spin.CoinChange;
-        CoinChangeText = CoinChange >= 0 ? $"+{CoinChange}" : $"{CoinChange}";
+        CoinChangeText = CoinFormat.Signed(CoinChange);
 
         // Build icon list for cell display
         if (!string.IsNullOrEmpty(spin.MainSymbol))
@@ -1020,7 +1023,7 @@ public class SpinCellViewModel
         }
 
         // Build tooltip data with icons
-        TooltipActions.Add(new TipAction { Label = $"#{SpinNum}  {CoinsBefore}→{CoinsAfter} ({CoinChangeText})", Icon = null });
+        TooltipActions.Add(new TipAction { Label = $"#{SpinNum}  {CoinFormat.Format(CoinsBefore)}→{CoinFormat.Format(CoinsAfter)} ({CoinChangeText})", Icon = null });
         if (spin.MainSymbol != null)
         {
             TooltipActions.Add(new TipAction { Label = "Took:", Icon = null });
@@ -1050,7 +1053,7 @@ public class SpinCellViewModel
         // Keep plain text for fallback
         var tt = new List<string>();
         tt.Add($"Spin #{SpinNum}");
-        tt.Add($"Coins: {CoinsBefore} → {CoinsAfter} ({CoinChangeText})");
+        tt.Add($"Coins: {CoinFormat.Format(CoinsBefore)} → {CoinFormat.Format(CoinsAfter)} ({CoinChangeText})");
 
         if (spin.MainSymbol != null)
             tt.Add($"Main symbol: {spin.MainSymbol}");
@@ -1099,7 +1102,9 @@ public class DptRankEntry
     public double BarWidthPx { get; set; }
     public string DetailText { get; set; } = "";
     public bool Departed { get; set; }
-    public string ValueDisplay => Value >= 10 ? $"{Value:F0}" : $"{Value:F1}";
+    public string ValueDisplay => Math.Abs(Value) >= CoinFormat.ScientificThreshold
+        ? CoinFormat.Format(Value)
+        : Value >= 10 ? $"{Value:F0}" : $"{Value:F1}";
 }
 
 public class ErrorMsgWrapper
