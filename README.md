@@ -26,8 +26,9 @@
 - Fixes Dove not growing after protecting an adjacent symbol
 - Fixes Midas Bomb destroying Wildcard without producing coins
 - Corrects the Simplified Chinese text for Fine Print 37 (it previously duplicated Fine Print 18's Guillotine text)
-- Fixes Swear Jar / Piggy Bank cash-outs leaving the game unable to continue on zero payouts
-- Fixes overflow when resolving extremely large in-game values
+- Fixes a rare error popup when copying a Seed while the clipboard is busy
+- Fixes content copied before launching the game not pasting into the seed input (Ctrl+V now always pastes your most recent copy)
+- Fixes Swear Jar / Piggy Bank cash-outs that could soft-lock boss fights on zero payouts
 
 ---
 
