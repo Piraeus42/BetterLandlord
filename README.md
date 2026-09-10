@@ -18,12 +18,16 @@
 - **Win-rate tracker** — 50/100/200 game sliding window + overall (seeded runs excluded)
 - **End-state handling** — Guillotine, mid-run quit, force-close, and post-victory continue all handled correctly
 - **Game performance optimizations** — Choice-card reuse, reduced resolver allocations, and cached destruction counts reduce repeated work during play
+- **Readable large numbers** — Overflow-scale history values are shown in scientific notation
+- **Master animation speed** — One gameplay option drives every in-game animation speed setting
 
 ### Game Bug Fixes
 
 - Fixes Dove not growing after protecting an adjacent symbol
 - Fixes Midas Bomb destroying Wildcard without producing coins
 - Corrects the Simplified Chinese text for Fine Print 37 (it previously duplicated Fine Print 18's Guillotine text)
+- Fixes Swear Jar / Piggy Bank cash-outs leaving the game unable to continue on zero payouts
+- Fixes overflow when resolving extremely large in-game values
 
 ---
 
