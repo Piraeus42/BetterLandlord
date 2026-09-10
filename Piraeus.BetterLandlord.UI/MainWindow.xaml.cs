@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Piraeus.BetterLandlord.UI.Ipc;
+using Piraeus.BetterLandlord.UI.Services;
 using Piraeus.BetterLandlord.UI.ViewModels;
 
 namespace Piraeus.BetterLandlord.UI;
@@ -163,12 +164,11 @@ public partial class MainWindow : Window
     private void CopySeed_Click(object sender, RoutedEventArgs e)
     {
         var seed = _viewModel.MetaSeed;
-        if (!string.IsNullOrEmpty(seed))
-        {
-            var dataObj = new DataObject();
-            dataObj.SetData(DataFormats.UnicodeText, seed, false);
-            Clipboard.SetDataObject(dataObj, true);
-            _viewModel.StatusText = $"Seed copied: {seed}";
-        }
+        if (string.IsNullOrEmpty(seed))
+            return;
+
+        _viewModel.StatusText = ClipboardHelper.TryCopyText(seed)
+            ? $"Seed copied: {seed}"
+            : "Copy failed — clipboard busy, please retry";
     }
 }

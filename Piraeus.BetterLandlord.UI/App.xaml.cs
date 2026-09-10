@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Threading;
+using Piraeus.BetterLandlord.UI.Services;
 
 namespace Piraeus.BetterLandlord.UI;
 
@@ -16,6 +17,10 @@ public partial class App : Application
         }
 
         base.OnStartup(e);
+
+        // Capture the player's pre-launch clipboard copy before the game's
+        // TTS flow can clear it — Ctrl+V in the seed dialog inherits this.
+        ClipboardHelper.RememberClipboardText();
 
         DispatcherUnhandledException += (s, args) =>
         {

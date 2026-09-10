@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using Piraeus.BetterLandlord.UI.Ipc;
+using Piraeus.BetterLandlord.UI.Services;
 
 namespace Piraeus.BetterLandlord.UI;
 
@@ -28,8 +29,18 @@ public partial class SeedDialog : Window
             _ownsPipeClient = true;
         }
 
+        // The game's TTS flow clears the clipboard (TTButton do_call), which
+        // leaves Ctrl+V empty for a seed copied before launch. Paste inherits
+        // the remembered copy — user-initiated, nothing is ever prefilled.
+        SeedInput.CommandBindings.Add(
+            new CommandBinding(ApplicationCommands.Paste, SeedInput_Paste));
+
         Loaded += (s, e) =>
         {
+            // Track copies made after launch; the startup capture in App
+            // already holds the pre-launch one.
+            ClipboardHelper.RememberClipboardText();
+
             Activate();
             SeedInput.Focus();
             Keyboard.Focus(SeedInput);
@@ -59,6 +70,13 @@ public partial class SeedDialog : Window
         _pipeClient.SendSetSeed(input);
         DialogResult = true;
         Close();
+    }
+
+    private void SeedInput_Paste(object sender, ExecutedRoutedEventArgs e)
+    {
+        var text = ClipboardHelper.GetTextForPaste();
+        if (!string.IsNullOrEmpty(text))
+            SeedInput.SelectedText = text;
     }
 
     protected override void OnClosed(EventArgs e)
