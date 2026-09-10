@@ -28,6 +28,7 @@
 - Corrects the Simplified Chinese text for Fine Print 37 (it previously duplicated Fine Print 18's Guillotine text)
 - Fixes a rare error popup when copying a Seed while the clipboard is busy
 - Fixes content copied before launching the game not pasting into the seed input (Ctrl+V now always pastes your most recent copy)
+- Fixes oversized in-game values overflowing abnormally during settlement
 - Fixes Swear Jar / Piggy Bank cash-outs that could soft-lock boss fights on zero payouts
 
 ---
