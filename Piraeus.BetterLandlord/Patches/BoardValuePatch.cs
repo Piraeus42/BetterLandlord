@@ -8,6 +8,14 @@ namespace Piraeus.BetterLandlord.Patches;
 /// settlement value must be read through get_value("coin"), not final_value:
 /// wildcarded symbols receive their payout through flat_value_bonus while
 /// true_final_value is set, and that path does not refresh final_value.
+///
+/// get_value() includes the accumulated prev_data of every form the icon
+/// replaced this spin (Shrine-style destroy-and-replace, growth transforms).
+/// The payout total is settlement-accurate, but keying the whole amount by the
+/// current type would credit a departed symbol's final production to its
+/// replacement (e.g. a fresh Spirit inheriting a destroyed Sun's value).  The
+/// prev_data contribution is therefore split per layer and attributed to the
+/// form that produced it.
 /// </summary>
 [Patch("res://Main.tscn::4", "check_values")]
 class BoardValuePatch
@@ -23,9 +31,36 @@ class BoardValuePatch
                         # final_value is stale for Wildcard and any symbol with
                         # wildcarded=true. get_value() selects flat_value_bonus
                         # during the final-value phase, matching settlement.
+                        var _total = _icon.get_value("coin")
+                        var _own = _total
+                        var _inherited_layers = []
+                        if not _icon.drained and _icon.prev_data.size() > 0:
+                            # Same value-source switch get_value() applies, so
+                            # each layer below mirrors what the game's prev_data
+                            # loop added to the settlement total.
+                            var _v_str = 'value'
+                            if _icon.wildcarded and true_final_value:
+                                _v_str = 'flat_value_bonus'
+                            for _p in _icon.prev_data:
+                                var _p_bonus = 0
+                                var _p_mult = 1.0
+                                for _pv in _p['value_bonus_arr']:
+                                    _p_bonus += _pv.value
+                                for _pm in _p['value_multiplier_arr']:
+                                    _p_mult *= _pm.value
+                                var _p_base = int(_p[_v_str]) + int(_p_bonus) + int(_p['permanent_bonus'])
+                                var _p_val
+                                if _p_base * _p_mult * float(_p['permanent_multiplier']) < 0:
+                                    _p_val = round(_p_base)
+                                else:
+                                    _p_val = round(_p_base * _p_mult * float(_p['permanent_multiplier']))
+                                _own -= _p_val
+                                var _p_type = str(_p.get('type', ''))
+                                if _p_type != '' and _p_type != 'null' and _p_val != 0:
+                                    _inherited_layers.append({'id': _p_type, 'value': _p_val, 'inherited': true})
                         var _entry = {
                             'id': str(_icon.type),
-                            'value': _icon.get_value("coin")
+                            'value': _own
                         }
                         if _icon.wildcarded:
                             _entry['wildcarded'] = true
