@@ -66,6 +66,17 @@ public class HistoryStore
     }
 
     /// <summary>
+    /// Removes a run's JSON and its event sidecars. Used by migration cleanup
+    /// to drop log-parsed duplicates of runs already captured live.
+    /// </summary>
+    public void Delete(string runId)
+    {
+        try { File.Delete(GetRunPath(runId)); } catch { }
+        try { File.Delete(Path.Combine(_historyDir, $"events_{runId}.json")); } catch { }
+        try { File.Delete(Path.Combine(_historyDir, $"events_{runId}.jsonl")); } catch { }
+    }
+
+    /// <summary>
     /// Rebuild the manifest by scanning all run JSONs.
     /// Uses JsonDocument for lightweight field extraction — no full RunRecord deserialization.
     /// </summary>

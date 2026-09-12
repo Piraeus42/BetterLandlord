@@ -105,9 +105,10 @@ public class Mod : IMod
 
             _modInterface.Logger.Information(
                 "[BetterLandlord] Migration done: {Migrated} complete + {Truncated} truncated + {Partial} partial " +
-                "({Skipped} skipped, {Empty} empty, {Corrupted} corrupted, {Failed} failed) �?history db at {Dir}",
+                "({Skipped} skipped, {DupSkip} dup-skipped, {DupRemoved} dup-removed, {Empty} empty, {Corrupted} corrupted, {Failed} failed) �?history db at {Dir}",
                 result.Migrated, result.MigratedTruncated, result.MigratedPartial,
-                result.Skipped, result.EmptyFiles, result.Corrupted, result.Failed,
+                result.Skipped, result.DuplicatesSkipped, result.DuplicatesRemoved,
+                result.EmptyFiles, result.Corrupted, result.Failed,
                 runner.HistoryDir);
         }
         catch (Exception ex)
