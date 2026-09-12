@@ -282,6 +282,7 @@ func _bh_save_rng_state():
         },
         ""item_pick_event"": _bh_item_pick_event,
         ""essence_pick_event"": _bh_essence_pick_event,
+        ""choice_idx"": _bh_choice_idx,
     }))
     f.close()
 
@@ -398,6 +399,9 @@ func _bh_restore_rng_state():
     _bh_item_cursor = {}
     _bh_essence_seq = []
     _bh_essence_cursor = 0
+    # Continue the choice counter so choices after a cold Continue keep
+    # numbering upward instead of colliding with restored history indices.
+    _bh_choice_idx = int(data.get(""choice_idx"", 0))
 
     # Load pre-close events only after the sidecar has been accepted.
     if has_method(""_bh_load_events_for_continue""):
