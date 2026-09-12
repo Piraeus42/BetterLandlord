@@ -88,6 +88,24 @@ func _bh_start_run():
             _d2.remove(_old_json)
         if _d2.file_exists(_old_jsonl):
             _d2.remove(_old_jsonl)
+    # Runs abandoned in a previous process (window close, later not Continued)
+    # never hit the block above — cold boot reset _bh_run_id to the boot
+    # timestamp, so their sidecars accumulate forever. Sweep every remaining
+    # JSONL: current-format run JSONs embed the detailed actions, and once a
+    # new run starts no old sidecar can be reached by Continue. Legacy .json
+    # sidecars are kept — old-format records still rehydrate detail views.
+    var _d3 = Directory.new()
+    if _d3.open('user://betterHistory') == OK:
+        var _stale_jsonls = []
+        _d3.list_dir_begin()
+        var _fname = _d3.get_next()
+        while _fname != '':
+            if _fname.begins_with('events_') and _fname.ends_with('.jsonl'):
+                _stale_jsonls.append(_fname)
+            _fname = _d3.get_next()
+        _d3.list_dir_end()
+        for _stale in _stale_jsonls:
+            _d3.remove(_stale)
     _bh_events.clear()
     _bh_events_persisted_count = 0
     _bh_events_dirty = false
