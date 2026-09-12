@@ -73,9 +73,16 @@ class BoardValuePatch
                         if typeof(_icon.displayed_bonus_value) == TYPE_STRING and _icon.displayed_bonus_value != '':
                             _entry['badge_bonus'] = str(_icon.displayed_bonus_value)
                         _grid_vals.append(_entry)
+                        for _layer in _inherited_layers:
+                            _grid_vals.append(_layer)
             if _grid_vals.size() > 0:
                 $"/root/Main"._bh_add_event("board_value", {
-                    "spin_num": popup.spins,
+                    # popup.spins is only incremented later in finalize_clumps(),
+                    # so the pre-increment count describes the spin BEFORE this
+                    # one. +1 keeps snapshots aligned with spin_start numbering
+                    # and keeps the first spin's board off the spin-0 label that
+                    # _bh_flush drops.
+                    "spin_num": popup.spins + 1,
                     "values": _grid_vals
                 })
         """);

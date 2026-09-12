@@ -288,8 +288,10 @@ func _bh_flush():
 
         elif et == 'board_value':
             var _sn = int(pl.get('spin_num', 0))
-            # spin 0 is the initial board display -- not a real production turn.
-            # Skip it to avoid double-counting with spin 1 and inflating turns_present.
+            # board_value snapshots are numbered 1:1 with spin_start since the
+            # emission was fixed to add +1 (popup.spins only increments later,
+            # in finalize_clumps). The guard stays as tolerance for events
+            # written by older builds, which labeled the first spin's board 0.
             if _sn > 0:
                 var _vals = pl.get('values', [])
                 if typeof(_vals) == TYPE_ARRAY:
