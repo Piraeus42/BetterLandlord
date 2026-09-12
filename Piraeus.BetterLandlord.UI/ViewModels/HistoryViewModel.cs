@@ -921,6 +921,7 @@ public class TimelineRoundViewModel
     public int RoundIndex { get; private set; }
     public int RentRequired { get; private set; }
     public double CoinsAtRent { get; private set; }
+    public string CoinsAtRentText => CoinFormat.Format(CoinsAtRent);
     public List<SpinCellViewModel> Spins { get; private set; } = new();
     public List<EndActionGroupViewModel> EndActionGroups { get; private set; } = new();
     public bool HasEndActions => EndActionGroups.Count > 0;
