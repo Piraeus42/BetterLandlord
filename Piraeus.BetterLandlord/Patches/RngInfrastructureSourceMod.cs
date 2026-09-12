@@ -446,6 +446,12 @@ func _notification(what: int):
                 _bl_choice_popup._bl_choice_card_cache_shutdown()
         if _bh_events.size() > 0:
             _bh_end_run(_bh_quit_result())
+            # Mirror TitlePatch: _bh_end_run only writes the run JSON. Without
+            # a sidecar snapshot here, a later Continue restores from the last
+            # native save and permanently drops the trailing events that were
+            # only in memory at close time.
+            if has_method(""_bh_force_persist_raw_events""):
+                _bh_force_persist_raw_events()
 
 # ============================================================
 # skip-owned item sequences — deterministic, prefix-stable
